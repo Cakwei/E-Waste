@@ -27,9 +27,9 @@ export default function Login() {
   return (
     <div className="">
       <Header />
-      <article className="mt-[64px] flex w-full items-center justify-center bg-[#056b66] p-10 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
+      <article className="mt-[64px] flex w-full items-center justify-center bg-[#056b66] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
         <form className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-5 rounded-2xl bg-white p-10 outline outline-zinc-400">
-          <h1 className="mb-5 text-center text-4xl font-bold">SIGN IN</h1>
+          <h1 className="text-center text-4xl font-bold">SIGN IN</h1>
           <div className="">
             <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
               <svg
@@ -102,6 +102,9 @@ export default function Login() {
           <button type="submit" className="btn border outline-none">
             Login
           </button>
+          <div className="flex w-full flex-col">
+            <div className="divider text-black">Quick Sign In</div>
+          </div>
         </form>
       </article>
       <Footer />
