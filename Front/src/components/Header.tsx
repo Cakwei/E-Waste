@@ -1,0 +1,183 @@
+import logo from "../assets/logo.png";
+import { NavLink, useNavigate } from "react-router";
+export default function Header() {
+  const navigate = useNavigate();
+  /* const links = [
+    { label: "About", href: "#1" },
+    { label: "About", href: "#2" },
+    { label: "About", href: "#3" },
+  ];*/
+  const profileLinks = [
+    { label: "My profile", href: "#1" },
+    { label: "My Requests", href: "#2" },
+  ];
+
+  return (
+    <header className="bg-base-200 fixed top-0 left-0 z-100 w-full">
+      <div className="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="md:flex md:items-center md:gap-12">
+            <a className="block text-teal-600" href="#">
+              <span className="sr-only">Home</span>
+              <img
+                onClick={() => {
+                  navigate("/");
+                }}
+                className="w-10 min-w-10 rounded-[50%] bg-zinc-400"
+                src={logo}
+              />
+            </a>
+          </div>
+          {/*  <div className="hidden md:block">
+            <nav aria-label="Global">
+              <ul className="flex items-center gap-2.5 text-sm">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <NavLink
+                      to={link.href}
+                      className="rounded-md p-2.5 text-black transition hover:bg-zinc-300"
+                    >
+                      {link.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>*/}
+
+          {false ? (
+            <div className="dropdown dropdown-end">
+              <img
+                tabIndex={0}
+                role="button"
+                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt=""
+                className="size-10 rounded-[50%] object-cover"
+              />
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu z-10 w-52 rounded-md bg-white p-2.5 shadow-sm"
+              >
+                {profileLinks.map((link) => (
+                  <span
+                    className="block rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                    role="menuitem"
+                  >
+                    {link.label}
+                  </span>
+                ))}
+
+                <div className="flex w-full flex-col">
+                  <span className="divider divider-neutral m-0 mx-2.5 before:h-[1px] before:bg-zinc-300 after:h-[1px] after:bg-zinc-300"></span>
+                </div>
+                <button
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                  role="menuitem"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="size-4"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+                    />
+                  </svg>
+                  Logout
+                </button>
+              </ul>
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex sm:gap-4">
+                <NavLink
+                  className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm"
+                  to="/login"
+                >
+                  Login
+                </NavLink>
+
+                <div className="hidden sm:flex">
+                  <NavLink
+                    className="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600"
+                    to="/register"
+                  >
+                    Register
+                  </NavLink>
+                </div>
+              </div>
+
+              <div className="block md:hidden">
+                <div className="drawer">
+                  <input
+                    id="my-drawer"
+                    type="checkbox"
+                    className="drawer-toggle"
+                  />
+                  <div className="drawer-content">
+                    <label
+                      htmlFor="my-drawer"
+                      className="drawer-button bg-base-10 rounded-[50%] p-2.5"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="size-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4 6h16M4 12h16M4 18h16"
+                        />
+                      </svg>
+                    </label>
+                  </div>
+                  <div className="drawer-side">
+                    <label
+                      htmlFor="my-drawer"
+                      aria-label="close sidebar"
+                      className="drawer-overlay"
+                    ></label>
+                    <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+                      {/* Sidebar content here */}
+                      <li>
+                        <a>Sidebar Item 1</a>
+                      </li>
+                      <li>
+                        <a>Sidebar Item 2</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                {/* <button  className="rounded-sm bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="size-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>*/}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
