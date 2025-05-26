@@ -2,6 +2,7 @@ import trash1 from "../assets/trash1.png";
 import greenEnv from "../assets/greenEnv.jpg";
 import { motion } from "motion/react";
 import { NavLink } from "react-router";
+import AboutUs from "@/components/About";
 import {
   Accordion,
   AccordionContent,
@@ -48,6 +49,7 @@ export default function HomeArticle() {
           </li>
         ))}
       </ul>
+      <AboutUs />
       <div className="my-10 flex w-full max-w-[1500px] flex-col items-center gap-5 self-center rounded-tl-2xl rounded-br-2xl bg-[#056b66] p-5 sm:flex-row">
         <img src={greenEnv} className="w-50 rounded-[50%] outline-2" />
         <h5 className="sm:text-st flex flex-col items-center justify-center gap-5 text-center text-2xl font-bold sm:items-start sm:text-start">
@@ -60,8 +62,8 @@ export default function HomeArticle() {
           </NavLink>
         </h5>
       </div>
-      <div className="flex w-full max-w-[1500px] self-center">
-        <section className="flex basis-[40%] flex-col gap-2.5 p-5 text-black">
+      <div className="flex w-full max-w-[1500px] flex-wrap self-center sm:flex-nowrap">
+        <section className="flex w-full flex-col gap-2.5 py-5 text-black sm:basis-[40%] sm:p-5">
           <h4 className="badge rounded-3xl border border-zinc-400 p-2.5">
             Questions
           </h4>
@@ -74,7 +76,7 @@ export default function HomeArticle() {
             </h3>
           </div>
         </section>
-        <section className="flex w-full basis-[60%] items-center text-black">
+        <section className="flex w-full items-center justify-center text-black sm:basis-[60%]">
           <Accordion type="single" collapsible className="w-full">
             {accordion.map((item, index) => (
               <AccordionItem value={`item-${index}`}>
