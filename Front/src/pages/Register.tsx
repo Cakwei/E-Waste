@@ -1,9 +1,7 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
-import { useAuth } from "@/App";
-import { AuthContext } from "@/lib/Auth";
 
 interface FormData {
   username: string;
@@ -32,8 +30,6 @@ export default function Register() {
       [name]: value,
     }));
   };
-
-  const auth = useAuth();
   useEffect(() => {
     console.log(formData);
   }, [formData]);

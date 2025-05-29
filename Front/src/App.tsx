@@ -3,23 +3,20 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
-import { AuthContext } from "@/lib/Auth";
-import { useContext } from "react";
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
+import AuthProvider from "./components/AuthProvider";
+import CollectionForm from "./pages/CollectionForm";
 
 function App() {
   return (
     <BrowserRouter>
-      <AuthContext value={{ user: null, token: "" }}>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/collection" element={<CollectionForm />} />
         </Routes>
-      </AuthContext>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
