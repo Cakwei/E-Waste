@@ -1,11 +1,11 @@
+import axios from "axios";
 import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router";
 
-type LoginType = {
+interface LoginType {
   username: string;
   password: string;
-  remember_me?: boolean | undefined;
-};
+}
 
 interface ProviderProps {
   user: string | null;
@@ -30,10 +30,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState(storedInfo?.token || "");
   const navigate = useNavigate();
 
-  const login = (data: LoginType) => {
-    setUser(data.username);
-    localStorage.setItem("user", JSON.stringify(data));
-    navigate("/");
+  const login = async (data: LoginType) => {
+    try {
+      const url =
+        import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
+          ? "https://wms.cakwei.com"
+          : "http://localhost:3000";
+      const result = await axios.post(`${url}/login`, {
+        username: data.username,
+        password: data.password,
+      });
+      setUser(data.username);
+      localStorage.setItem("user", JSON.stringify(data));
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const logout = () => {

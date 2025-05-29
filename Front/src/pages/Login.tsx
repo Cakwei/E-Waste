@@ -1,8 +1,8 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router";
 import { useAuth } from "@/components/AuthProvider";
+import axios from "axios";
 
 interface FormData {
   username: string;
@@ -29,7 +29,7 @@ export default function Login() {
   function login(e: React.FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
-      auth.login({ username: "Cakwei", password: "123", remember_me: false });
+      auth.login(formData);
     } catch (err) {
       console.log(err);
     }
@@ -112,17 +112,11 @@ export default function Login() {
               />
               Remember me
             </label>
-            <NavLink to="/forgot-password" className="hover:link">
-              Forgot password?
-            </NavLink>
           </div>
 
           <button type="submit" className="btn border outline-none">
             Login
           </button>
-          <div className="flex w-full flex-col">
-            <div className="divider text-black">Quick Sign In</div>
-          </div>
         </form>
       </article>
       <Footer />

@@ -16,13 +16,18 @@ export default function Register() {
     password: "",
   });
 
-  /*const handleSubmitEvent = (e: React.FormEvent<HTMLFormElement>) => {
+  async function register(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (formData.username !== "" && formData.password !== "") {
+    if (
+      formData.username !== "" &&
+      formData.email !== "" &&
+      formData.password !== ""
+    ) {
       //dispatch action from hooks
     }
     alert("please provide a valid input");
-  };*/
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -38,7 +43,12 @@ export default function Register() {
     <div className="">
       <Header />
       <article className="mt-[64px] flex w-full items-center justify-center bg-[#056b66] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
-        <form className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-5 rounded-2xl bg-white p-10 outline outline-zinc-400">
+        <form
+          onSubmit={(e) => {
+            register(e);
+          }}
+          className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-5 rounded-2xl bg-white p-10 outline outline-zinc-400"
+        >
           <h1 className="text-center text-4xl font-bold">SIGN UP</h1>
           <div className="">
             <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
