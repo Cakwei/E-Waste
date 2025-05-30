@@ -36,7 +36,7 @@ export default function HomeArticle() {
         {info.map((item) => (
           <li
             key={item.href}
-            className="flex w-full max-w-[300px] basis-[95%] justify-center rounded-lg bg-[#f9f9f9] py-5 text-black sm:w-max sm:max-w-[350px]"
+            className="flex w-full max-w-[300px] basis-[95%] justify-center rounded-lg bg-[#f9f9f9] py-5 text-black sm:w-max"
           >
             <div className="flex w-full flex-col items-center sm:w-max">
               <motion.img

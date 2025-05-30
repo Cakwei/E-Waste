@@ -3,7 +3,7 @@ import config from './config/config';
 import mysql from 'mysql2/promise';
 
 // DB Connection
-const connection = mysql.createPool({
+export const connection = mysql.createPool({
   uri: config.db_url,
   waitForConnections: true,
   connectionLimit: 10,
