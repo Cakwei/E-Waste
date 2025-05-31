@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { connection } from '../server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import config from '../config/config';
 
 const jwt_secret = config.jwt_secret;
@@ -10,7 +10,7 @@ const jwt_secret = config.jwt_secret;
 interface UserAccount extends RowDataPacket {
   username: string;
   email: string;
-  password?: string;
+  password: string;
 }
 
 async function Login(req: Request, res: Response): Promise<void> {
@@ -31,7 +31,7 @@ async function Login(req: Request, res: Response): Promise<void> {
     }
 
     const user = users[0];
-    const passwordMatch = password === user.password;
+    const passwordMatch = await bcrypt.compare(password, user.password); //password === user.password;
 
     if (!passwordMatch) {
       res.status(401).json({ result: false, message: 'Invalid credentials.' });
@@ -43,7 +43,6 @@ async function Login(req: Request, res: Response): Promise<void> {
       jwt_secret,
       { expiresIn: '1h' },
     );
-
     res
       .status(200)
       .json({ result: true, token: token, message: 'Login successful.' });

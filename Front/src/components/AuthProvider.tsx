@@ -2,16 +2,21 @@ import axios from "axios";
 import { createContext, useContext, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 
-interface LoginType {
+interface ILogin {
   username: string;
   password: string;
 }
-
+interface IRegister {
+  username: string;
+  email: string;
+  password: string;
+}
 interface ProviderProps {
   user: string | null;
   token: string;
-  login(data: LoginType): void;
-  logout(e: FormEvent): void;
+  login(data: ILogin): void;
+  logout(e: React.FormEvent): void;
+  register(data: IRegister): void;
 }
 
 const AuthContext = createContext<ProviderProps>({
@@ -19,6 +24,7 @@ const AuthContext = createContext<ProviderProps>({
   token: "",
   login: () => {},
   logout: () => {},
+  register: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -30,7 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState(storedInfo?.token || "");
   const navigate = useNavigate();
 
-  const login = async (data: LoginType) => {
+  const login = async (data: ILogin) => {
     try {
       const url =
         import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
@@ -53,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = (e: React.FormEvent<HTMLFormElement>) => {
+  const logout = (e: React.FormEvent) => {
     e.preventDefault();
     setUser(null);
     setToken("");
@@ -61,8 +67,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     window.location.href = "/";
   };
 
+  const register = async (data: IRegister) => {
+    try {
+      console.log(data);
+      const url =
+        import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
+          ? "https://wms.cakwei.com"
+          : "http://localhost:3000";
+      const result = await axios.post(`${url}/register`, {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      });
+      if (result.data.result === true) {
+        alert("Successfully registered. Please login.");
+        navigate("/login");
+      } else {
+        alert("Login failed. Please try again.");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

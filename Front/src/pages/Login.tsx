@@ -2,6 +2,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import { NavLink } from "react-router";
 
 interface FormData {
   username: string;
@@ -41,13 +42,14 @@ export default function Login() {
   return (
     <div className="">
       <Header />
-      <article className="mt-[64px] flex w-full items-center justify-center bg-[#056b66] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
+      <article className="mt-[64px] flex w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
         <form
           onSubmit={(e) => login(e)}
-          className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-5 rounded-2xl bg-white p-10 outline outline-zinc-400"
+          className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-2.5 rounded-2xl bg-white p-10 outline outline-zinc-400"
         >
           <h1 className="text-center text-4xl font-bold">SIGN IN</h1>
           <div className="">
+            <span className="text-sm">Username:</span>
             <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
               <svg
                 className="h-[1em] opacity-50"
@@ -71,37 +73,45 @@ export default function Login() {
                 value={formData.username}
                 onChange={handleInputChange}
                 required
-                placeholder="Username"
+                placeholder="Enter username"
+              />
+            </label>
+          </div>
+          <div>
+            <span className="text-sm">Password:</span>
+            <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
+              <svg
+                className="h-[1em] opacity-50"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeWidth="2.5"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+                  <circle
+                    cx="16.5"
+                    cy="7.5"
+                    r=".5"
+                    fill="currentColor"
+                  ></circle>
+                </g>
+              </svg>
+              <input
+                name="password"
+                value={formData.password}
+                type={showPassword ? "text" : "password"}
+                onChange={handleInputChange}
+                required
+                placeholder="Enter password"
               />
             </label>
           </div>
 
-          <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
-            <svg
-              className="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-              </g>
-            </svg>
-            <input
-              name="password"
-              value={formData.password}
-              type={showPassword ? "text" : "password"}
-              onChange={handleInputChange}
-              required
-              placeholder="Password"
-            />
-          </label>
           <div className="flex justify-between">
             <label className="label">
               <input
@@ -113,9 +123,16 @@ export default function Login() {
             </label>
           </div>
 
-          <button type="submit" className="btn border outline-none">
+          <button
+            type="submit"
+            className="btn border bg-[#30b4ac] text-white outline-none"
+          >
             Login
           </button>
+          <NavLink to="/register" className="w-full text-center text-sm">
+            {" New user? "}
+            <span className="hover:link text-blue-500">Create an account</span>
+          </NavLink>
         </form>
       </article>
       <Footer />
