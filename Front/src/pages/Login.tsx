@@ -2,7 +2,6 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import axios from "axios";
 
 interface FormData {
   username: string;

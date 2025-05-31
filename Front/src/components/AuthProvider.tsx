@@ -40,9 +40,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         username: data.username,
         password: data.password,
       });
-      setUser(data.username);
-      localStorage.setItem("user", JSON.stringify(data));
-      navigate("/");
+      if (result.data.result === true) {
+        setUser(data.username);
+        localStorage.setItem("token", result.data.token);
+        navigate("/");
+      } else {
+        alert("Login failed. Please try again.");
+      }
     } catch (err) {
       console.log(err);
     }

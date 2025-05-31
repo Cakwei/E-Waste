@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { connection } from '../server';
-import { QueryResult, RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import config from '../config/config';
@@ -44,7 +44,9 @@ async function Login(req: Request, res: Response): Promise<void> {
       { expiresIn: '1h' },
     );
 
-    res.status(200).json({ result: true, token: token });
+    res
+      .status(200)
+      .json({ result: true, token: token, message: 'Login successful.' });
   } catch (error) {
     console.error('Login error:', error);
     res
@@ -52,10 +54,37 @@ async function Login(req: Request, res: Response): Promise<void> {
       .json({ result: false, message: 'An internal server error occurred.' });
   }
 }
+
 async function Register(req: Request, res: Response) {
-  // Your logic to retrieve users from a database or service
-  res.write('fwefwf');
-  res.send('Retrieving all users');
+  try {
+    const hashSaltRounds = 10;
+    const { username, email, password } = req.body;
+    if (!(username && email && password)) {
+      res.status(400).send({ result: false, message: 'All input is required' });
+      return;
+    }
+    const accountExists =
+      ((await FindUserByEmail(email)) as UserAccount[]).length > 0 ||
+      ((await FindUserByUsername(username)) as UserAccount[]).length > 0;
+    if (accountExists) {
+      res
+        .status(409)
+        .send({ result: false, message: 'Account already exists' });
+      return;
+    }
+    const hashedPassword = await bcrypt.hash(password, hashSaltRounds);
+    const [rows, fields] = await connection.execute(
+      'INSERT INTO `accounts` VALUES (?, ?, ?)',
+      [email, username, hashedPassword],
+    );
+    if ((rows as ResultSetHeader).affectedRows > 0) {
+      res.status(201).send({ result: true, message: 'Account created' });
+    }
+  } catch (err) {
+    res
+      .status(500)
+      .send({ result: false, message: 'Failed to create account' });
+  }
 }
 
 // Private Functions
