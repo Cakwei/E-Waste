@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 
 interface LoginType {
@@ -11,7 +11,7 @@ interface ProviderProps {
   user: string | null;
   token: string;
   login(data: LoginType): void;
-  logout(): void;
+  logout(e: FormEvent): void;
 }
 
 const AuthContext = createContext<ProviderProps>({
@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       if (result.data.result === true) {
         setUser(data.username);
+        setToken(result.data.token);
         localStorage.setItem("token", result.data.token);
         navigate("/");
       } else {
@@ -52,10 +53,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = () => {
+  const logout = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setUser(null);
     setToken("");
     localStorage.removeItem("user");
+    window.location.href = "/";
   };
 
   return (

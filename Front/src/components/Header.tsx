@@ -1,6 +1,8 @@
 import logo from "../assets/logo.png";
 import { NavLink, useNavigate } from "react-router";
+import { useAuth } from "./AuthProvider";
 export default function Header() {
+  const auth = useAuth();
   const navigate = useNavigate();
   /* const links = [
     { label: "About", href: "#1" },
@@ -45,7 +47,7 @@ export default function Header() {
             </nav>
           </div>*/}
 
-          {false ? (
+          {auth.token !== "" ? (
             <div className="dropdown dropdown-end">
               <img
                 tabIndex={0}
@@ -71,6 +73,7 @@ export default function Header() {
                   <span className="divider divider-neutral m-0 mx-2.5 before:h-[1px] before:bg-zinc-300 after:h-[1px] after:bg-zinc-300"></span>
                 </div>
                 <button
+                  onClick={(e) => auth.logout(e)}
                   className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm text-red-700 hover:bg-red-50"
                   role="menuitem"
                 >
