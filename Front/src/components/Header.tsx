@@ -10,7 +10,7 @@ export default function Header() {
     { label: "About", href: "#3" },
   ];*/
   const profileLinks = [
-    { label: "My profile", href: "#1" },
+    { label: "My profile", href: "/profile" },
     { label: "My Requests", href: "#2" },
   ];
 
@@ -61,12 +61,13 @@ export default function Header() {
                 className="dropdown-content menu z-10 w-52 rounded-md bg-white p-2.5 shadow-sm"
               >
                 {profileLinks.map((link) => (
-                  <span
+                  <NavLink
+                    to={link.href}
                     className="block cursor-pointer rounded-lg px-4 py-2 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                     role="menuitem"
                   >
                     {link.label}
-                  </span>
+                  </NavLink>
                 ))}
 
                 <div className="flex w-full flex-col">

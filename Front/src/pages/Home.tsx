@@ -3,6 +3,9 @@ import HomeArticle from "../components/HomeArticle";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 
+export interface IStyle {
+  className?: React.HTMLAttributes<HTMLElement | string> | string;
+}
 export default function Home() {
   return (
     <>
