@@ -1,5 +1,6 @@
 import express from 'express';
 import AuthRoute from './routes/AuthRoute';
+import WasteRoute from './routes/WasteRoute';
 import cors from 'cors';
 import config from './config/config';
 
@@ -12,5 +13,5 @@ app.use(
 app.use(express.json());
 
 app.use('/', AuthRoute);
-
+app.use('/waste', WasteRoute);
 export default app;

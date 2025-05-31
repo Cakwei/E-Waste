@@ -2,25 +2,28 @@ import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import config from '../config/config';
 
-export const SECRET_KEY: Secret = config.jwt_secret;
+export const SECRET_KEY = config.jwt_secret;
 
 export interface CustomRequest extends Request {
-  token: string | JwtPayload;
+  token: string | JwtPayload | null;
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const AuthMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
+    const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
+      console.log('error');
       throw new Error();
     }
-
     const decoded = jwt.verify(token, SECRET_KEY);
-    (req as CustomRequest).token = decoded;
-
+    //(req as CustomRequest).token = decoded;
     next();
   } catch (err) {
-    res.status(401).send('Please authenticate');
+    console.log(err);
+    res.status(401).send({ result: false, message: 'Please authenticate.' });
   }
 };
