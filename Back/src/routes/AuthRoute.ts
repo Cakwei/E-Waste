@@ -1,9 +1,9 @@
 import { Router } from 'express';
 const router = Router();
-import { Login, Register } from '../controller/AuthController';
+import { Login, Register, RefreshSession } from '../controller/AuthController';
 
-// Define routes and map to controller methods
-router.post('/login', Login); // Map to getUsers function
-router.post('/register', Register); // Map to getUserById function
+router.post('/login', Login);
+router.post('/register', Register);
+router.post('/token', RefreshSession);
 
 export default router;

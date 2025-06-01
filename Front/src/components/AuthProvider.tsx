@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext, useState, type FormEvent } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 interface ILogin {
@@ -11,13 +11,18 @@ interface IRegister {
   email: string;
   password: string;
 }
-interface ProviderProps {
+export interface ProviderProps {
   user: string | null;
   token: string;
   login(data: ILogin): void;
   logout(e: React.FormEvent): void;
   register(data: IRegister): void;
 }
+
+const url =
+  import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
+    ? "https://wms.cakwei.com"
+    : "http://localhost:3000";
 
 const AuthContext = createContext<ProviderProps>({
   user: null,
@@ -38,10 +43,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (data: ILogin) => {
     try {
-      const url =
-        import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
-          ? "https://wms.cakwei.com"
-          : "http://localhost:3000";
       const result = await axios.post(`${url}/login`, {
         username: data.username,
         password: data.password,
@@ -70,10 +71,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (data: IRegister) => {
     try {
       console.log(data);
-      const url =
-        import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
-          ? "https://wms.cakwei.com"
-          : "http://localhost:3000";
       const result = await axios.post(`${url}/register`, {
         username: data.username,
         email: data.email,
@@ -89,7 +86,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(err);
     }
   };
+  async function RefreshSession() {
+    const token = localStorage.getItem("token");
 
+    if (token) {
+      const result = await axios.post(`${url}/token`, { token });
+      if (result.data.result === true) {
+        console.log(result.data);
+        setToken(result.data.token);
+      }
+    }
+  }
+  useEffect(() => {
+    RefreshSession();
+  }, []);
   return (
     <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}

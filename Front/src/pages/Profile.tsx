@@ -1,24 +1,39 @@
 import Footer from "@/components/Footer";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth, type ProviderProps } from "@/components/AuthProvider";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
+import { useEffect, useState, type ReactNode } from "react";
 
-const profileTabs: { label: string; href: string }[] = [
-  { label: "Home", href: "/" },
-  { label: "My Requests", href: "/" },
-  { label: "Help & Support", href: "/" },
+const profileTabs: { label: string; tab: string }[] = [
+  { label: "Home", tab: "" },
+  { label: "My Profile", tab: "profile" },
+  { label: "My Requests", tab: "request" },
+  { label: "Help & Support", tab: "support" },
 ];
+
 export default function Profile() {
-  const auth = useAuth();
   const navigate = useNavigate();
-  function selectTab(option: string) {
-    switch (option) {
-      case "my_request":
-        break;
+  const auth = useAuth();
+  const [currentTab, setCurrentTab] = useState<string>("profile");
+
+  function selectTab(auth: ProviderProps) {
+    switch (currentTab) {
+      case "request":
+        return RequestTab(auth);
+      case "profile":
+        return ProfileTab(auth);
       case "support":
+        return SupportTab();
+      default:
         break;
     }
   }
+
+  useEffect(() => {
+    selectTab(auth);
+    console.log(currentTab);
+  }, [currentTab]);
+
   return (
     <>
       <div className="relative flex h-[95vh] w-full min-w-[324px] text-black">
@@ -36,6 +51,7 @@ export default function Profile() {
             {profileTabs.map((item) => (
               <li
                 key={item.label}
+                onClick={() => setCurrentTab(item.tab)}
                 className="mx-2.5 cursor-pointer p-2.5 text-white hover:rounded-md hover:bg-[black]/20"
               >
                 {item.label}
@@ -43,19 +59,36 @@ export default function Profile() {
             ))}
           </ul>
         </nav>
+
         <div className="absolute ml-[max(20%,200px)] flex h-full flex-wrap overflow-scroll bg-transparent text-black">
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
-          dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe dwefwe
+          {selectTab(auth) as ReactNode}
         </div>
-        <h1>{auth.user}</h1>
       </div>
-      <Footer />
+      <Footer className={"min-w-[324px]"} />
     </>
+  );
+}
+
+function SupportTab() {
+  return (
+    <div>
+      <h1 className="text-lg font-bold">Support</h1>
+    </div>
+  );
+}
+
+function ProfileTab(auth: ProviderProps) {
+  return (
+    <div>
+      <h1 className="text-lg font-bold">Welcome, {auth.user}</h1>
+    </div>
+  );
+}
+
+function RequestTab(auth: ProviderProps) {
+  return (
+    <div>
+      <h1 className="text-lg font-bold">Request</h1>
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { connection } from '../server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { DecodeOptions } from 'jsonwebtoken';
 import config from '../config/config';
 
 const jwt_secret = config.jwt_secret;
@@ -43,6 +43,12 @@ async function Login(req: Request, res: Response): Promise<void> {
       jwt_secret,
       { expiresIn: '1h' },
     );
+    res.cookie('auth', token, {
+      sameSite: 'lax',
+      secure: config.nodeEnv === 'prod' ? true : false,
+      maxAge: 60 * 60 * 1000,
+      httpOnly: true,
+    });
     res
       .status(200)
       .json({ result: true, token: token, message: 'Login successful.' });
@@ -86,6 +92,42 @@ async function Register(req: Request, res: Response) {
   }
 }
 
+async function RefreshSession(req: Request, res: Response) {
+  try {
+    let { token } = req.body;
+    console.log(req.signedCookies);
+    console.log(req.cookies);
+    if (token) {
+      token = jwt.verify(token, jwt_secret, (err: any, decoded: any) => {
+        if (err) {
+          console.log('error');
+          res.status(401).send({
+            result: false,
+            message: 'Token invalid. Please login again.',
+          });
+          return;
+        }
+        if (decoded) {
+          console.log('decoded');
+          res.cookie('auth', token, {
+            sameSite: 'lax',
+            secure: config.nodeEnv === 'prod' ? true : false,
+            maxAge: 60 * 60 * 1000,
+            httpOnly: true,
+          });
+          res
+            .status(200)
+            .send({ result: true, token: token, message: 'Session retrieved' });
+        }
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      result: false,
+      message: 'Failed to refresh session due to internal server error',
+    });
+  }
+}
 // Private Functions
 async function FindUserByEmail(email: string) {
   const [rows, fields] = await connection.execute(
@@ -102,4 +144,4 @@ async function FindUserByUsername(username: string) {
   return rows;
 }
 
-export { Login, Register };
+export { Login, Register, RefreshSession };
