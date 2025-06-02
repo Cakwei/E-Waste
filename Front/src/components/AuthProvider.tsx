@@ -38,8 +38,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     : null;
 
   const [user, setUser] = useState<string | null>(storedInfo?.username);
+  // const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState(storedInfo?.token || "");
   const navigate = useNavigate();
+
+  async function RefreshSession() {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const result = await axios.post(`${url}/token`, { token });
+        if (result.data.result === true) {
+          setToken(result.data.token);
+        }
+      }
+    } catch (err) {
+      setUser(null);
+      setToken("");
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    }
+  }
+
+  useEffect(() => {
+    RefreshSession();
+  }, []);
 
   const login = async (data: ILogin) => {
     try {
@@ -60,12 +82,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = (e: React.FormEvent) => {
+  const logout = async (e: React.FormEvent) => {
     e.preventDefault();
-    setUser(null);
-    setToken("");
-    localStorage.removeItem("user");
-    window.location.href = "/";
+    const result = await axios.post(`${url}/logout`, {});
+    if (result.status === 200) {
+      setUser(null);
+      setToken("");
+      localStorage.removeItem("token");
+      window.location.href = "/";
+    }
   };
 
   const register = async (data: IRegister) => {
@@ -76,6 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         email: data.email,
         password: data.password,
       });
+
       if (result.data.result === true) {
         alert("Successfully registered. Please login.");
         navigate("/login");
@@ -86,20 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(err);
     }
   };
-  async function RefreshSession() {
-    const token = localStorage.getItem("token");
 
-    if (token) {
-      const result = await axios.post(`${url}/token`, { token });
-      if (result.data.result === true) {
-        console.log(result.data);
-        setToken(result.data.token);
-      }
-    }
-  }
-  useEffect(() => {
-    RefreshSession();
-  }, []);
   return (
     <AuthContext.Provider value={{ user, token, login, logout, register }}>
       {children}

@@ -86,6 +86,7 @@ function ProfileTab(auth: ProviderProps) {
 }
 
 function RequestTab(auth: ProviderProps) {
+  auth; // Remove this
   return (
     <div>
       <h1 className="text-lg font-bold">Request</h1>

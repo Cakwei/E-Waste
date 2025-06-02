@@ -95,12 +95,10 @@ async function Register(req: Request, res: Response) {
 async function RefreshSession(req: Request, res: Response) {
   try {
     let { token } = req.body;
-    console.log(req.signedCookies);
     console.log(req.cookies);
     if (token) {
       token = jwt.verify(token, jwt_secret, (err: any, decoded: any) => {
         if (err) {
-          console.log('error');
           res.status(401).send({
             result: false,
             message: 'Token invalid. Please login again.',
@@ -108,7 +106,6 @@ async function RefreshSession(req: Request, res: Response) {
           return;
         }
         if (decoded) {
-          console.log('decoded');
           res.cookie('auth', token, {
             sameSite: 'lax',
             secure: config.nodeEnv === 'prod' ? true : false,
@@ -128,6 +125,11 @@ async function RefreshSession(req: Request, res: Response) {
     });
   }
 }
+
+const Logout = (req: Request, res: Response) => {
+  res.clearCookie('auth');
+  res.status(200).send({ result: true, message: 'Logged out' });
+};
 // Private Functions
 async function FindUserByEmail(email: string) {
   const [rows, fields] = await connection.execute(
@@ -144,4 +146,4 @@ async function FindUserByUsername(username: string) {
   return rows;
 }
 
-export { Login, Register, RefreshSession };
+export { Login, Register, RefreshSession, Logout };
