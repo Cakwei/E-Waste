@@ -4,11 +4,11 @@ import logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
 import { useEffect, useState, type ReactNode } from "react";
 
-const profileTabs: { label: string; tab: string }[] = [
-  { label: "Home", tab: "" },
-  { label: "My Profile", tab: "profile" },
-  { label: "My Requests", tab: "request" },
-  { label: "Help & Support", tab: "support" },
+const profileTabs: { label: string; tab: string; href: string | null }[] = [
+  { label: "Home", tab: "", href: "/" },
+  { label: "My Profile", tab: "profile", href: null },
+  { label: "My Requests", tab: "request", href: null },
+  { label: "Help & Support", tab: "support", href: null },
 ];
 
 export default function Profile() {
@@ -43,7 +43,7 @@ export default function Profile() {
               onClick={() => {
                 navigate("/");
               }}
-              className="w-10 min-w-10 rounded-[50%] bg-zinc-400"
+              className="w-10 min-w-10 cursor-pointer rounded-[50%] bg-zinc-400"
               src={logo}
             />
           </div>
@@ -51,7 +51,13 @@ export default function Profile() {
             {profileTabs.map((item) => (
               <li
                 key={item.label}
-                onClick={() => setCurrentTab(item.tab)}
+                onClick={() => {
+                  if (item.label === "Home") {
+                    navigate("/");
+                  } else {
+                    setCurrentTab(item.tab);
+                  }
+                }}
                 className="mx-2.5 cursor-pointer p-2.5 text-white hover:rounded-md hover:bg-[black]/20"
               >
                 {item.label}

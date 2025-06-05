@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { connection } from '../server';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import bcrypt from 'bcrypt';
-import jwt, { DecodeOptions } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config/config';
 
 const jwt_secret = config.jwt_secret;
@@ -13,6 +13,9 @@ interface UserAccount extends RowDataPacket {
   password: string;
 }
 
+interface JWTPayload extends JwtPayload {
+  username: string;
+}
 async function Login(req: Request, res: Response): Promise<void> {
   try {
     const { username, password } = req.body;
@@ -49,9 +52,12 @@ async function Login(req: Request, res: Response): Promise<void> {
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
-    res
-      .status(200)
-      .json({ result: true, token: token, message: 'Login successful.' });
+    res.status(200).json({
+      result: true,
+      token: token,
+      message: 'Login successful.',
+      username: username,
+    });
   } catch (error) {
     console.error('Login error:', error);
     res
@@ -95,7 +101,6 @@ async function Register(req: Request, res: Response) {
 async function RefreshSession(req: Request, res: Response) {
   try {
     let { token } = req.body;
-    console.log(req.cookies);
     if (token) {
       token = jwt.verify(token, jwt_secret, (err: any, decoded: any) => {
         if (err) {
@@ -112,9 +117,12 @@ async function RefreshSession(req: Request, res: Response) {
             maxAge: 60 * 60 * 1000,
             httpOnly: true,
           });
-          res
-            .status(200)
-            .send({ result: true, token: token, message: 'Session retrieved' });
+          res.status(200).send({
+            result: true,
+            token: token,
+            message: 'Session retrieved',
+            username: (jwt.verify(token, jwt_secret) as JWTPayload).username,
+          });
         }
       });
     }

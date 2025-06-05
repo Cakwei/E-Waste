@@ -46,9 +46,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        const result = await axios.post(`${url}/token`, { token });
+        const result = await axios.post(
+          `${url}/token`,
+          { token },
+          { withCredentials: true },
+        );
         if (result.data.result === true) {
           setToken(result.data.token);
+          setUser(result.data.username);
         }
       }
     } catch (err) {
@@ -95,7 +100,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (data: IRegister) => {
     try {
-      console.log(data);
       const result = await axios.post(`${url}/register`, {
         username: data.username,
         email: data.email,

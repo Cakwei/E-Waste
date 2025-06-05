@@ -13,7 +13,7 @@ app.use(
   }),
 );
 app.use(express.json());
-//app.use(cookieParser());
+app.use(cookieParser());
 app.use('/', AuthRoute);
 app.use('/waste', WasteRoute);
 export default app;
