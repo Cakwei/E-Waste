@@ -12,7 +12,7 @@ interface IRegister {
   password: string;
 }
 export interface ProviderProps {
-  user: string | null;
+  user: { username: string; email: string } | null;
   token: string;
   login(data: ILogin): void;
   logout(e: React.FormEvent): void;
@@ -25,7 +25,7 @@ const url =
     : "http://localhost:3000";
 
 const AuthContext = createContext<ProviderProps>({
-  user: null,
+  user: { username: "", email: "" },
   token: "",
   login: () => {},
   logout: () => {},
@@ -33,14 +33,16 @@ const AuthContext = createContext<ProviderProps>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const storedInfo = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user") || "{}")
-    : null;
-
-  const [user, setUser] = useState<string | null>(storedInfo?.username);
-  // const [isLoading, setIsLoading] = useState(true);
-  const [token, setToken] = useState(storedInfo?.token || "");
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+  });
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
 
   async function RefreshSession() {
     try {
@@ -53,11 +55,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         );
         if (result.data.result === true) {
           setToken(result.data.token);
-          setUser(result.data.username);
+          setUser({ username: result.data.username, email: result.data.email });
         }
       }
     } catch (err) {
-      setUser(null);
+      setUser({ username: "", email: "" });
       setToken("");
       localStorage.removeItem("token");
       window.location.href = "/";
@@ -75,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         password: data.password,
       });
       if (result.data.result === true) {
-        setUser(data.username);
+        setUser({ ...user, username: data.username as string });
         setToken(result.data.token);
         localStorage.setItem("token", result.data.token);
         navigate("/");
@@ -91,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     e.preventDefault();
     const result = await axios.post(`${url}/logout`, {});
     if (result.status === 200) {
-      setUser(null);
+      setUser({ username: "", email: "" });
       setToken("");
       localStorage.removeItem("token");
       window.location.href = "/";

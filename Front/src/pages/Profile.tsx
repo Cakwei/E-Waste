@@ -1,8 +1,12 @@
-import Footer from "@/components/Footer";
 import { useAuth, type ProviderProps } from "@/components/AuthProvider";
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
 
 const profileTabs: { label: string; tab: string; href: string | null }[] = [
   { label: "Home", tab: "", href: "/" },
@@ -11,17 +15,28 @@ const profileTabs: { label: string; tab: string; href: string | null }[] = [
   { label: "Help & Support", tab: "support", href: null },
 ];
 
+interface IFormData {
+  username: string | null;
+  email: string | null;
+  password: string | null;
+}
 export default function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [currentTab, setCurrentTab] = useState<string>("profile");
+  const [editPassword, setEditPassword] = useState<boolean>(false);
+  const [formData, setFormData] = useState<IFormData>({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   function selectTab(auth: ProviderProps) {
     switch (currentTab) {
       case "request":
         return RequestTab(auth);
       case "profile":
-        return ProfileTab(auth);
+        return ProfileTab(auth, editPassword, (e) => handleInput(e));
       case "support":
         return SupportTab();
       default:
@@ -29,15 +44,24 @@ export default function Profile() {
     }
   }
 
+  async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  }
+
   useEffect(() => {
     selectTab(auth);
     console.log(currentTab);
   }, [currentTab]);
 
+  useEffect(() => console.log(formData), [formData]);
   return (
     <>
-      <div className="relative flex h-[95vh] w-full min-w-[324px] text-black">
-        <nav className="absolute top-0 left-0 z-[0] h-full w-[20%] min-w-[200px] bg-[#056b66]">
+      <div className="relative flex h-[100vh] w-full min-w-[324px] text-black">
+        <nav
+          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] bg-[#056b66] md:block md:w-[20%]`}
+        >
           <div className="flex w-full justify-center p-2.5">
             <img
               onClick={() => {
@@ -66,11 +90,11 @@ export default function Profile() {
           </ul>
         </nav>
 
-        <div className="absolute ml-[max(20%,200px)] flex h-full flex-wrap overflow-scroll bg-transparent text-black">
+        <div className="flex h-full w-full flex-wrap overflow-scroll bg-transparent text-black md:pl-[max(20%,200px)]">
           {selectTab(auth) as ReactNode}
         </div>
       </div>
-      <Footer className={"min-w-[324px]"} />
+      {/*<Footer className={"min-w-[324px]"} /> */}
     </>
   );
 }
@@ -83,19 +107,63 @@ function SupportTab() {
   );
 }
 
-function ProfileTab(auth: ProviderProps) {
+function ProfileTab(
+  auth: ProviderProps,
+  editPassword: SetStateAction<boolean>,
+  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void,
+) {
   return (
-    <div>
-      <h1 className="text-lg font-bold">Welcome, {auth.user}</h1>
+    <div className="flex w-full p-5">
+      <form className="flex h-max basis-[50%] flex-col rounded-2xl p-5 pb-10 outline">
+        <h1 className="text-lg font-semibold">My Profile</h1>
+        <div className="w-[65%]">
+          <div className="flex w-full justify-between border-b border-b-black pb-1">
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              onChange={(e) => handleInput(e)}
+              placeholder="Username"
+              defaultValue={auth.user?.username}
+            />
+          </div>
+          <div className="flex w-full justify-between border-b border-b-black pb-1">
+            <label>Email Address</label>
+            <input
+              type="text"
+              name="email"
+              onChange={(e) => handleInput(e)}
+              placeholder="Email Address"
+              defaultValue={auth.user?.email}
+            />
+          </div>
+          <div className="flex w-full justify-between border-b border-b-black pb-1">
+            <label>Current Password</label>
+            <input
+              type="password"
+              name="password"
+              onChange={(e) => handleInput(e)}
+              placeholder="Password"
+            />
+          </div>
+        </div>
+
+        {editPassword && <input type="password" placeholder="Password" />}
+
+        <input type="submit" />
+      </form>
     </div>
   );
 }
 
 function RequestTab(auth: ProviderProps) {
-  auth; // Remove this
+  auth; // Remove this later on
   return (
     <div>
       <h1 className="text-lg font-bold">Request</h1>
+      <div className="flex w-full basis-[50%] flex-col">
+        <section className="rounded-2xl outline"></section>
+      </div>
     </div>
   );
 }

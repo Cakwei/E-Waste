@@ -15,12 +15,13 @@ interface UserAccount extends RowDataPacket {
 
 interface JWTPayload extends JwtPayload {
   username: string;
+  email: string;
 }
 async function Login(req: Request, res: Response): Promise<void> {
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      res.status(400).json({
+      res.status(400).send({
         success: false,
         message: 'Username and password are required.',
       });
@@ -29,7 +30,7 @@ async function Login(req: Request, res: Response): Promise<void> {
 
     const users = (await FindUserByUsername(username)) as UserAccount[];
     if (users.length === 0) {
-      res.status(401).json({ result: false, message: 'Invalid credentials.' });
+      res.status(401).send({ result: false, message: 'Invalid credentials.' });
       return;
     }
 
@@ -37,7 +38,7 @@ async function Login(req: Request, res: Response): Promise<void> {
     const passwordMatch = await bcrypt.compare(password, user.password); //password === user.password;
 
     if (!passwordMatch) {
-      res.status(401).json({ result: false, message: 'Invalid credentials.' });
+      res.status(401).send({ result: false, message: 'Invalid credentials.' });
       return;
     }
 
@@ -52,17 +53,18 @@ async function Login(req: Request, res: Response): Promise<void> {
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
-    res.status(200).json({
+    res.status(200).send({
       result: true,
       token: token,
       message: 'Login successful.',
-      username: username,
+      username: user.username,
+      email: user.email,
     });
   } catch (error) {
     console.error('Login error:', error);
     res
       .status(500)
-      .json({ result: false, message: 'An internal server error occurred.' });
+      .send({ result: false, message: 'An internal server error occurred.' });
   }
 }
 
@@ -122,6 +124,7 @@ async function RefreshSession(req: Request, res: Response) {
             token: token,
             message: 'Session retrieved',
             username: (jwt.verify(token, jwt_secret) as JWTPayload).username,
+            email: (jwt.verify(token, jwt_secret) as JWTPayload).email,
           });
         }
       });
