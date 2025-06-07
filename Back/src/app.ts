@@ -9,7 +9,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: config.nodeEnv === 'prod' ? '*' : 'http://localhost:5173',
+    origin: config.nodeEnv === 'prod' ? 'https://wms.cakwei.com' : 'http://localhost:5173',
   }),
 );
 app.use(express.json());
