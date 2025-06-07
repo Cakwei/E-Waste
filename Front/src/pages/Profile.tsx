@@ -8,11 +8,31 @@ import {
   type SetStateAction,
 } from "react";
 
-const profileTabs: { label: string; tab: string; href: string | null }[] = [
-  { label: "Home", tab: "", href: "/" },
-  { label: "My Profile", tab: "profile", href: null },
-  { label: "My Requests", tab: "request", href: null },
-  { label: "Help & Support", tab: "support", href: null },
+const profileTabs: {
+  label: string;
+  tab: string;
+  href: string | null;
+  icon: string;
+}[] = [
+  { label: "Home", tab: "", href: "/", icon: "bi bi-house-fill" },
+  {
+    label: "My Profile",
+    tab: "profile",
+    href: null,
+    icon: "bi bi-person-bounding-box",
+  },
+  {
+    label: "My Requests",
+    tab: "request",
+    href: null,
+    icon: "bi bi-ticket-fill",
+  },
+  {
+    label: "Help & Support",
+    tab: "support",
+    href: null,
+    icon: "bi bi-info-circle-fill",
+  },
 ];
 
 interface IFormData {
@@ -54,13 +74,22 @@ export default function Profile() {
     selectTab(auth);
     console.log(currentTab);
   }, [currentTab]);
-
+  useEffect(() => {
+    if (auth.user) {
+      setFormData({
+        username: auth.user.username,
+        email: auth.user.email,
+        password: null,
+      });
+    }
+  }, [auth]);
   useEffect(() => console.log(formData), [formData]);
   return (
     <>
-      <div className="relative flex h-[100vh] w-full min-w-[324px] text-black">
+      <div className="relative flex w-full min-w-[324px] text-black md:h-[100vh]">
+        {/*Desktop navigation */}
         <nav
-          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] bg-[#056b66] md:block md:w-[20%]`}
+          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] overflow-y-scroll bg-[#056b66] md:block md:w-[20%]`}
         >
           <div className="flex w-full justify-center p-2.5">
             <img
@@ -84,11 +113,127 @@ export default function Profile() {
                 }}
                 className="mx-2.5 cursor-pointer p-2.5 text-white hover:rounded-md hover:bg-[black]/20"
               >
-                {item.label}
+                <i className={`${item.icon} mr-5`}></i>
+                {`${item.label}`}
               </li>
             ))}
           </ul>
         </nav>
+
+        {/*Mobile navigation */}
+        <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
+          <button>
+            <svg
+              className="size-[1.2em]"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                fill="currentColor"
+                strokeLinejoin="miter"
+                strokeLinecap="butt"
+              >
+                <polyline
+                  points="3 14 9 14 9 17 15 17 15 14 21 14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></polyline>
+                <rect
+                  x="3"
+                  y="3"
+                  width="18"
+                  height="18"
+                  rx="2"
+                  ry="2"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="square"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></rect>
+              </g>
+            </svg>
+            <span className="dock-label">Inbox</span>
+          </button>
+
+          <button className="dock-active" onClick={() => navigate("/")}>
+            <svg
+              className="size-[1.2em]"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                fill="currentColor"
+                strokeLinejoin="miter"
+                strokeLinecap="butt"
+              >
+                <polyline
+                  points="1 11 12 2 23 11"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></polyline>
+                <path
+                  d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="square"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></path>
+                <line
+                  x1="12"
+                  y1="22"
+                  x2="12"
+                  y2="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="square"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></line>
+              </g>
+            </svg>
+            <span className="dock-label">Home</span>
+          </button>
+
+          <button>
+            <svg
+              className="size-[1.2em]"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                fill="currentColor"
+                strokeLinejoin="miter"
+                strokeLinecap="butt"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="square"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></circle>
+                <path
+                  d="m22,13.25v-2.5l-2.318-.966c-.167-.581-.395-1.135-.682-1.654l.954-2.318-1.768-1.768-2.318.954c-.518-.287-1.073-.515-1.654-.682l-.966-2.318h-2.5l-.966,2.318c-.581.167-1.135.395-1.654.682l-2.318-.954-1.768,1.768.954,2.318c-.287.518-.515,1.073-.682,1.654l-2.318.966v2.5l2.318.966c.167.581.395,1.135.682,1.654l-.954,2.318,1.768,1.768,2.318-.954c.518.287,1.073.515,1.654.682l.966,2.318h2.5l.966-2.318c.581-.167,1.135-.395,1.654-.682l2.318.954,1.768-1.768-.954-2.318c.287-.518.515-1.073.682-1.654l2.318-.966Z"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="square"
+                  stroke-miterlimit="10"
+                  strokeWidth="2"
+                ></path>
+              </g>
+            </svg>
+            <span className="dock-label">Settings</span>
+          </button>
+        </div>
 
         <div className="flex h-full w-full flex-wrap overflow-scroll bg-transparent text-black md:pl-[max(20%,200px)]">
           {selectTab(auth) as ReactNode}
@@ -114,11 +259,11 @@ function ProfileTab(
 ) {
   return (
     <div className="flex w-full p-5">
-      <form className="flex h-max basis-[50%] flex-col rounded-2xl p-5 pb-10 outline">
+      <form className="flex h-max w-full flex-col rounded-2xl p-5 pb-10 outline md:basis-[50%]">
         <h1 className="text-lg font-semibold">My Profile</h1>
         <div className="w-[65%]">
-          <div className="flex w-full justify-between border-b border-b-black pb-1">
-            <label>Username</label>
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
+            <label className="sm:text-nowrap">Username</label>
             <input
               type="text"
               name="username"
@@ -127,8 +272,8 @@ function ProfileTab(
               defaultValue={auth.user?.username}
             />
           </div>
-          <div className="flex w-full justify-between border-b border-b-black pb-1">
-            <label>Email Address</label>
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
+            <label className="sm:text-nowrap">Email Address</label>
             <input
               type="text"
               name="email"
@@ -137,8 +282,8 @@ function ProfileTab(
               defaultValue={auth.user?.email}
             />
           </div>
-          <div className="flex w-full justify-between border-b border-b-black pb-1">
-            <label>Current Password</label>
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
+            <label className="sm:text-nowrap">Current Password</label>
             <input
               type="password"
               name="password"
@@ -150,7 +295,7 @@ function ProfileTab(
 
         {editPassword && <input type="password" placeholder="Password" />}
 
-        <input type="submit" />
+        <input type="submit" value="Update information" />
       </form>
     </div>
   );
