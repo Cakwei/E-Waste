@@ -10,7 +10,7 @@
   
 <h2>🧐 Features</h2>
 
-Here're some of the project's best features:
+Here're some of the project's features:
 
 *   Add/edit/remove e-waste collection
 *   Authentication using JWT tokens
