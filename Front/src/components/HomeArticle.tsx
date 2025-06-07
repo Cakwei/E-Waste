@@ -17,16 +17,16 @@ const info = [
 ];
 const accordion = [
   {
-    question: "Is it accessible?",
-    answer: "Yes. It adheres to the WAI-ARIA design pattern",
+    question: "Is it system fully built and finished?",
+    answer: "No, I will finish it as soon possible though.",
   },
   {
-    question: "Is it accessible?",
-    answer: "Yes. It adheres to the WAI-ARIA design pattern",
+    question: "What if there is a bug in the system?",
+    answer: "Please do report @ charleetan2020@gmail.com if you do. :)",
   },
   {
-    question: "Is it accessible?",
-    answer: "Yes. It adheres to the WAI-ARIA design pattern",
+    question: "What are future features to be added?",
+    answer: "For now, I am not sure, sorry.",
   },
 ];
 export default function HomeArticle() {

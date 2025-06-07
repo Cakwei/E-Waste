@@ -7,6 +7,34 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
+import {
+  ArrowRight,
+  User,
+  Fingerprint,
+  Settings,
+  type LucideIcon,
+} from "lucide-react"; // Importing icons from Lucide React
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/Accordion";
+
+const accordion = [
+  {
+    question: "Is it system fully built and finished?",
+    answer: "No, I will finish it as soon possible though.",
+  },
+  {
+    question: "What if there is a bug in the system?",
+    answer: "Please do report @ charleetan2020@gmail.com if you do. :)",
+  },
+  {
+    question: "What are future features to be added?",
+    answer: "For now, I am not sure, sorry.",
+  },
+];
 
 const profileTabs: {
   label: string;
@@ -35,16 +63,49 @@ const profileTabs: {
   },
 ];
 
+// Data for each feature card, matching the image content
+const featureCards: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}[] = [
+  {
+    icon: ArrowRight,
+    title: "Getting Started",
+    description:
+      "Everything you need to know to get started and get to work in ChatCloud.",
+  },
+  {
+    icon: User,
+    title: "Admin Settings",
+    description:
+      "Learn how to manage your current workspace or your enterprise space.",
+  },
+  {
+    icon: Fingerprint,
+    title: "Login and Verification",
+    description:
+      "Read on to learn how to sign in with your email address, or your Apple or Google.",
+  },
+  {
+    icon: Settings,
+    title: "Account Setup",
+    description:
+      "Adjust your profile and preferences to make ChatCloud work just for you.",
+  },
+];
 interface IFormData {
   username: string | null;
   email: string | null;
   password: string | null;
 }
+
 export default function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [currentTab, setCurrentTab] = useState<string>("profile");
   const [editPassword, setEditPassword] = useState<boolean>(false);
+  setEditPassword(false); // Remove this later on
   const [formData, setFormData] = useState<IFormData>({
     username: "",
     email: "",
@@ -89,7 +150,7 @@ export default function Profile() {
       <div className="relative flex w-full min-w-[324px] text-black md:h-[100vh]">
         {/*Desktop navigation */}
         <nav
-          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] overflow-y-scroll bg-[#056b66] md:block md:w-[20%]`}
+          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] overflow-y-clip bg-[#056b66] md:block md:w-[20%]`}
         >
           <div className="flex w-full justify-center p-2.5">
             <img
@@ -121,7 +182,7 @@ export default function Profile() {
         </nav>
 
         {/*Mobile navigation */}
-        <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
+        <div className="dock fixed bottom-0 left-0 rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
           <button>
             <svg
               className="size-[1.2em]"
@@ -235,7 +296,7 @@ export default function Profile() {
           </button>
         </div>
 
-        <div className="flex h-full w-full flex-wrap overflow-scroll bg-transparent text-black md:pl-[max(20%,200px)]">
+        <div className="flex h-full w-full flex-wrap bg-transparent text-black md:pl-[max(20%,200px)]">
           {selectTab(auth) as ReactNode}
         </div>
       </div>
@@ -246,8 +307,56 @@ export default function Profile() {
 
 function SupportTab() {
   return (
-    <div>
-      <h1 className="text-lg font-bold">Support</h1>
+    <div className="pb-[64px] md:pb-0">
+      <h1 className="bg-gray-50 p-5 text-4xl font-bold uppercase">
+        Need assistance?
+      </h1>
+      <div className="flex flex-col items-center justify-center bg-gray-50 p-5 font-sans">
+        <div className="w-full max-w-6xl">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featureCards.map((Card) => (
+              <div
+                key={Card.title}
+                className="flex min-h-[180px] flex-col items-start rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg"
+              >
+                <div className="mb-4">
+                  <Card.icon
+                    color="#056b66"
+                    className="h-8 w-8 text-blue-600"
+                  ></Card.icon>
+                </div>
+
+                <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                  {Card.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {Card.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <h1 className="bg-gray-50 p-5 text-4xl font-bold uppercase">
+        FAQ Section
+      </h1>
+      <div className="rounded-md bg-gray-50 p-5 px-5">
+        <Accordion
+          type="single"
+          collapsible
+          className="flex w-full flex-col gap-2.5"
+        >
+          {accordion.map((item, index) => (
+            <AccordionItem
+              value={`item-${index}`}
+              className="rounded-md px-2.5 shadow-md transition-shadow duration-300 hover:shadow-lg"
+            >
+              <AccordionTrigger>{item.question}</AccordionTrigger>
+              <AccordionContent>{item.answer}</AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
     </div>
   );
 }
@@ -258,11 +367,11 @@ function ProfileTab(
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void,
 ) {
   return (
-    <div className="flex w-full p-5">
-      <form className="flex h-max w-full flex-col rounded-2xl p-5 pb-10 outline md:basis-[50%]">
-        <h1 className="text-lg font-semibold">My Profile</h1>
-        <div className="w-[65%]">
-          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
+    <div className="flex w-full justify-start bg-gray-50 p-5">
+      <form className="flex h-max w-full flex-col gap-2.5 rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
+        <h1 className="text-2xl font-semibold">My Profile</h1>
+        <div className="w-full">
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
             <label className="sm:text-nowrap">Username</label>
             <input
               type="text"
@@ -270,9 +379,10 @@ function ProfileTab(
               onChange={(e) => handleInput(e)}
               placeholder="Username"
               defaultValue={auth.user?.username}
+              className="basis-[50%]"
             />
           </div>
-          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
             <label className="sm:text-nowrap">Email Address</label>
             <input
               type="text"
@@ -280,22 +390,30 @@ function ProfileTab(
               onChange={(e) => handleInput(e)}
               placeholder="Email Address"
               defaultValue={auth.user?.email}
+              className="basis-[50%]"
             />
           </div>
-          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1">
-            <label className="sm:text-nowrap">Current Password</label>
+          <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
+            <label className="basis-[50%] sm:text-nowrap">
+              Current Password
+            </label>
             <input
               type="password"
               name="password"
               onChange={(e) => handleInput(e)}
               placeholder="Password"
+              className="basis-[50%]"
             />
           </div>
         </div>
 
         {editPassword && <input type="password" placeholder="Password" />}
 
-        <input type="submit" value="Update information" />
+        <input
+          type="submit"
+          className="btn mt-2.5 border border-zinc-300 outline-none"
+          value="Update information"
+        />
       </form>
     </div>
   );
