@@ -17,7 +17,7 @@ const info = [
 ];
 const accordion = [
   {
-    question: "Is it system fully built and finished?",
+    question: "Is the system fully built and finished?",
     answer: "No, I will finish it as soon possible though.",
   },
   {
@@ -50,7 +50,7 @@ export default function HomeArticle() {
         ))}
       </ul>
       <AboutUs />
-      <div className="my-10 flex w-full max-w-[1500px] flex-col items-center gap-5 self-center rounded-tl-2xl rounded-br-2xl bg-[#056b66] p-5 sm:flex-row">
+      <div className="my-10 flex w-full max-w-[1500px] flex-col items-center gap-5 self-center rounded-tl-2xl rounded-br-2xl bg-[#056b66] p-5 min-[1920px]:max-w-[1920px] sm:flex-row">
         <img src={greenEnv} className="w-50 rounded-[50%] outline-2" />
         <h5 className="sm:text-st flex flex-col items-center justify-center gap-5 text-center text-2xl font-bold sm:items-start sm:text-start">
           Wish to take part in our journey for a greener future?
@@ -62,7 +62,7 @@ export default function HomeArticle() {
           </NavLink>
         </h5>
       </div>
-      <div className="flex w-full max-w-[1500px] flex-wrap self-center sm:flex-nowrap">
+      <div className="flex w-full max-w-[1500px] flex-wrap self-center min-[1920px]:max-w-[1920px] sm:flex-nowrap">
         <section className="flex w-full flex-col gap-2.5 py-5 text-black sm:basis-[40%] sm:p-5">
           <h4 className="badge rounded-3xl border border-zinc-400 p-2.5">
             Questions

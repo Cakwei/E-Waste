@@ -14,6 +14,7 @@ interface IRegister {
 export interface ProviderProps {
   user: { username: string; email: string } | null;
   token: string;
+  loading: boolean;
   login(data: ILogin): void;
   logout(e: React.FormEvent): void;
   register(data: IRegister): void;
@@ -27,6 +28,7 @@ const url =
 const AuthContext = createContext<ProviderProps>({
   user: { username: "", email: "" },
   token: "",
+  loading: true,
   login: () => {},
   logout: () => {},
   register: () => {},
@@ -37,15 +39,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     username: "",
     email: "",
   });
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   async function RefreshSession() {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       if (token) {
         const result = await axios.post(
@@ -58,7 +58,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser({ username: result.data.username, email: result.data.email });
         }
       }
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       setUser({ username: "", email: "" });
       setToken("");
       localStorage.removeItem("token");
@@ -120,7 +122,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, register }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, login, logout, register }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import {
   useEffect,
   useState,
+  type JSX,
   type ReactNode,
   type SetStateAction,
 } from "react";
@@ -20,7 +21,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/Accordion";
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 const accordion = [
   {
     question: "Is it system fully built and finished?",
@@ -44,7 +53,7 @@ const profileTabs: {
 }[] = [
   { label: "Home", tab: "", href: "/", icon: "bi bi-house-fill" },
   {
-    label: "My Profile",
+    label: "My Information",
     tab: "profile",
     href: null,
     icon: "bi bi-person-bounding-box",
@@ -73,7 +82,7 @@ const featureCards: {
     icon: ArrowRight,
     title: "Getting Started",
     description:
-      "Everything you need to know to get started and get to work in ChatCloud.",
+      "Everything you need to know to get started and get to work with the application.",
   },
   {
     icon: User,
@@ -89,35 +98,37 @@ const featureCards: {
   },
   {
     icon: Settings,
-    title: "Account Setup",
-    description:
-      "Adjust your profile and preferences to make ChatCloud work just for you.",
+    title: "Account Information",
+    description: "Adjust your profile and preferences to meet your needs.",
   },
 ];
+
 interface IFormData {
-  username: string | null;
-  email: string | null;
-  password: string | null;
+  username: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
 }
 
 export default function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [currentTab, setCurrentTab] = useState<string>("profile");
-  const [editPassword, setEditPassword] = useState<boolean>(false);
-  setEditPassword(false); // Remove this later on
   const [formData, setFormData] = useState<IFormData>({
     username: "",
     email: "",
-    password: "",
+    currentPassword: "",
+    newPassword: "",
   });
+  const [hideNewPasswordInput, setHideNewPasswordInput] =
+    useState<boolean>(true);
 
   function selectTab(auth: ProviderProps) {
     switch (currentTab) {
       case "request":
         return RequestTab(auth);
       case "profile":
-        return ProfileTab(auth, editPassword, (e) => handleInput(e));
+        return ProfileTab(auth, hideNewPasswordInput, (e) => handleInput(e));
       case "support":
         return SupportTab();
       default:
@@ -133,24 +144,42 @@ export default function Profile() {
 
   useEffect(() => {
     selectTab(auth);
-    console.log(currentTab);
   }, [currentTab]);
+
   useEffect(() => {
-    if (auth.user) {
+    if (
+      auth.user?.username === "" &&
+      auth.token === "" &&
+      auth.user?.email === "" &&
+      !auth.loading
+    ) {
+      navigate("/login");
+    }
+
+    if (auth.user?.username !== "" && auth.user?.email !== "" && auth.user) {
       setFormData({
         username: auth.user.username,
         email: auth.user.email,
-        password: null,
+        currentPassword: "",
+        newPassword: "",
       });
     }
   }, [auth]);
-  useEffect(() => console.log(formData), [formData]);
+
+  useEffect(() => {
+    if (formData.currentPassword.length > 0) {
+      setHideNewPasswordInput(false);
+    } else {
+      setHideNewPasswordInput(true);
+    }
+  }, [formData]);
+
   return (
     <>
-      <div className="relative flex w-full min-w-[324px] text-black md:h-[100vh]">
+      <div className="relative flex w-full text-black md:h-[100vh]">
         {/*Desktop navigation */}
         <nav
-          className={`fixed top-0 left-0 z-[50] hidden h-full min-w-[200px] overflow-y-clip bg-[#056b66] md:block md:w-[20%]`}
+          className={`fixed top-0 left-0 z-[50] hidden h-full max-w-[250px] min-w-[250px] overflow-y-clip bg-[#056b66] md:block md:w-[25%]`}
         >
           <div className="flex w-full justify-center p-2.5">
             <img
@@ -182,7 +211,7 @@ export default function Profile() {
         </nav>
 
         {/*Mobile navigation */}
-        <div className="dock fixed bottom-0 left-0 rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
+        <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
           <button>
             <svg
               className="size-[1.2em]"
@@ -198,7 +227,7 @@ export default function Profile() {
                   points="3 14 9 14 9 17 15 17 15 14 21 14"
                   fill="none"
                   stroke="currentColor"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></polyline>
                 <rect
@@ -211,7 +240,7 @@ export default function Profile() {
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="square"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></rect>
               </g>
@@ -234,7 +263,7 @@ export default function Profile() {
                   points="1 11 12 2 23 11"
                   fill="none"
                   stroke="currentColor"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></polyline>
                 <path
@@ -242,7 +271,7 @@ export default function Profile() {
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="square"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></path>
                 <line
@@ -253,7 +282,7 @@ export default function Profile() {
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="square"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></line>
               </g>
@@ -279,7 +308,7 @@ export default function Profile() {
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="square"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></circle>
                 <path
@@ -287,7 +316,7 @@ export default function Profile() {
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="square"
-                  stroke-miterlimit="10"
+                  strokeMiterlimit="10"
                   strokeWidth="2"
                 ></path>
               </g>
@@ -296,7 +325,7 @@ export default function Profile() {
           </button>
         </div>
 
-        <div className="flex h-full w-full flex-wrap bg-transparent text-black md:pl-[max(20%,200px)]">
+        <div className="flex h-full w-full flex-wrap bg-transparent text-black md:pl-[250px]">
           {selectTab(auth) as ReactNode}
         </div>
       </div>
@@ -305,7 +334,7 @@ export default function Profile() {
   );
 }
 
-function SupportTab() {
+function SupportTab(): JSX.Element {
   return (
     <div className="pb-[64px] md:pb-0">
       <h1 className="bg-gray-50 p-5 text-4xl font-bold uppercase">
@@ -363,51 +392,71 @@ function SupportTab() {
 
 function ProfileTab(
   auth: ProviderProps,
-  editPassword: SetStateAction<boolean>,
+  hideNewPasswordInput: SetStateAction<boolean>,
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void,
-) {
+): JSX.Element {
   return (
     <div className="flex w-full justify-start bg-gray-50 p-5">
-      <form className="flex h-max w-full flex-col gap-2.5 rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
+      <form className="flex h-max w-full max-w-[650px] flex-col gap-2.5 rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
         <h1 className="text-2xl font-semibold">My Profile</h1>
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-2.5">
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
             <label className="sm:text-nowrap">Username</label>
-            <input
-              type="text"
-              name="username"
-              onChange={(e) => handleInput(e)}
-              placeholder="Username"
-              defaultValue={auth.user?.username}
-              className="basis-[50%]"
-            />
+            {auth.loading ? (
+              <div className="skeleton basis-[50%]"></div>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  name="username"
+                  onChange={(e) => handleInput(e)}
+                  placeholder="Username"
+                  defaultValue={auth.user?.username}
+                  className="basis-[50%]"
+                />
+              </>
+            )}
           </div>
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
             <label className="sm:text-nowrap">Email Address</label>
-            <input
-              type="text"
-              name="email"
-              onChange={(e) => handleInput(e)}
-              placeholder="Email Address"
-              defaultValue={auth.user?.email}
-              className="basis-[50%]"
-            />
+            {auth.loading ? (
+              <div className="skeleton basis-[50%]"></div>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  name="email"
+                  onChange={(e) => handleInput(e)}
+                  placeholder="Email Address"
+                  defaultValue={auth.user?.email}
+                  className="basis-[50%]"
+                />
+              </>
+            )}
           </div>
           <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
             <label className="basis-[50%] sm:text-nowrap">
               Current Password
             </label>
-            <input
-              type="password"
-              name="password"
-              onChange={(e) => handleInput(e)}
-              placeholder="Password"
-              className="basis-[50%]"
-            />
+            {auth.loading ? (
+              <div className="skeleton basis-[50%]"></div>
+            ) : (
+              <>
+                <input
+                  type="password"
+                  name="currentPassword"
+                  onChange={(e) => handleInput(e)}
+                  placeholder="Password"
+                  className="basis-[50%]"
+                />
+              </>
+            )}
           </div>
         </div>
 
-        {editPassword && <input type="password" placeholder="Password" />}
+        {!hideNewPasswordInput && (
+          <input type="password" placeholder="Password" name="newPassword" />
+        )}
 
         <input
           type="submit"
@@ -419,13 +468,42 @@ function ProfileTab(
   );
 }
 
-function RequestTab(auth: ProviderProps) {
+function RequestTab(auth: ProviderProps): JSX.Element {
   auth; // Remove this later on
   return (
-    <div>
-      <h1 className="text-lg font-bold">Request</h1>
-      <div className="flex w-full basis-[50%] flex-col">
-        <section className="rounded-2xl outline"></section>
+    <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
+      <div className="flex flex-col items-start gap-1 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
+        <h1 className="text-lg font-bold uppercase">Request</h1>
+        <div className="flex justify-between">
+          <button className=""></button>
+        </div>
+        <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
+          <Table className="w-full">
+            <TableCaption>A list of your recent invoices.</TableCaption>
+            <TableHeader className="">
+              <TableRow>
+                <TableHead className="w-[100px]">Invoice</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Request Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="">
+              <TableRow>
+                <TableCell className="font-medium">INV001</TableCell>
+                <TableCell>Paid</TableCell>
+                <TableCell>Collection</TableCell>
+                <TableCell>$69.00</TableCell>
+                <TableCell>01-01-2025</TableCell>
+                <TableCell className="">
+                  <button className="btn btn-primary">Pay</button>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </section>
       </div>
     </div>
   );
