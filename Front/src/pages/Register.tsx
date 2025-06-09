@@ -46,7 +46,7 @@ export default function Register() {
   return (
     <div className="">
       <Header />
-      <article className="mt-[64px] flex w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
+      <article className="mt-[64px] flex min-h-[500px] w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
         <form
           onSubmit={(e) => {
             register(e);
