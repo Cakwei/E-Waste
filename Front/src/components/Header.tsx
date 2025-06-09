@@ -2,7 +2,6 @@ import logo from "../assets/logo.png";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "./AuthProvider";
 import defaultProfileIcon from "@/assets/defaultProfileIcon.jpg";
-import { useEffect } from "react";
 export default function Header() {
   const auth = useAuth();
   const navigate = useNavigate();
@@ -15,8 +14,6 @@ export default function Header() {
     { label: "My profile", href: "/profile" },
     { label: "My Requests", href: "#2" },
   ];
-
-  useEffect(() => console.log(auth.loading), [auth]);
 
   return (
     <header className="bg-base-200 fixed top-0 left-0 z-100 w-full">
@@ -61,7 +58,7 @@ export default function Header() {
                     <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
                       {/* Sidebar content here */}
                       <li>
-                        <NavLink to="#">Sidebar Item 1</NavLink>
+                        <NavLink to="#">Login/Register</NavLink>
                       </li>
                       <li>
                         <NavLink to="#">Sidebar Item 2</NavLink>

@@ -42,7 +42,7 @@ export default function Login() {
   return (
     <div className="">
       <Header />
-      <article className="mt-[64px] flex w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
+      <article className="mt-[64px] flex min-h-[500px] w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
         <form
           onSubmit={(e) => login(e)}
           className="flex w-full max-w-[550px] min-w-[150px] flex-col gap-2.5 rounded-2xl bg-white p-10 outline outline-zinc-400"

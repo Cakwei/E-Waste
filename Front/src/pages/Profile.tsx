@@ -29,7 +29,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/ui/Table";
+
 const accordion = [
   {
     question: "Is it system fully built and finished?",
@@ -498,7 +499,9 @@ function RequestTab(auth: ProviderProps): JSX.Element {
                 <TableCell>$69.00</TableCell>
                 <TableCell>01-01-2025</TableCell>
                 <TableCell className="">
-                  <button className="btn btn-primary">Pay</button>
+                  <button className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac]">
+                    Pay
+                  </button>
                 </TableCell>
               </TableRow>
             </TableBody>
