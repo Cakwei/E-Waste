@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router";
 import heroImg from "../assets/heroImg.svg";
 import { motion } from "motion/react";
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <div className="relative flex h-[calc(100vh-64px)] min-h-[250px] w-full items-center justify-center bg-transparent min-[500px]:h-[calc(75vh-64px)] sm:h-[calc(50vh-64px)]">
       <div className="absolute z-[2] flex flex-col gap-2.5 text-center">
@@ -14,6 +16,7 @@ export default function Hero() {
           <motion.button
             initial={{ x: -10 }}
             animate={{ x: 0, transition: { duration: 0.55 } }}
+            onClick={() => navigate("/profile")}
             className="btn border-none bg-[#08948c] font-normal text-white outline-none"
           >
             Recycle

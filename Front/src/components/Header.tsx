@@ -20,9 +20,9 @@ export default function Header() {
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="md:flex md:items-center md:gap-12">
-            <div className="flex items-center gap-5 text-teal-600">
+            <div className="flex items-center justify-center gap-5 text-teal-600 md:gap-0">
               <div className="block">
-                <div className="drawer">
+                <div className="drawer md:hidden">
                   <input
                     id="my-drawer"
                     type="checkbox"

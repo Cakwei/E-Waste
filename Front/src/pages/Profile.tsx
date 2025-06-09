@@ -52,7 +52,12 @@ const profileTabs: {
   href: string | null;
   icon: string;
 }[] = [
-  { label: "Home", tab: "", href: "/", icon: "bi bi-house-fill" },
+  {
+    label: "Return to Homepage",
+    tab: "home",
+    href: "/",
+    icon: "bi bi-house-fill",
+  },
   {
     label: "My Information",
     tab: "profile",
@@ -124,7 +129,7 @@ export default function Profile() {
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
 
-  function selectTab(auth: ProviderProps) {
+  function selectTab() {
     switch (currentTab) {
       case "request":
         return RequestTab(auth);
@@ -144,7 +149,22 @@ export default function Profile() {
   }
 
   useEffect(() => {
-    selectTab(auth);
+    selectTab();
+    console.log(currentTab);
+    switch (currentTab) {
+      case "home":
+        navigate("/");
+        break;
+      case "request":
+        navigate("/profile/#request");
+        break;
+      case "profile":
+        navigate("/profile/#profile");
+        break;
+      case "support":
+        navigate("/profile/#support");
+        break;
+    }
   }, [currentTab]);
 
   useEffect(() => {
@@ -327,7 +347,7 @@ export default function Profile() {
         </div>
 
         <div className="flex h-full w-full flex-wrap bg-transparent text-black md:pl-[250px]">
-          {selectTab(auth) as ReactNode}
+          {selectTab() as ReactNode}
         </div>
       </div>
       {/*<Footer className={"min-w-[324px]"} /> */}
@@ -347,7 +367,7 @@ function SupportTab(): JSX.Element {
             {featureCards.map((Card) => (
               <div
                 key={Card.title}
-                className="flex min-h-[180px] flex-col items-start rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg"
+                className="flex min-h-[180px] flex-col items-start rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:cursor-pointer hover:shadow-lg"
               >
                 <div className="mb-4">
                   <Card.icon
@@ -378,6 +398,7 @@ function SupportTab(): JSX.Element {
         >
           {accordion.map((item, index) => (
             <AccordionItem
+              key={item.question}
               value={`item-${index}`}
               className="rounded-md px-2.5 shadow-md transition-shadow duration-300 hover:shadow-lg"
             >
@@ -499,7 +520,16 @@ function RequestTab(auth: ProviderProps): JSX.Element {
                 <TableCell>$69.00</TableCell>
                 <TableCell>01-01-2025</TableCell>
                 <TableCell className="">
-                  <button className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac]">
+                  <button
+                    onClick={() => {
+                      (
+                        document.getElementById(
+                          "my_modal_2",
+                        ) as HTMLDialogElement
+                      ).showModal();
+                    }}
+                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac]"
+                  >
                     Pay
                   </button>
                 </TableCell>
@@ -507,6 +537,15 @@ function RequestTab(auth: ProviderProps): JSX.Element {
             </TableBody>
           </Table>
         </section>
+        <dialog id="my_modal_2" className="modal">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Hello!</h3>
+            <p className="py-4">Press ESC key or click outside to close</p>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
       </div>
     </div>
   );
