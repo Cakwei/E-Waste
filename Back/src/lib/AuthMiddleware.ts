@@ -20,6 +20,7 @@ export const AuthMiddleware = async (
       throw new Error();
     }
     const decoded = jwt.verify(token, SECRET_KEY);
+
     //(req as CustomRequest).token = decoded;
     next();
   } catch (err) {

@@ -1,6 +1,6 @@
 import { useAuth, type ProviderProps } from "@/components/AuthProvider";
 import logo from "../assets/logo.png";
-import { useNavigate } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   useEffect,
   useState,
@@ -420,7 +420,7 @@ function ProfileTab(
   return (
     <div className="flex w-full justify-start bg-gray-50 p-5">
       <form className="flex h-max w-full max-w-[650px] flex-col gap-2.5 rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
-        <h1 className="text-2xl font-semibold">My Profile</h1>
+        <h1 className="text-2xl font-semibold">Profile</h1>
         <div className="flex w-full flex-col gap-2.5">
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
             <label className="sm:text-nowrap">Username</label>
@@ -494,10 +494,12 @@ function RequestTab(auth: ProviderProps): JSX.Element {
   auth; // Remove this later on
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
-      <div className="flex flex-col items-start gap-1 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
-        <h1 className="text-lg font-bold uppercase">Request</h1>
+      <div className="flex flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
+        <h1 className="text-2xl font-semibold">Requests</h1>
         <div className="flex justify-between">
-          <button className=""></button>
+          <NavLink to="/collection" className="btn border-none bg-[#028b85] font-normal text-white">
+            Create New Request
+          </NavLink>
         </div>
         <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
           <Table className="w-full">
@@ -528,7 +530,7 @@ function RequestTab(auth: ProviderProps): JSX.Element {
                         ) as HTMLDialogElement
                       ).showModal();
                     }}
-                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac]"
+                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
                   >
                     Pay
                   </button>
@@ -539,8 +541,8 @@ function RequestTab(auth: ProviderProps): JSX.Element {
         </section>
         <dialog id="my_modal_2" className="modal">
           <div className="modal-box">
-            <h3 className="text-lg font-bold">Hello!</h3>
-            <p className="py-4">Press ESC key or click outside to close</p>
+            <h3 className="text-lg font-bold">Lorum Ipsum</h3>
+            <p className="py-4">Lorum ipsum</p>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

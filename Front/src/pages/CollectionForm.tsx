@@ -1,9 +1,17 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useAuth } from "@/components/AuthProvider";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { url, useAuth } from "@/components/AuthProvider";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { Clipboard } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import axios from "axios";
 
 interface ICollectionForm {
   firstName: string;
@@ -16,6 +24,7 @@ interface ICollectionForm {
   country: string;
   wasteDescription: string;
 }
+
 export default function CollectionForm() {
   const auth = useAuth();
   const navigate = useNavigate();
@@ -25,6 +34,7 @@ export default function CollectionForm() {
       navigate("/");
     }
   }, [auth.user]);
+
   const [formData, setFormData] = useState<ICollectionForm>({
     firstName: "",
     lastName: "",
@@ -33,7 +43,7 @@ export default function CollectionForm() {
     building: "",
     streetAddress: "",
     city: "",
-    country: "",
+    country: "null",
     wasteDescription: "",
   });
 
@@ -47,11 +57,40 @@ export default function CollectionForm() {
     }));
   }
 
+  useEffect(() => {
+    if (
+      auth.user?.username === "" &&
+      auth.token === "" &&
+      auth.user?.email === "" &&
+      !auth.loading
+    ) {
+      navigate("/login");
+    }
+  }, [auth]);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    try {
+      e.preventDefault();
+      const result = await axios.post(
+        `${url}/waste-collection/create`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.token}`,
+          },
+        },
+      );
+      console.log(result);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
-    <>
+    <div className="">
       <Header />
-      <div className="mt-[64px] min-w-[324px] font-light">
-        <div className="flex min-h-screen items-center justify-center bg-[#08948c] p-4 sm:p-6 lg:p-8">
+      <div className="mt-[64px] min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">
+        <div className="flex items-center justify-center bg-[#08948c] p-4 sm:p-6 lg:p-8">
           <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl sm:p-8">
             {/* Company Logo and Title */}
             <div className="mb-6 flex flex-col items-center">
@@ -65,7 +104,7 @@ export default function CollectionForm() {
             </div>
 
             {/* Form Section */}
-            <form className="space-y-4">
+            <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
               {/* Name Section */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -103,7 +142,6 @@ export default function CollectionForm() {
                   />
                 </div>
               </div>
-
               {/* Email Address */}
               <div>
                 <label
@@ -122,7 +160,6 @@ export default function CollectionForm() {
                   required
                 />
               </div>
-
               {/* Phone Number */}
               <div>
                 <label
@@ -142,7 +179,6 @@ export default function CollectionForm() {
                   required
                 />
               </div>
-
               {/* Waste Location Building */}
               <div>
                 <label
@@ -160,7 +196,6 @@ export default function CollectionForm() {
                   onChange={(e) => handleInput(e)}
                 />
               </div>
-
               {/* Street Address */}
               <div>
                 <label
@@ -179,7 +214,6 @@ export default function CollectionForm() {
                   required
                 />
               </div>
-
               {/* City and Country */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -204,30 +238,37 @@ export default function CollectionForm() {
                     htmlFor="country"
                     className="mb-1 block text-sm font-medium text-gray-700"
                   >
-                    Country
+                    State
                   </label>
-                  <select
-                    id="country"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={formData.country}
-                    name="country"
-                    onChange={(e) => handleInput(e)}
-                  >
-                    <option value="null" className="font-sans">
-                      Select country
-                    </option>
-                    <option value="Romania" className="font-sans">
-                      Romania
-                    </option>
-                    <option value="USA">USA</option>
-                    <option value="Canada">Canada</option>
-                    <option value="UK">UK</option>
-                    {/* Add more countries as needed */}
-                  </select>
+
+                  <Select>
+                    <SelectTrigger className="select mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm">
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                    <SelectContent className="h-50">
+                      <SelectItem value="johor">Johor</SelectItem>
+                      <SelectItem value="kedah">Kedah</SelectItem>
+                      <SelectItem value="kelantan">Kelantan</SelectItem>
+                      <SelectItem value="melaka">Malacca</SelectItem>
+                      <SelectItem value="negeri_sembilan">
+                        Negeri Sembilan
+                      </SelectItem>
+                      <SelectItem value="pahang">Pahang</SelectItem>
+                      <SelectItem value="penang">Penang</SelectItem>
+                      <SelectItem value="perak">Perak</SelectItem>
+                      <SelectItem value="perlis">Perlis</SelectItem>
+                      <SelectItem value="selangor">Selangor</SelectItem>
+                      <SelectItem value="terengganu">Terengganu</SelectItem>
+                      <SelectItem value="sabah">Sabah</SelectItem>
+                      <SelectItem value="sarawak">Sarawak</SelectItem>
+                      <SelectItem value="kuala_lumpur">Kuala Lumpur</SelectItem>
+                      <SelectItem value="labuan">Labuan</SelectItem>
+                      <SelectItem value="putrajaya">Putrajaya</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              {/* Waste Origin Classification/Description */}
               <div>
                 <label
                   htmlFor="wasteDescription"
@@ -244,7 +285,6 @@ export default function CollectionForm() {
                   onChange={(e) => handleInput(e)}
                 ></textarea>
               </div>
-
               {/* Submit Button */}
               <div className="flex justify-center">
                 <button
@@ -259,6 +299,6 @@ export default function CollectionForm() {
         </div>
         <Footer />
       </div>
-    </>
+    </div>
   );
 }

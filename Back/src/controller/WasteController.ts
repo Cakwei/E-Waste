@@ -1,7 +1,20 @@
 import { Request, Response, Router } from 'express';
 const router = Router();
 
-const createForm = (req: Request, res: Response) => {
-  res.send({ result: true, message: 'Success' });
+const CreateCollection = (req: Request, res: Response) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    building,
+    streetAddress,
+    city,
+    country,
+    wasteDescription,
+  }: { [key: string]: string } = req.body;
+
+  res.send({ message: firstName + ' ' + lastName });
 };
-export { createForm };
+
+export { CreateCollection };

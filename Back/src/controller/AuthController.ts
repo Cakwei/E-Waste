@@ -128,6 +128,11 @@ async function RefreshSession(req: Request, res: Response) {
           });
         }
       });
+    } else {
+      res.status(401).send({
+        result: false,
+        message: 'Access unauthorized. Please login again.',
+      });
     }
   } catch (err) {
     res.status(500).send({
