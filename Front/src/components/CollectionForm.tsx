@@ -1,19 +1,10 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { url, useAuth } from "@/components/AuthProvider";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { Clipboard } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import axios from "axios";
 
-interface ICollectionForm {
+export interface ICollectionForm {
   firstName: string;
   lastName: string;
   email: string;
@@ -21,11 +12,11 @@ interface ICollectionForm {
   building: string;
   streetAddress: string;
   city: string;
-  country: string;
+  state: string;
   wasteDescription: string;
 }
 
-export default function CollectionForm() {
+export default function CollectionForm({}) {
   const auth = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
@@ -43,7 +34,7 @@ export default function CollectionForm() {
     building: "",
     streetAddress: "",
     city: "",
-    country: "null",
+    state: "null",
     wasteDescription: "",
   });
 
@@ -58,16 +49,8 @@ export default function CollectionForm() {
   }
 
   useEffect(() => {
-    if (
-      auth.user?.username === "" &&
-      auth.token === "" &&
-      auth.user?.email === "" &&
-      !auth.loading
-    ) {
-      navigate("/login");
-    }
-  }, [auth]);
-
+    console.log(formData);
+  }, [formData]);
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
@@ -88,8 +71,7 @@ export default function CollectionForm() {
 
   return (
     <div className="">
-      <Header />
-      <div className="mt-[64px] min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">
+      <div className="min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">
         <div className="flex items-center justify-center bg-[#08948c] p-4 sm:p-6 lg:p-8">
           <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl sm:p-8">
             {/* Company Logo and Title */}
@@ -240,32 +222,36 @@ export default function CollectionForm() {
                   >
                     State
                   </label>
-
-                  <Select>
-                    <SelectTrigger className="select mt-1 w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm">
-                      <SelectValue placeholder="Select state" />
-                    </SelectTrigger>
-                    <SelectContent className="h-50">
-                      <SelectItem value="johor">Johor</SelectItem>
-                      <SelectItem value="kedah">Kedah</SelectItem>
-                      <SelectItem value="kelantan">Kelantan</SelectItem>
-                      <SelectItem value="melaka">Malacca</SelectItem>
-                      <SelectItem value="negeri_sembilan">
-                        Negeri Sembilan
-                      </SelectItem>
-                      <SelectItem value="pahang">Pahang</SelectItem>
-                      <SelectItem value="penang">Penang</SelectItem>
-                      <SelectItem value="perak">Perak</SelectItem>
-                      <SelectItem value="perlis">Perlis</SelectItem>
-                      <SelectItem value="selangor">Selangor</SelectItem>
-                      <SelectItem value="terengganu">Terengganu</SelectItem>
-                      <SelectItem value="sabah">Sabah</SelectItem>
-                      <SelectItem value="sarawak">Sarawak</SelectItem>
-                      <SelectItem value="kuala_lumpur">Kuala Lumpur</SelectItem>
-                      <SelectItem value="labuan">Labuan</SelectItem>
-                      <SelectItem value="putrajaya">Putrajaya</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <select
+                    defaultValue="null"
+                    name="state"
+                    onChange={(e) => handleInput(e)}
+                    className="select mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                  >
+                    <option
+                      disabled
+                      value="null"
+                      className="rounded-md bg-zinc-200"
+                    >
+                      Pick a state
+                    </option>
+                    <option value="johor">Johor</option>
+                    <option value="kedah">Kedah</option>
+                    <option value="kelantan">Kelantan</option>
+                    <option value="melaka">Malacca</option>
+                    <option value="negeri_sembilan">Negeri Sembilan</option>
+                    <option value="pahang">Pahang</option>
+                    <option value="penang">Penang</option>
+                    <option value="perak">Perak</option>
+                    <option value="perlis">Perlis</option>
+                    <option value="selangor">Selangor</option>
+                    <option value="terengganu">Terengganu</option>
+                    <option value="sabah">Sabah</option>
+                    <option value="sarawak">Sarawak</option>
+                    <option value="kuala_lumpur">Kuala Lumpur</option>
+                    <option value="labuan">Labuan</option>
+                    <option value="putrajaya">Putrajaya</option>
+                  </select>
                 </div>
               </div>
 
@@ -297,7 +283,6 @@ export default function CollectionForm() {
             </form>
           </div>
         </div>
-        <Footer />
       </div>
     </div>
   );

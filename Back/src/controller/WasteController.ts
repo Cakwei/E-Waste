@@ -1,5 +1,18 @@
 import { Request, Response, Router } from 'express';
+import { connection } from '../server';
 const router = Router();
+
+interface ICollection {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  building: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  wasteDescription: string;
+}
 
 const CreateCollection = (req: Request, res: Response) => {
   const {
@@ -10,11 +23,11 @@ const CreateCollection = (req: Request, res: Response) => {
     building,
     streetAddress,
     city,
-    country,
+    state,
     wasteDescription,
-  }: { [key: string]: string } = req.body;
+  }: ICollection = req.body;
 
-  res.send({ message: firstName + ' ' + lastName });
+  //connection.execute();
 };
 
 export { CreateCollection };

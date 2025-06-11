@@ -1,8 +1,2 @@
-Add refetch session feature
-Add RefreshToken 
+Continue from wastecontroller backend
 
-
-
-Replace JWT token in httpOnly to actual refresh token.
-Fix overflow issue in home when height is small
-fix login also

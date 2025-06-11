@@ -46,42 +46,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   async function RefreshSession() {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      if (token) {
-        const result = await axios.post(
-          `${url}/token`,
-          { token },
-          { withCredentials: true },
-        );
-        if (result.data.result === true) {
-          setToken(result.data.token);
-          setUser({ username: result.data.username, email: result.data.email });
-        }
+
+      const result = await axios.post(
+        `${url}/token`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+      if (result.data.result === true) {
+        setToken(result.data.token);
+        setUser({ username: result.data.username, email: result.data.email });
+      } else {
       }
       setLoading(false);
     } catch (err) {
       setLoading(false);
       setUser({ username: "", email: "" });
       setToken("");
-      localStorage.removeItem("token");
-      window.location.href = "/";
+      //window.location.href = "/";
     }
   }
 
-  useEffect(() => {
-    RefreshSession();
-  }, []);
-
   const login = async (data: ILogin) => {
     try {
-      const result = await axios.post(`${url}/login`, {
-        username: data.username,
-        password: data.password,
-      });
+      const result = await axios.post(
+        `${url}/login`,
+        {
+          username: data.username,
+          password: data.password,
+        },
+        { withCredentials: true },
+      );
       if (result.data.result === true) {
         setUser({ ...user, username: data.username as string });
         setToken(result.data.token);
-        localStorage.setItem("token", result.data.token);
         navigate("/");
       } else {
         alert("Login failed. Please try again.");
@@ -97,7 +96,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (result.status === 200) {
       setUser({ username: "", email: "" });
       setToken("");
-      localStorage.removeItem("token");
       window.location.href = "/";
     }
   };
@@ -120,6 +118,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    RefreshSession();
+  }, []);
 
   return (
     <AuthContext.Provider

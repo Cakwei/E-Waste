@@ -47,12 +47,14 @@ async function Login(req: Request, res: Response): Promise<void> {
       jwt_secret,
       { expiresIn: '1h' },
     );
+
     res.cookie('auth', token, {
       sameSite: 'lax',
       secure: config.nodeEnv === 'prod' ? true : false,
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
+
     res.status(200).send({
       result: true,
       token: token,
@@ -102,7 +104,7 @@ async function Register(req: Request, res: Response) {
 
 async function RefreshSession(req: Request, res: Response) {
   try {
-    let { token } = req.body;
+    let token = req.cookies.auth;
     if (token) {
       token = jwt.verify(token, jwt_secret, (err: any, decoded: any) => {
         if (err) {
@@ -129,6 +131,8 @@ async function RefreshSession(req: Request, res: Response) {
         }
       });
     } else {
+      res.clearCookie('auth');
+      console.log('d');
       res.status(401).send({
         result: false,
         message: 'Access unauthorized. Please login again.',

@@ -4,7 +4,7 @@ import Register from "./pages/Register";
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import AuthProvider from "./components/AuthProvider";
-import CollectionForm from "./pages/CollectionForm";
+import CollectionForm from "./components/CollectionForm";
 import Profile from "./pages/Profile";
 
 function App() {

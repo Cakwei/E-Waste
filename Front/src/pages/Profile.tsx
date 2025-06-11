@@ -1,6 +1,6 @@
 import { useAuth, type ProviderProps } from "@/components/AuthProvider";
 import logo from "../assets/logo.png";
-import { NavLink, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import {
   useEffect,
   useState,
@@ -14,6 +14,7 @@ import {
   Fingerprint,
   Settings,
   type LucideIcon,
+  X,
 } from "lucide-react"; // Importing icons from Lucide React
 import {
   Accordion,
@@ -30,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
+import CollectionForm from "@/components/CollectionForm";
 
 const accordion = [
   {
@@ -78,7 +80,6 @@ const profileTabs: {
   },
 ];
 
-// Data for each feature card, matching the image content
 const featureCards: {
   icon: LucideIcon;
   title: string;
@@ -167,6 +168,9 @@ export default function Profile() {
     }
   }, [currentTab]);
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
   useEffect(() => {
     if (
       auth.user?.username === "" &&
@@ -350,7 +354,6 @@ export default function Profile() {
           {selectTab() as ReactNode}
         </div>
       </div>
-      {/*<Footer className={"min-w-[324px]"} /> */}
     </>
   );
 }
@@ -419,7 +422,7 @@ function ProfileTab(
 ): JSX.Element {
   return (
     <div className="flex w-full justify-start bg-gray-50 p-5">
-      <form className="flex h-max w-full max-w-[650px] flex-col gap-2.5 rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
+      <form className="flex h-max w-full max-w-[650px] flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
         <h1 className="text-2xl font-semibold">Profile</h1>
         <div className="flex w-full flex-col gap-2.5">
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
@@ -486,6 +489,7 @@ function ProfileTab(
           value="Update information"
         />
       </form>
+      <CollectionForm />
     </div>
   );
 }
@@ -497,9 +501,16 @@ function RequestTab(auth: ProviderProps): JSX.Element {
       <div className="flex flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
         <h1 className="text-2xl font-semibold">Requests</h1>
         <div className="flex justify-between">
-          <NavLink to="/collection" className="btn border-none bg-[#028b85] font-normal text-white">
+          <button
+            onClick={() => {
+              (
+                document.getElementById("my_modal_1") as HTMLDialogElement
+              ).showModal();
+            }}
+            className="btn border-none bg-[#028b85] font-normal text-white"
+          >
             Create New Request
-          </NavLink>
+          </button>
         </div>
         <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
           <Table className="w-full">
@@ -539,13 +550,35 @@ function RequestTab(auth: ProviderProps): JSX.Element {
             </TableBody>
           </Table>
         </section>
-        <dialog id="my_modal_2" className="modal">
+        {/* Modal for new request */}
+        <dialog id="my_modal_1" className="modal z-[-1]">
+          <div className="modal-box my-5 flex h-min max-h-[90%] flex-col gap-2.5 md:min-w-[650px]">
+            <div className="flex justify-end gap-2.5">
+              <X
+                onClick={() => {
+                  (
+                    document.getElementById("my_modal_1") as HTMLDialogElement
+                  ).close();
+                }}
+                className="rounded-[50%] p-1 text-zinc-400 transition-all duration-300 hover:bg-zinc-300 hover:text-white"
+                size={35}
+              />
+            </div>
+            <CollectionForm />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button className="hover:cursor-default">close</button>
+          </form>
+        </dialog>
+
+        {/* Modal for payment */}
+        <dialog id="my_modal_2" className="modal z-[10000000000000000]">
           <div className="modal-box">
             <h3 className="text-lg font-bold">Lorum Ipsum</h3>
             <p className="py-4">Lorum ipsum</p>
           </div>
-          <form method="dialog" className="modal-backdrop">
-            <button>close</button>
+          <form method="dialog" className="modal-backdrop hover:cursor-default">
+            <button className="hover:cursor-default">close</button>
           </form>
         </dialog>
       </div>
