@@ -188,10 +188,10 @@ export default function Profile() {
         break;
     }
   }, [currentTab]);
-
+  /*
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-  }
+  }*/
   useEffect(() => {
     if (
       auth.user?.username === "" &&
