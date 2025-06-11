@@ -1,3 +1,4 @@
+import { url } from "@/lib/exports";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -19,11 +20,6 @@ export interface ProviderProps {
   logout(e: React.FormEvent): void;
   register(data: IRegister): void;
 }
-
-export const url =
-  import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
-    ? "https://wms-api.cakwei.com"
-    : "http://localhost:3000";
 
 const AuthContext = createContext<ProviderProps>({
   user: { username: "", email: "" },
@@ -57,10 +53,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (result.data.result === true) {
         setToken(result.data.token);
         setUser({ username: result.data.username, email: result.data.email });
-      } else {
       }
       setLoading(false);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setUser({ username: "", email: "" });
       setToken("");
@@ -92,7 +87,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await axios.post(`${url}/logout`, {});
+    const result = await axios.post(
+      `${url}/logout`,
+      {},
+      { withCredentials: true },
+    );
     if (result.status === 200) {
       setUser({ username: "", email: "" });
       setToken("");

@@ -32,6 +32,9 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import CollectionForm from "@/components/CollectionForm";
+import { url } from "@/lib/exports";
+import axios from "axios";
+import Buffer from "buffer/"; // note: the trailing slash is important!
 
 const accordion = [
   {
@@ -129,11 +132,12 @@ export default function Profile() {
   });
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
+  const [image, setImage] = useState<string | null>(null);
 
   function selectTab() {
     switch (currentTab) {
       case "request":
-        return RequestTab(auth);
+        return RequestTab(image);
       case "profile":
         return ProfileTab(auth, hideNewPasswordInput, (e) => handleInput(e));
       case "support":
@@ -142,7 +146,22 @@ export default function Profile() {
         break;
     }
   }
-
+  async function fetchData() {
+    try {
+      const result = await axios.post(
+        `${url}/waste-collection/${auth.user?.email}`,
+        {},
+        { withCredentials: true },
+      );
+      const imgSrc = result.data.message[0].images.data;
+      console.log(imgSrc);
+      const buffer64 = Buffer.Buffer.from(imgSrc).toString("base64"); //setImage(result.data.results)
+      console.log(buffer64);
+      setImage(buffer64);
+    } catch (err) {
+      console.log(err);
+    }
+  }
   async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     const { name, value } = e.target;
@@ -152,11 +171,13 @@ export default function Profile() {
   useEffect(() => {
     selectTab();
     console.log(currentTab);
+
     switch (currentTab) {
       case "home":
         navigate("/");
         break;
       case "request":
+        fetchData();
         navigate("/profile/#request");
         break;
       case "profile":
@@ -350,11 +371,107 @@ export default function Profile() {
           </button>
         </div>
 
-        <div className="flex h-full w-full flex-wrap bg-transparent text-black md:pl-[250px]">
+        <div className="flex h-full w-full flex-wrap bg-gray-50 text-black md:pl-[250px]">
           {selectTab() as ReactNode}
         </div>
       </div>
     </>
+  );
+}
+
+function RequestTab(image: string | null): JSX.Element {
+  return (
+    <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
+      <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
+        <h1 className="text-2xl font-semibold">Requests</h1>
+        <div className="flex justify-between">
+          <button
+            onClick={() => {
+              (
+                document.getElementById("my_modal_1") as HTMLDialogElement
+              ).showModal();
+            }}
+            className="btn border-none bg-[#028b85] font-normal text-white"
+          >
+            Create New Request
+          </button>
+        </div>
+        <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
+          <Table className="w-full">
+            <TableCaption>A list of your recent invoices.</TableCaption>
+            <TableHeader className="">
+              <TableRow>
+                <TableHead className="w-[100px]">Invoice</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Request Type</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="">
+              <TableRow>
+                <TableCell className="font-medium">INV001</TableCell>
+                <TableCell>Paid</TableCell>
+                <TableCell>Collection</TableCell>
+                <TableCell>$69.00</TableCell>
+                <TableCell>01-01-2025</TableCell>
+                <TableCell className="">
+                  <button
+                    onClick={() => {
+                      (
+                        document.getElementById(
+                          "my_modal_2",
+                        ) as HTMLDialogElement
+                      ).showModal();
+                    }}
+                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
+                  >
+                    Pay
+                  </button>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </section>
+
+        <div>
+          <img src={image as string} />
+        </div>
+
+        {/* Modal for new request */}
+        <dialog id="my_modal_1" className="modal z-[-1]">
+          <div className="modal-box my-5 flex min-h-[90%] flex-col gap-2.5 md:max-h-[90%] md:min-w-[650px]">
+            <div className="flex justify-end gap-2.5">
+              <X
+                onClick={() => {
+                  (
+                    document.getElementById("my_modal_1") as HTMLDialogElement
+                  ).close();
+                }}
+                className="rounded-[50%] p-1 text-zinc-400 transition-all duration-300 hover:bg-zinc-300 hover:text-white"
+                size={35}
+              />
+            </div>
+            <CollectionForm />
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button className="hover:cursor-default">close</button>
+          </form>
+        </dialog>
+
+        {/* Modal for payment */}
+        <dialog id="my_modal_2" className="modal">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Lorum Ipsum</h3>
+            <p className="py-4">Lorum ipsum</p>
+          </div>
+          <form method="dialog" className="modal-backdrop hover:cursor-default">
+            <button className="hover:cursor-default">close</button>
+          </form>
+        </dialog>
+      </div>
+    </div>
   );
 }
 
@@ -489,99 +606,6 @@ function ProfileTab(
           value="Update information"
         />
       </form>
-      <CollectionForm />
-    </div>
-  );
-}
-
-function RequestTab(auth: ProviderProps): JSX.Element {
-  auth; // Remove this later on
-  return (
-    <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
-      <div className="flex flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
-        <h1 className="text-2xl font-semibold">Requests</h1>
-        <div className="flex justify-between">
-          <button
-            onClick={() => {
-              (
-                document.getElementById("my_modal_1") as HTMLDialogElement
-              ).showModal();
-            }}
-            className="btn border-none bg-[#028b85] font-normal text-white"
-          >
-            Create New Request
-          </button>
-        </div>
-        <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
-          <Table className="w-full">
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader className="">
-              <TableRow>
-                <TableHead className="w-[100px]">Invoice</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Request Type</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="">
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Collection</TableCell>
-                <TableCell>$69.00</TableCell>
-                <TableCell>01-01-2025</TableCell>
-                <TableCell className="">
-                  <button
-                    onClick={() => {
-                      (
-                        document.getElementById(
-                          "my_modal_2",
-                        ) as HTMLDialogElement
-                      ).showModal();
-                    }}
-                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
-                  >
-                    Pay
-                  </button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </section>
-        {/* Modal for new request */}
-        <dialog id="my_modal_1" className="modal z-[-1]">
-          <div className="modal-box my-5 flex h-min max-h-[90%] flex-col gap-2.5 md:min-w-[650px]">
-            <div className="flex justify-end gap-2.5">
-              <X
-                onClick={() => {
-                  (
-                    document.getElementById("my_modal_1") as HTMLDialogElement
-                  ).close();
-                }}
-                className="rounded-[50%] p-1 text-zinc-400 transition-all duration-300 hover:bg-zinc-300 hover:text-white"
-                size={35}
-              />
-            </div>
-            <CollectionForm />
-          </div>
-          <form method="dialog" className="modal-backdrop">
-            <button className="hover:cursor-default">close</button>
-          </form>
-        </dialog>
-
-        {/* Modal for payment */}
-        <dialog id="my_modal_2" className="modal z-[10000000000000000]">
-          <div className="modal-box">
-            <h3 className="text-lg font-bold">Lorum Ipsum</h3>
-            <p className="py-4">Lorum ipsum</p>
-          </div>
-          <form method="dialog" className="modal-backdrop hover:cursor-default">
-            <button className="hover:cursor-default">close</button>
-          </form>
-        </dialog>
-      </div>
     </div>
   );
 }

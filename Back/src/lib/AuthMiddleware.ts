@@ -14,7 +14,8 @@ export const AuthMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.header('Authorization')?.split(' ')[1];
+    const token = req.cookies.auth;
+    // const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
       console.log('error');
       throw new Error();

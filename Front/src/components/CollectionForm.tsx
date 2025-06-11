@@ -1,8 +1,11 @@
-import { url, useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/components/AuthProvider";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { Clipboard } from "lucide-react";
 import axios from "axios";
+import { url } from "@/lib/exports";
+import FileInput from "./FileInput";
+import type { FileWithPreview } from "@/hooks/FileInputHook";
 
 export interface ICollectionForm {
   firstName: string;
@@ -14,17 +17,19 @@ export interface ICollectionForm {
   city: string;
   state: string;
   wasteDescription: string;
+  img: FileWithPreview[];
 }
 
-export default function CollectionForm({}) {
+export default function CollectionForm() {
   const auth = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!auth.user) {
       alert("You are not logged in");
       navigate("/");
     }
-  }, [auth.user]);
+  }, [auth]);
 
   const [formData, setFormData] = useState<ICollectionForm>({
     firstName: "",
@@ -36,6 +41,7 @@ export default function CollectionForm({}) {
     city: "",
     state: "null",
     wasteDescription: "",
+    img: [],
   });
 
   function handleInput(
@@ -48,26 +54,38 @@ export default function CollectionForm({}) {
     }));
   }
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
-      const result = await axios.post(
-        `${url}/waste-collection/create`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.token}`,
-          },
-        },
-      );
-      console.log(result);
+      if (
+        !(
+          (formData.firstName = "") &&
+          (formData.lastName = "") &&
+          (formData.email = "") &&
+          (formData.phoneNumber = "") &&
+          (formData.building = "") &&
+          (formData.streetAddress = "") &&
+          (formData.city = "") &&
+          (formData.state = "null") &&
+          (formData.wasteDescription = "") &&
+          (formData.img = [])
+        )
+      ) {
+        const result = await axios.post(
+          `${url}/waste-collection/create`,
+          formData,
+          { withCredentials: true },
+        );
+        console.log(result);
+      }
     } catch (err) {
       console.log(err);
     }
   }
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   return (
     <div className="">
@@ -270,6 +288,15 @@ export default function CollectionForm({}) {
                   name="wasteDescription"
                   onChange={(e) => handleInput(e)}
                 ></textarea>
+              </div>
+
+              <div>
+                <span className="mb-1 block text-sm font-medium text-gray-700">
+                  Photo upload (Optional)
+                </span>
+                <FileInput
+                  callback={(data) => setFormData({ ...formData, img: data })}
+                />
               </div>
               {/* Submit Button */}
               <div className="flex justify-center">
