@@ -1,6 +1,7 @@
 import app from './app';
 import config from './config/config';
 import mysql from 'mysql2/promise';
+import { v2 as cloudinary } from 'cloudinary';
 
 // DB Connection
 export const connection = mysql.createPool({
@@ -12,6 +13,12 @@ export const connection = mysql.createPool({
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
+});
+
+export const cloudinaryConfig = cloudinary.config({
+  cloud_name: config.cloudinary_cloud_name,
+  api_key: config.cloudinary_api_key,
+  api_secret: config.cloudinary_api_secret,
 });
 
 app.listen(config.port, () => {

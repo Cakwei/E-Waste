@@ -1,25 +1,28 @@
 import { url } from "@/lib/exports";
 import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router";
 
-interface ILogin {
+interface IUser {
   username: string;
+  email?: string;
   password: string;
 }
-interface IRegister {
-  username: string;
-  email: string;
-  password: string;
-}
-export interface ProviderProps {
+
+export type ProviderProps = {
   user: { username: string; email: string } | null;
   token: string;
   loading: boolean;
-  login(data: ILogin): void;
+  login(data: IUser): void;
   logout(e: React.FormEvent): void;
-  register(data: IRegister): void;
-}
+  register(data: IUser): void;
+};
 
 const AuthContext = createContext<ProviderProps>({
   user: { username: "", email: "" },
@@ -63,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const login = async (data: ILogin) => {
+  const login = async (data: IUser) => {
     try {
       const result = await axios.post(
         `${url}/login`,
@@ -74,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         { withCredentials: true },
       );
       if (result.data.result === true) {
-        setUser({ ...user, username: data.username as string });
+        setUser({ username: data.username, email: result.data.email });
         setToken(result.data.token);
         navigate("/");
       } else {
@@ -99,7 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const register = async (data: IRegister) => {
+  const register = async (data: IUser) => {
     try {
       const result = await axios.post(`${url}/register`, {
         username: data.username,
@@ -118,10 +121,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     RefreshSession();
   }, []);
 
+  useEffect(() => console.log(user),[user])
   return (
     <AuthContext.Provider
       value={{ user, token, loading, login, logout, register }}

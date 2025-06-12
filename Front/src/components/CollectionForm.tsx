@@ -71,10 +71,27 @@ export default function CollectionForm() {
           (formData.img = [])
         )
       ) {
+        const formInfo = new FormData();
+
+        formInfo.append("firstName", formData.firstName);
+        formInfo.append("lastName", formData.lastName);
+        formInfo.append("email", formData.email);
+        formInfo.append("phoneNumber", formData.phoneNumber);
+        formInfo.append("building", formData.building);
+        formInfo.append("streetAddress", formData.streetAddress);
+        formInfo.append("city", formData.city);
+        formInfo.append("state", formData.state);
+        formInfo.append("wasteDescription", formData.wasteDescription);
+        for (let i = 0; i < formData.img.length; i++) {
+          formInfo.append("img", formData.img[i].file as File);
+        }
         const result = await axios.post(
           `${url}/waste-collection/create`,
-          formData,
-          { withCredentials: true },
+          formInfo,
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "multipart/form-data" },
+          },
         );
         console.log(result);
       }
@@ -104,7 +121,11 @@ export default function CollectionForm() {
             </div>
 
             {/* Form Section */}
-            <form onSubmit={(e) => handleSubmit(e)} className="space-y-4">
+            <form
+              onSubmit={(e) => handleSubmit(e)}
+              encType={"multipart/form-data"}
+              className="space-y-4"
+            >
               {/* Name Section */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -291,9 +312,13 @@ export default function CollectionForm() {
               </div>
 
               <div>
-                <span className="mb-1 block text-sm font-medium text-gray-700">
+                <div className="block text-sm font-medium text-gray-700">
                   Photo upload (Optional)
-                </span>
+                </div>
+                <div className="text-error mb-1 block text-xs font-medium">
+                  [Only a showcase in frontend due to requiring payment for
+                  object storage]
+                </div>
                 <FileInput
                   callback={(data) => setFormData({ ...formData, img: data })}
                 />

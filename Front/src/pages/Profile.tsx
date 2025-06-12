@@ -3,6 +3,7 @@ import logo from "../assets/logo.png";
 import { useNavigate } from "react-router";
 import {
   useEffect,
+  useLayoutEffect,
   useState,
   type JSX,
   type ReactNode,
@@ -34,7 +35,7 @@ import {
 import CollectionForm from "@/components/CollectionForm";
 import { url } from "@/lib/exports";
 import axios from "axios";
-import Buffer from "buffer/"; // note: the trailing slash is important!
+import Buffer from "buffer/";
 
 const accordion = [
   {
@@ -123,7 +124,12 @@ interface IFormData {
 export default function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
-  const [currentTab, setCurrentTab] = useState<string>("profile");
+  const [currentTab, setCurrentTab] = useState<string>(
+    window.location.href.includes("/profile/#")
+      ? window.location.href.split("#")[1]
+      : "profile",
+  );
+
   const [formData, setFormData] = useState<IFormData>({
     username: "",
     email: "",
@@ -132,7 +138,7 @@ export default function Profile() {
   });
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<String[]>([]);
 
   function selectTab() {
     switch (currentTab) {
@@ -148,20 +154,31 @@ export default function Profile() {
   }
   async function fetchData() {
     try {
-      const result = await axios.post(
-        `${url}/waste-collection/${auth.user?.email}`,
-        {},
-        { withCredentials: true },
-      );
-      const imgSrc = result.data.message[0].images.data;
-      console.log(imgSrc);
-      const buffer64 = Buffer.Buffer.from(imgSrc).toString("base64"); //setImage(result.data.results)
-      console.log(buffer64);
-      setImage(buffer64);
+      if (
+        !auth.loading &&
+        auth.user?.username !== "" &&
+        auth.user?.email !== ""
+      ) {
+        const result = await axios.post(
+          `${url}/waste-collection/${auth.user?.email}`,
+          {},
+          { withCredentials: true },
+        );
+
+        const convertedImagesStringOfArray = Buffer.Buffer.from(
+          result.data.message.images.data,
+        ).toString("utf-8");
+        const convertedImagesArray = JSON.parse(convertedImagesStringOfArray);
+
+        if (result.data.result === true) {
+          setImage(convertedImagesArray);
+        }
+      }
     } catch (err) {
       console.log(err);
     }
   }
+
   async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     const { name, value } = e.target;
@@ -170,7 +187,6 @@ export default function Profile() {
 
   useEffect(() => {
     selectTab();
-    console.log(currentTab);
 
     switch (currentTab) {
       case "home":
@@ -188,11 +204,13 @@ export default function Profile() {
         break;
     }
   }, [currentTab]);
+
   /*
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
   }*/
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     if (
       auth.user?.username === "" &&
       auth.token === "" &&
@@ -220,7 +238,9 @@ export default function Profile() {
     }
   }, [formData]);
 
-  return (
+  return auth.loading ? (
+    <div className="fixed h-dvh w-dvh bg-white"></div>
+  ) : (
     <>
       <div className="relative flex w-full text-black md:h-[100vh]">
         {/*Desktop navigation */}
@@ -379,7 +399,7 @@ export default function Profile() {
   );
 }
 
-function RequestTab(image: string | null): JSX.Element {
+function RequestTab(image: String[] | null): JSX.Element {
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
       <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
@@ -436,7 +456,8 @@ function RequestTab(image: string | null): JSX.Element {
         </section>
 
         <div>
-          <img src={image as string} />
+          fwfw
+          <img src={image ? (image[0] as string) : ""} />
         </div>
 
         {/* Modal for new request */}

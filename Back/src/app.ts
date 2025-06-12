@@ -15,6 +15,7 @@ app.use(
         : 'http://localhost:5173',
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', AuthRoute);

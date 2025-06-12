@@ -34,11 +34,6 @@ export default function Login() {
       console.log(err);
     }
   }
-  useEffect(() => {
-    if (formData.username || formData.password) {
-      console.log(formData);
-    }
-  }, [formData]);
   return (
     <div className="">
       <Header />

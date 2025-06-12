@@ -54,7 +54,6 @@ async function Login(req: Request, res: Response): Promise<void> {
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
-
     res.status(200).send({
       result: true,
       token: token,
@@ -132,7 +131,6 @@ async function RefreshSession(req: Request, res: Response) {
       });
     } else {
       res.clearCookie('auth');
-      console.log('d');
       res.status(401).send({
         result: false,
         message: 'Access unauthorized. Please login again.',

@@ -1,5 +1,10 @@
 import { Request, Response, Router } from 'express';
-import { connection } from '../server';
+import { cloudinaryConfig, connection } from '../server';
+import multer from 'multer';
+import { RowDataPacket } from 'mysql2/promise';
+import { v2 as cloudinary } from 'cloudinary';
+const upload = multer({ dest: 'uploads/' });
+
 const router = Router();
 
 type FileMetadata = {
@@ -9,13 +14,13 @@ type FileMetadata = {
   url: string;
   id: string;
 };
-
+/*
 type FileWithPreview = {
   file: File | FileMetadata;
   id: string;
   preview?: string;
 };
-
+*/
 interface ICollection {
   firstName: string;
   lastName: string;
@@ -26,7 +31,7 @@ interface ICollection {
   city: string;
   state: string;
   wasteDescription: string;
-  img: FileWithPreview[];
+  img: any;
 }
 
 const CreateCollection = async (req: Request, res: Response) => {
@@ -41,8 +46,43 @@ const CreateCollection = async (req: Request, res: Response) => {
       city,
       state,
       wasteDescription,
-      img,
     }: ICollection = req.body;
+
+    const files = req.files as Express.Multer.File[];
+    if (!(Array.isArray(req.files) && files.length > 0)) {
+      res.send({ result: false, message: 'At least  one image is required' });
+      return;
+    }
+
+    if (
+      firstName === '' &&
+      lastName === '' &&
+      email === '' &&
+      phoneNumber === '' &&
+      building === '' &&
+      streetAddress === '' &&
+      city === '' &&
+      state === '' &&
+      wasteDescription === ''
+    ) {
+      res.send({ result: false, message: 'One or more input is empty' });
+      return;
+    }
+
+    let imageLinksArray: String[] = [],
+      base64File;
+
+    for (let x of files) {
+      const mimetype = x.mimetype;
+      const buffer = x.buffer;
+      base64File = `data:${mimetype};base64,${buffer.toString('base64')}`;
+      const result = await cloudinary.uploader.upload(
+        base64File,
+        cloudinaryConfig,
+      );
+      imageLinksArray.push(result.secure_url);
+      // console.log(result);
+    }
 
     connection.execute(
       'INSERT INTO collections (firstName, lastName, email, phoneNumber, building, streetAddress, city, state, wasteDescription, images) VALUES (?,?,?,?,?,?,?,?,?,?)',
@@ -56,12 +96,11 @@ const CreateCollection = async (req: Request, res: Response) => {
         city,
         state,
         wasteDescription,
-        img,
+        imageLinksArray,
       ],
     );
 
-    console.log('Success');
-    res.send({ result: true, message: img });
+    res.send({ result: true, message: imageLinksArray });
   } catch (err) {
     console.log(err);
   }
@@ -70,8 +109,7 @@ const CreateCollection = async (req: Request, res: Response) => {
 const GetCollection = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
-    console.log(email);
-    const [results] = await connection.execute(
+    const [result] = await connection.execute(
       `
       SELECT images
       FROM accounts
@@ -80,7 +118,11 @@ const GetCollection = async (req: Request, res: Response) => {
       `,
       [email],
     );
-    res.send({ result: true, message: results });
+    if ((result as RowDataPacket[]).length === 0) {
+      res.send({ result: false, message: 'No results found' });
+      return;
+    }
+    res.send({ result: true, message: (result as RowDataPacket[])[0] });
   } catch (err) {
     console.log(err);
   }
