@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { NavLink } from "react-router";
 

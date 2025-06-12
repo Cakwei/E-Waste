@@ -59,16 +59,16 @@ export default function CollectionForm() {
       e.preventDefault();
       if (
         !(
-          (formData.firstName = "") &&
-          (formData.lastName = "") &&
-          (formData.email = "") &&
-          (formData.phoneNumber = "") &&
-          (formData.building = "") &&
-          (formData.streetAddress = "") &&
-          (formData.city = "") &&
-          (formData.state = "null") &&
-          (formData.wasteDescription = "") &&
-          (formData.img = [])
+          formData.firstName === "" &&
+          formData.lastName === "" &&
+          formData.email === "" &&
+          formData.phoneNumber === "" &&
+          formData.building === "" &&
+          formData.streetAddress === "" &&
+          formData.city === "" &&
+          formData.state === "null" &&
+          formData.wasteDescription === "" &&
+          formData.img.length === 0
         )
       ) {
         const formInfo = new FormData();

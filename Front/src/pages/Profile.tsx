@@ -138,7 +138,7 @@ export default function Profile() {
   });
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
-  const [image, setImage] = useState<String[]>([]);
+  const [image, setImage] = useState<string[]>([]);
 
   function selectTab() {
     switch (currentTab) {
@@ -399,7 +399,7 @@ export default function Profile() {
   );
 }
 
-function RequestTab(image: String[] | null): JSX.Element {
+function RequestTab(image: string[] | null): JSX.Element {
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
       <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
