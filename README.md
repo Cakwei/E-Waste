@@ -45,3 +45,5 @@ Technologies used in the project:
 
 *   React
 *   TypeScript
+*   ShadcnUI
+*   daisyUI
