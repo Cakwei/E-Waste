@@ -15,6 +15,12 @@ Here're some of the project's current planned features:
 *   Add/edit/remove e-waste collection
 *   Authentication using JWT tokens
 
+<h2>Future planned features </h2>
+
+What I feel possible to be done after the whole web project is finished.
+
+*   Flutter mobile app
+
 <h2>🛠️ Installation Steps:</h2>
 
 <p>1. Move the folder into the IDE of your choice.</p>
