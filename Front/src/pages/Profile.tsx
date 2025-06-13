@@ -35,7 +35,6 @@ import {
 import CollectionForm from "@/components/CollectionForm";
 import { url } from "@/lib/exports";
 import axios from "axios";
-import Buffer from "buffer/";
 
 const accordion = [
   {
@@ -139,7 +138,7 @@ export default function Profile() {
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
   //const [image, setImage] = useState<string[]>([]);
-  const [data, setData] = useState([]);
+  //const [data, setData] = useState([]);
 
   function selectTab() {
     switch (currentTab) {
