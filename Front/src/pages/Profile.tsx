@@ -138,12 +138,13 @@ export default function Profile() {
   });
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
-  const [image, setImage] = useState<string[]>([]);
+  //const [image, setImage] = useState<string[]>([]);
+  const [data, setData] = useState([]);
 
   function selectTab() {
     switch (currentTab) {
       case "request":
-        return RequestTab(image);
+        return RequestTab();
       case "profile":
         return ProfileTab(auth, hideNewPasswordInput, (e) => handleInput(e));
       case "support":
@@ -164,14 +165,14 @@ export default function Profile() {
           {},
           { withCredentials: true },
         );
-
-        const convertedImagesStringOfArray = Buffer.Buffer.from(
-          result.data.message.images.data,
-        ).toString("utf-8");
-        const convertedImagesArray = JSON.parse(convertedImagesStringOfArray);
-
-        if (result.data.result === true) {
-          setImage(convertedImagesArray);
+        if (result.data.result) {
+          /* const convertedImagesStringOfArray = Buffer.Buffer.from(
+            result.data.message.images.data,
+          ).toString("utf-8");
+          const convertedImagesArray = JSON.parse(convertedImagesStringOfArray);
+          if (result.data.result === true) {
+            // setImage(convertedImagesArray);
+          }*/
         }
       }
     } catch (err) {
@@ -399,7 +400,7 @@ export default function Profile() {
   );
 }
 
-function RequestTab(image: string[] | null): JSX.Element {
+function RequestTab(): JSX.Element {
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
       <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
@@ -430,35 +431,32 @@ function RequestTab(image: string[] | null): JSX.Element {
               </TableRow>
             </TableHeader>
             <TableBody className="">
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Collection</TableCell>
-                <TableCell>$69.00</TableCell>
-                <TableCell>01-01-2025</TableCell>
-                <TableCell className="">
-                  <button
-                    onClick={() => {
-                      (
-                        document.getElementById(
-                          "my_modal_2",
-                        ) as HTMLDialogElement
-                      ).showModal();
-                    }}
-                    className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
-                  >
-                    Pay
-                  </button>
-                </TableCell>
-              </TableRow>
+              {
+                <TableRow>
+                  <TableCell className="font-medium">INV001</TableCell>
+                  <TableCell>Paid</TableCell>
+                  <TableCell>Collection</TableCell>
+                  <TableCell>$69.00</TableCell>
+                  <TableCell>01-01-2025</TableCell>
+                  <TableCell className="">
+                    <button
+                      onClick={() => {
+                        (
+                          document.getElementById(
+                            "my_modal_2",
+                          ) as HTMLDialogElement
+                        ).showModal();
+                      }}
+                      className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
+                    >
+                      Pay
+                    </button>
+                  </TableCell>
+                </TableRow>
+              }
             </TableBody>
           </Table>
         </section>
-
-        <div>
-          fwfw
-          <img src={image ? (image[0] as string) : ""} />
-        </div>
 
         {/* Modal for new request */}
         <dialog id="my_modal_1" className="modal z-[-1]">

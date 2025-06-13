@@ -8,6 +8,8 @@ interface FormData {
   username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 }
 
 export default function Register() {
@@ -16,18 +18,23 @@ export default function Register() {
     username: "",
     email: "",
     password: "",
+    firstName: "",
+    lastName: "",
   });
 
   async function register(e: React.FormEvent) {
     e.preventDefault();
+    console.log(formData.firstName.trim());
     if (
-      formData.username !== "" &&
-      formData.email !== "" &&
-      formData.password !== ""
+      formData.username.trim() !== "" &&
+      formData.email.trim() !== "" &&
+      formData.password.trim() !== "" &&
+      formData.firstName.trim() !== "" &&
+      formData.lastName.trim() !== ""
     ) {
       auth.register(formData);
     } else {
-      alert("please provide a valid input");
+      alert("Please provide a valid input");
       return;
     }
   }
@@ -83,6 +90,68 @@ export default function Register() {
               />
             </label>
           </div>
+          <div className="flex gap-2.5">
+            <div className="basis-[50%]">
+              <span className="text-sm">First Name:</span>
+              <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
+                <svg
+                  className="h-[1em] opacity-50"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    strokeWidth="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </g>
+                </svg>
+                <input
+                  onChange={handleInputChange}
+                  value={formData.firstName}
+                  name="firstName"
+                  type="text"
+                  required
+                  placeholder="Enter username"
+                />
+              </label>
+            </div>
+
+            <div className="basis-[50%]">
+              <span className="text-sm">Last Name:</span>
+              <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
+                <svg
+                  className="h-[1em] opacity-50"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    strokeWidth="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </g>
+                </svg>
+                <input
+                  onChange={handleInputChange}
+                  value={formData.lastName}
+                  name="lastName"
+                  type="text"
+                  required
+                  placeholder="Enter username"
+                />
+              </label>
+            </div>
+          </div>
+
           <div>
             <span className="text-sm">Email Address:</span>
             <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">

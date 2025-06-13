@@ -9,6 +9,14 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/Accordion";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import type { LatLngExpression } from "leaflet";
+
+type ILocation = {
+  office: string;
+  approx_coordinates: LatLngExpression;
+  city: string;
+};
 
 const info = [
   { label: "1k E-Waste Recycled", href: "#" },
@@ -29,6 +37,35 @@ const accordion = [
     answer: "For now, I am not sure, sorry.",
   },
 ];
+
+const location: ILocation[] = [
+  {
+    office: "Volt Recycle | E-Waste Recycling Kuala Lumpur & Selangor Malaysia",
+    approx_coordinates: [3.140853, 101.693207],
+    city: "Kuala Lumpur",
+  },
+  {
+    office: "TechWaste Recycling Malaysia",
+    approx_coordinates: [2.9782, 101.7068],
+    city: "Seri Kembangan",
+  },
+  {
+    office: "ERTH: Electronic Recycling Through Heroes (E-waste)",
+    approx_coordinates: [2.9213, 101.6558],
+    city: "Cyberjaya",
+  },
+  {
+    office: "PJ Eco Recycling Plaza",
+    approx_coordinates: [3.127887, 101.59449],
+    city: "Petaling Jaya",
+  },
+  {
+    office: "Mudajaya Recycle Sdn Bhd",
+    approx_coordinates: [2.9782, 101.7068],
+    city: "Seri Kembangan / Balakong",
+  },
+];
+
 export default function HomeArticle() {
   return (
     <article className="flex w-full flex-col p-10 text-white">
@@ -62,7 +99,7 @@ export default function HomeArticle() {
           </NavLink>
         </h5>
       </div>
-      <div className="flex w-full max-w-[1500px] flex-wrap self-center min-[1920px]:max-w-[1920px] sm:flex-nowrap">
+      <div className="mb-10 flex w-full max-w-[1500px] flex-wrap self-center min-[1920px]:max-w-[1920px] sm:flex-nowrap">
         <section className="flex w-full flex-col gap-2.5 py-5 text-black sm:basis-[40%] sm:p-5">
           <h4 className="badge rounded-3xl border border-zinc-400 p-2.5">
             Questions
@@ -86,6 +123,33 @@ export default function HomeArticle() {
             ))}
           </Accordion>
         </section>
+      </div>
+      <div className="">
+        <h1 className="text-3xl font-extrabold text-black uppercase">
+          Available Send-Off Locations
+        </h1>
+        <MapContainer
+          className="h-[450px] sm:h-[250px]"
+          center={[3.140853, 101.693207]}
+          zoom={10}
+          scrollWheelZoom={false}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {location.map((item, index) => (
+            <Marker position={item.approx_coordinates} key={index}>
+              <Popup>
+                <div className="p-2.5">
+                  <div className="text-center">{item.office}</div>
+                  <span className="divider my-0"></span>{" "}
+                  <div className="text-center">{item.city}</div>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
       </div>
     </article>
   );

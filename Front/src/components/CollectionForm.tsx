@@ -32,9 +32,9 @@ export default function CollectionForm() {
   }, [auth]);
 
   const [formData, setFormData] = useState<ICollectionForm>({
-    firstName: "",
-    lastName: "",
-    email: "",
+    firstName: auth.user?.firstName || "",
+    lastName: auth.user?.lastName || "",
+    email: auth.user?.email || "",
     phoneNumber: "",
     building: "",
     streetAddress: "",
@@ -138,8 +138,9 @@ export default function CollectionForm() {
                   <input
                     type="text"
                     id="firstName"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={formData.firstName}
+                    disabled
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                    value={auth.user?.firstName || formData.firstName}
                     name="firstName"
                     onChange={(e) => handleInput(e)}
                     required
@@ -155,8 +156,9 @@ export default function CollectionForm() {
                   <input
                     type="text"
                     id="lastName"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={formData.lastName}
+                    disabled
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                    value={auth.user?.lastName || formData.lastName}
                     name="lastName"
                     onChange={(e) => handleInput(e)}
                     required
@@ -174,8 +176,9 @@ export default function CollectionForm() {
                 <input
                   type="email"
                   id="email"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  value={formData.email}
+                  disabled
+                  className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                  value={auth.user?.email || formData.email}
                   name="email"
                   onChange={(e) => handleInput(e)}
                   required

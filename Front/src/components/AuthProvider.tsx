@@ -12,11 +12,18 @@ import { useNavigate } from "react-router";
 interface IUser {
   username: string;
   email?: string;
+  firstName: string;
+  lastName: string;
   password: string;
 }
 
 export type ProviderProps = {
-  user: { username: string; email: string } | null;
+  user: {
+    username: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  } | null;
   token: string;
   loading: boolean;
   login(data: IUser): void;
@@ -25,7 +32,7 @@ export type ProviderProps = {
 };
 
 const AuthContext = createContext<ProviderProps>({
-  user: { username: "", email: "" },
+  user: { username: "", email: "", firstName: "", lastName: "" },
   token: "",
   loading: true,
   login: () => {},
@@ -37,6 +44,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState({
     username: "",
     email: "",
+    firstName: "",
+    lastName: "",
   });
   const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -55,12 +64,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       );
       if (result.data.result === true) {
         setToken(result.data.token);
-        setUser({ username: result.data.username, email: result.data.email });
+        setUser({
+          username: result.data.username,
+          email: result.data.email,
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+        });
+      } else {
+        setUser({ username: "", email: "", firstName: "", lastName: "" });
       }
       setLoading(false);
     } catch {
       setLoading(false);
-      setUser({ username: "", email: "" });
+      setUser({ username: "", email: "", firstName: "", lastName: "" });
       setToken("");
       //window.location.href = "/";
     }
@@ -77,7 +93,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         { withCredentials: true },
       );
       if (result.data.result === true) {
-        setUser({ username: data.username, email: result.data.email });
+        setUser({
+          username: data.username,
+          email: result.data.email,
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+        });
         setToken(result.data.token);
         navigate("/");
       } else {
@@ -96,7 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       { withCredentials: true },
     );
     if (result.status === 200) {
-      setUser({ username: "", email: "" });
+      setUser({ username: "", email: "", firstName: "", lastName: "" });
       setToken("");
       window.location.href = "/";
     }
@@ -108,6 +129,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         username: data.username,
         email: data.email,
         password: data.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
       });
 
       if (result.data.result === true) {
@@ -125,7 +148,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     RefreshSession();
   }, []);
 
-  useEffect(() => console.log(user),[user])
+  useEffect(() => console.log(user), [user]);
   return (
     <AuthContext.Provider
       value={{ user, token, loading, login, logout, register }}

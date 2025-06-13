@@ -35,6 +35,9 @@ interface ICollection {
 }
 
 const CreateCollection = async (req: Request, res: Response) => {
+  let imageLinksArray: string[] = [],
+    imagePublicIdArray: string[] = [], // For deletion purposes from cloudinary incase error occurs
+    base64File;
   try {
     const {
       firstName,
@@ -50,28 +53,28 @@ const CreateCollection = async (req: Request, res: Response) => {
 
     const files = req.files as Express.Multer.File[];
     if (!(Array.isArray(req.files) && files.length > 0)) {
-      res.send({ result: false, message: 'At least  one image is required' });
+      res
+        .status(400)
+        .send({ result: false, message: 'At least  one image is required' });
       return;
     }
-
+    console.log(req.body);
     if (
-      firstName === '' &&
-      lastName === '' &&
-      email === '' &&
-      phoneNumber === '' &&
-      building === '' &&
-      streetAddress === '' &&
-      city === '' &&
-      state === '' &&
+      firstName === '' ||
+      lastName === '' ||
+      email === '' ||
+      phoneNumber === '' ||
+      building === '' ||
+      streetAddress === '' ||
+      city === '' ||
+      state === '' ||
       wasteDescription === ''
     ) {
-      res.send({ result: false, message: 'One or more input is empty' });
+      res
+        .status(400)
+        .send({ result: false, message: 'One or more input is empty' });
       return;
     }
-
-    let imageLinksArray: String[] = [],
-      base64File;
-
     for (let x of files) {
       const mimetype = x.mimetype;
       const buffer = x.buffer;
@@ -81,14 +84,13 @@ const CreateCollection = async (req: Request, res: Response) => {
         cloudinaryConfig,
       );
       imageLinksArray.push(result.secure_url);
-      // console.log(result);
+      imagePublicIdArray.push(result.public_id);
+      console.log(imageLinksArray);
     }
 
-    connection.execute(
-      'INSERT INTO collections (firstName, lastName, email, phoneNumber, building, streetAddress, city, state, wasteDescription, images) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    const result = await connection.execute(
+      'INSERT INTO collections (email, phoneNumber, building, streetAddress, city, state, wasteDescription, images, creationdate) VALUES (?,?,?,?,?,?,?,?, NOW())',
       [
-        firstName,
-        lastName,
         email,
         phoneNumber,
         building,
@@ -100,9 +102,16 @@ const CreateCollection = async (req: Request, res: Response) => {
       ],
     );
 
-    res.send({ result: true, message: imageLinksArray });
+    res.status(201).send({ result: true, message: 'Request created' });
   } catch (err) {
     console.log(err);
+    if (imageLinksArray.length > 0) {
+      for (let publicId of imagePublicIdArray) {
+        cloudinary.uploader.destroy(publicId).then((result) => {
+          console.log(result);
+        });
+      }
+    }
   }
 };
 
@@ -111,7 +120,7 @@ const GetCollection = async (req: Request, res: Response) => {
     const { email } = req.params;
     const [result] = await connection.execute(
       `
-      SELECT images
+      SELECT *
       FROM accounts
       RIGHT JOIN collections
       ON accounts.email = collections.email WHERE  accounts.email = ?;
@@ -119,10 +128,14 @@ const GetCollection = async (req: Request, res: Response) => {
       [email],
     );
     if ((result as RowDataPacket[]).length === 0) {
-      res.send({ result: false, message: 'No results found' });
+      res.status(404).send({ result: false, message: 'No results found' });
       return;
     }
-    res.send({ result: true, message: (result as RowDataPacket[])[0] });
+    console.log((result as RowDataPacket[])[0]);
+    res.status(200).send({
+      result: true,
+      message: (result as RowDataPacket[])[0],
+    });
   } catch (err) {
     console.log(err);
   }
