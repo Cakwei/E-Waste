@@ -6,7 +6,7 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/Sidebar";
 import { cn } from "@/lib/utils";
 import {
   type LucideIcon,
@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import axios from "axios";
-import { useNavigate } from "react-router";
+import { useFetcher, useNavigate } from "react-router";
 import {
   Accordion,
   AccordionContent,
@@ -350,7 +350,7 @@ function RequestTab(
   data: IRequest[] | null,
   viewData: IRequest | null,
   setViewData: (viewData: IRequest | null) => void,
-): JSX.Element {
+) {
   function selectBadge(data: { status: string }) {
     switch (data.status) {
       case "created":
@@ -367,6 +367,9 @@ function RequestTab(
         );
     }
   }
+  useEffect(() => {
+    console.log(viewData);
+  }, []);
 
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
