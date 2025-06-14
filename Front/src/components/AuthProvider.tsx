@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   createContext,
   useContext,
-  useEffect,
   useLayoutEffect,
   useState,
 } from "react";
@@ -12,8 +11,8 @@ import { useNavigate } from "react-router";
 interface IUser {
   username: string;
   email?: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   password: string;
 }
 
@@ -94,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       );
       if (result.data.result === true) {
         setUser({
-          username: data.username,
+          username: result.data.username,
           email: result.data.email,
           firstName: result.data.firstName,
           lastName: result.data.lastName,
@@ -148,7 +147,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     RefreshSession();
   }, []);
 
-  useEffect(() => console.log(user), [user]);
   return (
     <AuthContext.Provider
       value={{ user, token, loading, login, logout, register }}

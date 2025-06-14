@@ -1,12 +1,10 @@
-import { Request, Response, Router } from 'express';
+import { Request, Response } from 'express';
 import { cloudinaryConfig, connection } from '../server';
-import multer from 'multer';
 import { RowDataPacket } from 'mysql2/promise';
 import { v2 as cloudinary } from 'cloudinary';
-const upload = multer({ dest: 'uploads/' });
+import { v4 as uuidv4 } from 'uuid';
 
-const router = Router();
-
+/*
 type FileMetadata = {
   name: string;
   size: number;
@@ -14,7 +12,7 @@ type FileMetadata = {
   url: string;
   id: string;
 };
-/*
+
 type FileWithPreview = {
   file: File | FileMetadata;
   id: string;
@@ -50,15 +48,16 @@ const CreateCollection = async (req: Request, res: Response) => {
       state,
       wasteDescription,
     }: ICollection = req.body;
-
+    const uuid = uuidv4();
     const files = req.files as Express.Multer.File[];
+
     if (!(Array.isArray(req.files) && files.length > 0)) {
       res
         .status(400)
         .send({ result: false, message: 'At least  one image is required' });
       return;
     }
-    console.log(req.body);
+
     if (
       firstName === '' ||
       lastName === '' ||
@@ -75,6 +74,7 @@ const CreateCollection = async (req: Request, res: Response) => {
         .send({ result: false, message: 'One or more input is empty' });
       return;
     }
+
     for (let x of files) {
       const mimetype = x.mimetype;
       const buffer = x.buffer;
@@ -85,12 +85,12 @@ const CreateCollection = async (req: Request, res: Response) => {
       );
       imageLinksArray.push(result.secure_url);
       imagePublicIdArray.push(result.public_id);
-      console.log(imageLinksArray);
     }
 
     const result = await connection.execute(
-      'INSERT INTO collections (email, phoneNumber, building, streetAddress, city, state, wasteDescription, images, creationdate) VALUES (?,?,?,?,?,?,?,?, NOW())',
+      'INSERT INTO collections (id, email, phoneNumber, building, streetAddress, city, state, wasteDescription, images, creationdate) VALUES (?,?,?,?,?,?,?,?,?, NOW())',
       [
+        uuid,
         email,
         phoneNumber,
         building,
@@ -112,6 +112,9 @@ const CreateCollection = async (req: Request, res: Response) => {
         });
       }
     }
+    res
+      .status(500)
+      .send({ result: false, message: 'Failed to create request' });
   }
 };
 
@@ -120,7 +123,7 @@ const GetCollection = async (req: Request, res: Response) => {
     const { email } = req.params;
     const [result] = await connection.execute(
       `
-      SELECT *
+      SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
       FROM accounts
       RIGHT JOIN collections
       ON accounts.email = collections.email WHERE  accounts.email = ?;
@@ -131,10 +134,9 @@ const GetCollection = async (req: Request, res: Response) => {
       res.status(404).send({ result: false, message: 'No results found' });
       return;
     }
-    console.log((result as RowDataPacket[])[0]);
     res.status(200).send({
       result: true,
-      message: (result as RowDataPacket[])[0],
+      message: result as RowDataPacket[],
     });
   } catch (err) {
     console.log(err);

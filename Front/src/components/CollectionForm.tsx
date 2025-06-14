@@ -1,6 +1,5 @@
 import { useAuth } from "@/components/AuthProvider";
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { useNavigate } from "react-router";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Clipboard } from "lucide-react";
 import axios from "axios";
 import { url } from "@/lib/exports";
@@ -22,14 +21,6 @@ export interface ICollectionForm {
 
 export default function CollectionForm() {
   const auth = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!auth.user) {
-      alert("You are not logged in");
-      navigate("/");
-    }
-  }, [auth]);
 
   const [formData, setFormData] = useState<ICollectionForm>({
     firstName: auth.user?.firstName || "",
@@ -99,10 +90,6 @@ export default function CollectionForm() {
       console.log(err);
     }
   }
-
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   return (
     <div className="">

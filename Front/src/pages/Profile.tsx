@@ -10,14 +10,6 @@ import {
   type SetStateAction,
 } from "react";
 import {
-  ArrowRight,
-  User,
-  Fingerprint,
-  Settings,
-  type LucideIcon,
-  X,
-} from "lucide-react"; // Importing icons from Lucide React
-import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -35,6 +27,18 @@ import {
 import CollectionForm from "@/components/CollectionForm";
 import { url } from "@/lib/exports";
 import axios from "axios";
+import {
+  type LucideIcon,
+  ArrowRight,
+  User,
+  Fingerprint,
+  Settings,
+  House,
+  SquareUser,
+  Ticket,
+  MessageCircleQuestion,
+  X,
+} from "lucide-react";
 
 const accordion = [
   {
@@ -113,12 +117,28 @@ const featureCards: {
   },
 ];
 
-interface IFormData {
+type IFormData = {
   username: string;
   email: string;
   currentPassword: string;
   newPassword: string;
-}
+};
+
+type IRequest = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  building: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  wasteDescription: string;
+  images: string;
+  creationDate: string;
+  status: string;
+};
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -128,7 +148,6 @@ export default function Profile() {
       ? window.location.href.split("#")[1]
       : "profile",
   );
-
   const [formData, setFormData] = useState<IFormData>({
     username: "",
     email: "",
@@ -138,12 +157,13 @@ export default function Profile() {
   const [hideNewPasswordInput, setHideNewPasswordInput] =
     useState<boolean>(true);
   //const [image, setImage] = useState<string[]>([]);
-  //const [data, setData] = useState([]);
+  const [data, setData] = useState<IRequest[] | null>(null);
+  const [viewData, setViewData] = useState<IRequest | null>(null);
 
   function selectTab() {
     switch (currentTab) {
       case "request":
-        return RequestTab();
+        return RequestTab(data, viewData, setViewData);
       case "profile":
         return ProfileTab(auth, hideNewPasswordInput, (e) => handleInput(e));
       case "support":
@@ -164,7 +184,10 @@ export default function Profile() {
           {},
           { withCredentials: true },
         );
+        console.log(result);
         if (result.data.result) {
+          console.log(result.data.message);
+          setData(result.data.message);
           /* const convertedImagesStringOfArray = Buffer.Buffer.from(
             result.data.message.images.data,
           ).toString("utf-8");
@@ -185,6 +208,8 @@ export default function Profile() {
     setFormData({ ...formData, [name]: value });
   }
 
+  useEffect(() => console.log(viewData), [setViewData, viewData]);
+
   useEffect(() => {
     selectTab();
 
@@ -193,7 +218,6 @@ export default function Profile() {
         navigate("/");
         break;
       case "request":
-        fetchData();
         navigate("/profile/#request");
         break;
       case "profile":
@@ -203,7 +227,7 @@ export default function Profile() {
         navigate("/profile/#support");
         break;
     }
-  }, [currentTab]);
+  }, [currentTab, setCurrentTab]);
 
   /*
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -213,14 +237,26 @@ export default function Profile() {
   useLayoutEffect(() => {
     if (
       auth.user?.username === "" &&
-      auth.token === "" &&
+      auth.user?.firstName === "" &&
+      auth.user?.lastName == "" &&
       auth.user?.email === "" &&
+      auth.token === "" &&
       !auth.loading
     ) {
       navigate("/login");
+      return;
     }
+    if (
+      auth.user?.username !== "" &&
+      auth.user?.firstName !== "" &&
+      auth.user?.lastName !== "" &&
+      auth.user?.email !== "" &&
+      auth.user
+    ) {
+      if (currentTab === "request") {
+        fetchData();
+      }
 
-    if (auth.user?.username !== "" && auth.user?.email !== "" && auth.user) {
       setFormData({
         username: auth.user.username,
         email: auth.user.email,
@@ -231,15 +267,17 @@ export default function Profile() {
   }, [auth]);
 
   useEffect(() => {
-    if (formData.currentPassword.length > 0) {
-      setHideNewPasswordInput(false);
-    } else {
-      setHideNewPasswordInput(true);
+    if (currentTab === "profile") {
+      if (formData.currentPassword.length > 0) {
+        setHideNewPasswordInput(false);
+      } else {
+        setHideNewPasswordInput(true);
+      }
     }
-  }, [formData]);
+  }, [formData.currentPassword]);
 
   return auth.loading ? (
-    <div className="fixed h-dvh w-dvh bg-white"></div>
+    <div className="fixed h-dvh w-dvh bg-gray-50"></div>
   ) : (
     <>
       <div className="relative flex w-full text-black md:h-[100vh]">
@@ -278,116 +316,40 @@ export default function Profile() {
 
         {/*Mobile navigation */}
         <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
-          <button>
-            <svg
-              className="size-[1.2em]"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                fill="currentColor"
-                strokeLinejoin="miter"
-                strokeLinecap="butt"
-              >
-                <polyline
-                  points="3 14 9 14 9 17 15 17 15 14 21 14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></polyline>
-                <rect
-                  x="3"
-                  y="3"
-                  width="18"
-                  height="18"
-                  rx="2"
-                  ry="2"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="square"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></rect>
-              </g>
-            </svg>
-            <span className="dock-label">Inbox</span>
-          </button>
-
-          <button className="dock-active" onClick={() => navigate("/")}>
-            <svg
-              className="size-[1.2em]"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                fill="currentColor"
-                strokeLinejoin="miter"
-                strokeLinecap="butt"
-              >
-                <polyline
-                  points="1 11 12 2 23 11"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></polyline>
-                <path
-                  d="m5,13v7c0,1.105.895,2,2,2h10c1.105,0,2-.895,2-2v-7"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="square"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></path>
-                <line
-                  x1="12"
-                  y1="22"
-                  x2="12"
-                  y2="18"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="square"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></line>
-              </g>
-            </svg>
+          <button
+            onClick={() => {
+              setCurrentTab("home");
+            }}
+          >
+            <House size={20} />
             <span className="dock-label">Home</span>
+          </button>{" "}
+          <button
+            onClick={() => {
+              console.log("erewgewgew");
+              setCurrentTab("profile");
+            }}
+          >
+            <SquareUser size={20} />
+            <span className="dock-label">Profile</span>
           </button>
-
-          <button>
-            <svg
-              className="size-[1.2em]"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                fill="currentColor"
-                strokeLinejoin="miter"
-                strokeLinecap="butt"
-              >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="3"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="square"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></circle>
-                <path
-                  d="m22,13.25v-2.5l-2.318-.966c-.167-.581-.395-1.135-.682-1.654l.954-2.318-1.768-1.768-2.318.954c-.518-.287-1.073-.515-1.654-.682l-.966-2.318h-2.5l-.966,2.318c-.581.167-1.135.395-1.654.682l-2.318-.954-1.768,1.768.954,2.318c-.287.518-.515,1.073-.682,1.654l-2.318.966v2.5l2.318.966c.167.581.395,1.135.682,1.654l-.954,2.318,1.768,1.768,2.318-.954c.518.287,1.073.515,1.654.682l.966,2.318h2.5l.966-2.318c.581-.167,1.135-.395,1.654-.682l2.318.954,1.768-1.768-.954-2.318c.287-.518.515-1.073.682-1.654l2.318-.966Z"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="square"
-                  strokeMiterlimit="10"
-                  strokeWidth="2"
-                ></path>
-              </g>
-            </svg>
-            <span className="dock-label">Settings</span>
+          <button
+            onClick={() => {
+              console.log("erewgewgew");
+              setCurrentTab("request");
+            }}
+          >
+            <Ticket size={20} />
+            <span className="dock-label">Request</span>
+          </button>
+          <button
+            onClick={() => {
+              console.log("erewgewgew");
+              setCurrentTab("support");
+            }}
+          >
+            <MessageCircleQuestion size={20} />
+            <span className="dock-label">Help & Support</span>
           </button>
         </div>
 
@@ -399,11 +361,32 @@ export default function Profile() {
   );
 }
 
-function RequestTab(): JSX.Element {
+function RequestTab(
+  data: IRequest[] | null,
+  viewData: IRequest | null,
+  setViewData: (viewData: IRequest | null) => void,
+): JSX.Element {
+  function selectBadge(data: { status: string }) {
+    switch (data.status) {
+      case "created":
+        return (
+          <div className="badge badge-success p-1.5 font-semibold text-white">
+            Created
+          </div>
+        );
+      case "picked_up":
+        return (
+          <div className="badge badge-success p-1.5 font-semibold text-white">
+            Picked Up
+          </div>
+        );
+    }
+  }
+
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
       <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
-        <h1 className="text-2xl font-semibold">Requests</h1>
+        <h1 className="text-2xl font-semibold">Collection Requests</h1>
         <div className="flex justify-between">
           <button
             onClick={() => {
@@ -416,49 +399,62 @@ function RequestTab(): JSX.Element {
             Create New Request
           </button>
         </div>
-        <section className="max-h-50 w-full overflow-scroll rounded-2xl outline">
+        <section
+          className={`${data && data.length > 0 ? "max-h-[calc(100dvh-250px)]" : "h-50"} w-full overflow-scroll rounded-2xl outline`}
+        >
           <Table className="w-full">
             <TableCaption>A list of your recent invoices.</TableCaption>
             <TableHeader className="">
               <TableRow>
                 <TableHead className="w-[100px]">Invoice</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Request Type</TableHead>
-                <TableHead>Amount</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="">
-              {
-                <TableRow>
-                  <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>Paid</TableCell>
-                  <TableCell>Collection</TableCell>
-                  <TableCell>$69.00</TableCell>
-                  <TableCell>01-01-2025</TableCell>
-                  <TableCell className="">
-                    <button
-                      onClick={() => {
-                        (
-                          document.getElementById(
-                            "my_modal_2",
-                          ) as HTMLDialogElement
-                        ).showModal();
-                      }}
-                      className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal"
-                    >
-                      Pay
-                    </button>
+            <TableBody>
+              {data ? (
+                data.map((item) => (
+                  <TableRow>
+                    <TableCell className="font-medium">{item.id}</TableCell>
+                    <TableCell>{selectBadge(item)}</TableCell>
+                    <TableCell>
+                      {new Date(item.creationDate).getDate() +
+                        "-" +
+                        new Date(item.creationDate).getMonth() +
+                        "-" +
+                        new Date(item.creationDate).getFullYear()}
+                    </TableCell>
+                    <TableCell className="">
+                      <button
+                        onClick={() => {
+                          setViewData(item || item);
+                          (
+                            document.getElementById(
+                              "my_modal_2",
+                            ) as HTMLDialogElement
+                          ).showModal();
+                        }}
+                        className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal shadow-none"
+                      >
+                        View
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="relative h-[27px] w-full">
+                  <TableCell>
+                    <span className="loading loading-spinner loading-md absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5"></span>
                   </TableCell>
                 </TableRow>
-              }
+              )}
             </TableBody>
           </Table>
         </section>
 
         {/* Modal for new request */}
-        <dialog id="my_modal_1" className="modal z-[-1]">
+        <dialog id="my_modal_1" className="modal">
           <div className="modal-box my-5 flex min-h-[90%] flex-col gap-2.5 md:max-h-[90%] md:min-w-[650px]">
             <div className="flex justify-end gap-2.5">
               <X
@@ -478,11 +474,11 @@ function RequestTab(): JSX.Element {
           </form>
         </dialog>
 
-        {/* Modal for payment */}
+        {/* Modal for view */}
         <dialog id="my_modal_2" className="modal">
           <div className="modal-box">
-            <h3 className="text-lg font-bold">Lorum Ipsum</h3>
-            <p className="py-4">Lorum ipsum</p>
+            <h3 className="text-lg font-bold">Submitted Request Details</h3>
+            <p className="py-4">{JSON.stringify(viewData)}</p>
           </div>
           <form method="dialog" className="modal-backdrop hover:cursor-default">
             <button className="hover:cursor-default">close</button>
@@ -557,7 +553,7 @@ function ProfileTab(
 ): JSX.Element {
   return (
     <div className="flex w-full justify-start bg-gray-50 p-5">
-      <form className="flex h-max w-full max-w-[650px] flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg">
+      <form className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]">
         <h1 className="text-2xl font-semibold">Profile</h1>
         <div className="flex w-full flex-col gap-2.5">
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">

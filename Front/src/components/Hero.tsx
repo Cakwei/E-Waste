@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 export default function Hero() {
   const navigate = useNavigate();
   return (
-    <div className="relative flex h-[calc(100vh-64px)] min-h-[250px] w-full items-center justify-center bg-transparent min-[500px]:h-[calc(75vh-64px)] sm:h-[calc(50vh-64px)]">
+    <div className="relative flex h-[calc(100vh-64px)] max-h-[450px] min-h-[250px] w-full items-center justify-center bg-transparent min-[500px]:h-[calc(75vh-64px)] sm:h-[calc(50vh-64px)] lg:max-h-[400px]">
       <div className="absolute z-[2] flex flex-col gap-2.5 text-center">
         <h1 className="px-5 text-4xl font-extrabold text-black">
           Electronic Waste Recycling Program
@@ -32,7 +32,7 @@ export default function Hero() {
       </div>
       <img
         src={heroImg}
-        className="absolute inset-0 top-0 z-[1] h-[inherit] min-h-[inherit] w-full object-cover object-center opacity-25 grayscale"
+        className="absolute inset-0 top-0 z-[1] h-[inherit] max-h-[450px] min-h-[inherit] w-full object-cover object-center opacity-25 grayscale lg:max-h-[400px]"
       />
     </div>
   );
