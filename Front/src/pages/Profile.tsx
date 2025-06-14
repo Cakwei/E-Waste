@@ -1,6 +1,3 @@
-import { useAuth, type ProviderProps } from "@/components/AuthProvider";
-import logo from "../assets/logo.png";
-import { useNavigate } from "react-router";
 import {
   useEffect,
   useLayoutEffect,
@@ -9,12 +6,24 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/Accordion";
+  type LucideIcon,
+  ArrowRight,
+  User,
+  Fingerprint,
+  Settings,
+  House,
+  MessageCircleQuestion,
+  SquareUser,
+  Ticket,
+  X,
+} from "lucide-react";
+import logo from "../assets/logo.png";
+import { useAuth, type ProviderProps } from "@/components/AuthProvider";
+import CollectionForm from "@/components/CollectionForm";
+import { url } from "@/lib/exports";
 import {
   Table,
   TableBody,
@@ -24,68 +33,37 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/Table";
-import CollectionForm from "@/components/CollectionForm";
-import { url } from "@/lib/exports";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import {
-  type LucideIcon,
-  ArrowRight,
-  User,
-  Fingerprint,
-  Settings,
-  House,
-  SquareUser,
-  Ticket,
-  MessageCircleQuestion,
-  X,
-} from "lucide-react";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/Accordion";
 
-const accordion = [
-  {
-    question: "Is it system fully built and finished?",
-    answer: "No, I will finish it as soon possible though.",
-  },
-  {
-    question: "What if there is a bug in the system?",
-    answer: "Please do report @ charleetan2020@gmail.com if you do. :)",
-  },
-  {
-    question: "What are future features to be added?",
-    answer: "For now, I am not sure, sorry.",
-  },
-];
+type IRequest = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  building: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  wasteDescription: string;
+  images: string;
+  creationDate: string;
+  status: string;
+};
 
-const profileTabs: {
-  label: string;
-  tab: string;
-  href: string | null;
-  icon: string;
-}[] = [
-  {
-    label: "Return to Homepage",
-    tab: "home",
-    href: "/",
-    icon: "bi bi-house-fill",
-  },
-  {
-    label: "My Information",
-    tab: "profile",
-    href: null,
-    icon: "bi bi-person-bounding-box",
-  },
-  {
-    label: "My Requests",
-    tab: "request",
-    href: null,
-    icon: "bi bi-ticket-fill",
-  },
-  {
-    label: "Help & Support",
-    tab: "support",
-    href: null,
-    icon: "bi bi-info-circle-fill",
-  },
-];
+type IFormData = {
+  username: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+};
 
 const featureCards: {
   icon: LucideIcon;
@@ -117,35 +95,60 @@ const featureCards: {
   },
 ];
 
-type IFormData = {
-  username: string;
-  email: string;
-  currentPassword: string;
-  newPassword: string;
-};
+const accordion = [
+  {
+    question: "Is it system fully built and finished?",
+    answer: "No, I will finish it as soon possible though.",
+  },
+  {
+    question: "What if there is a bug in the system?",
+    answer: "Please do report @ charleetan2020@gmail.com if you do. :)",
+  },
+  {
+    question: "What are future features to be added?",
+    answer: "For now, I am not sure, sorry.",
+  },
+];
 
-type IRequest = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  building: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  wasteDescription: string;
-  images: string;
-  creationDate: string;
-  status: string;
-};
-
-export default function Profile() {
+const profileTabs: {
+  label: string;
+  tab: string;
+  href: string | null;
+  icon: ReactNode | string;
+}[] = [
+  {
+    label: "Return to Homepage",
+    tab: "home",
+    href: "/",
+    icon: <House size={20} />,
+  },
+  {
+    label: "My Information",
+    tab: "profile",
+    href: null,
+    icon: <SquareUser size={20} />,
+  },
+  {
+    label: "My Requests",
+    tab: "request",
+    href: null,
+    icon: <Ticket size={20} />,
+  },
+  {
+    label: "Help & Support",
+    tab: "support",
+    href: null,
+    icon: <MessageCircleQuestion size={20} />,
+  },
+];
+export default function ViewRequest() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [currentTab, setCurrentTab] = useState<string>(
-    window.location.href.includes("/profile/#")
-      ? window.location.href.split("#")[1]
+    window.location.href.includes(`${import.meta.env.VITE_WEB_URL}`)
+      ? window.location.href.split(
+          `${import.meta.env.VITE_WEB_URL}/profile/#`,
+        )[1]
       : "profile",
   );
   const [formData, setFormData] = useState<IFormData>({
@@ -159,6 +162,7 @@ export default function Profile() {
   //const [image, setImage] = useState<string[]>([]);
   const [data, setData] = useState<IRequest[] | null>(null);
   const [viewData, setViewData] = useState<IRequest | null>(null);
+  const [open, setOpen] = useState(false);
 
   function selectTab() {
     switch (currentTab) {
@@ -207,8 +211,6 @@ export default function Profile() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   }
-
-  useEffect(() => console.log(viewData), [setViewData, viewData]);
 
   useEffect(() => {
     selectTab();
@@ -276,90 +278,73 @@ export default function Profile() {
     }
   }, [formData.currentPassword]);
 
-  return auth.loading ? (
-    <div className="fixed h-dvh w-dvh bg-gray-50"></div>
-  ) : (
-    <>
-      <div className="relative flex w-full text-black md:h-[100vh]">
-        {/*Desktop navigation */}
-        <nav
-          className={`fixed top-0 left-0 z-[50] hidden h-full max-w-[250px] min-w-[250px] overflow-y-clip bg-[#056b66] md:block md:w-[25%]`}
-        >
-          <div className="flex w-full justify-center p-2.5">
-            <img
-              onClick={() => {
-                navigate("/");
-              }}
-              className="w-10 min-w-10 cursor-pointer rounded-[50%] bg-zinc-400"
-              src={logo}
-            />
+  useEffect(() => console.log(currentTab), [setCurrentTab]);
+  return (
+    <div
+      className={cn(
+        "flex h-dvh max-h-dvh min-h-dvh w-full flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800",
+        "h-[60vh]",
+      )}
+    >
+      <Sidebar open={open} setOpen={setOpen} animate={true}>
+        <SidebarBody className="justify-between gap-10">
+          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <>
+              <Logo />
+            </>
+            <div className="mt-8 flex flex-col gap-2">
+              {profileTabs.map((link, idx) => (
+                <SidebarLink
+                  className="text-white hover:cursor-default"
+                  setCurrentTab={setCurrentTab}
+                  key={idx}
+                  link={link}
+                />
+              ))}
+            </div>
           </div>
-          <ul>
-            {profileTabs.map((item) => (
-              <li
-                key={item.label}
-                onClick={() => {
-                  if (item.label === "Home") {
-                    navigate("/");
-                  } else {
-                    setCurrentTab(item.tab);
-                  }
-                }}
-                className="mx-2.5 cursor-pointer p-2.5 text-white hover:rounded-md hover:bg-[black]/20"
-              >
-                <i className={`${item.icon} mr-5`}></i>
-                {`${item.label}`}
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/*Mobile navigation */}
-        <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
-          <button
-            onClick={() => {
-              setCurrentTab("home");
-            }}
-          >
-            <House size={20} />
-            <span className="dock-label">Home</span>
-          </button>{" "}
-          <button
-            onClick={() => {
-              console.log("erewgewgew");
-              setCurrentTab("profile");
-            }}
-          >
-            <SquareUser size={20} />
-            <span className="dock-label">Profile</span>
-          </button>
-          <button
-            onClick={() => {
-              console.log("erewgewgew");
-              setCurrentTab("request");
-            }}
-          >
-            <Ticket size={20} />
-            <span className="dock-label">Request</span>
-          </button>
-          <button
-            onClick={() => {
-              console.log("erewgewgew");
-              setCurrentTab("support");
-            }}
-          >
-            <MessageCircleQuestion size={20} />
-            <span className="dock-label">Help & Support</span>
-          </button>
-        </div>
-
-        <div className="flex h-full w-full flex-wrap bg-gray-50 text-black md:pl-[250px]">
-          {selectTab() as ReactNode}
-        </div>
-      </div>
-    </>
+        </SidebarBody>
+      </Sidebar>
+      <Dashboard selectTab={selectTab} />
+    </div>
   );
 }
+export const Logo = () => {
+  return (
+    <a
+      href="#"
+      className="relative z-20 flex items-center gap-x-5 space-x-2 py-1 text-sm font-normal text-white"
+    >
+      <img
+        src={logo}
+        className="w-full max-w-7 min-w-7 cursor-pointer rounded-[50%] bg-zinc-400"
+      />
+      <span className="w-[100px] overflow-hidden text-xl font-semibold text-nowrap">
+        E-Waste
+      </span>
+    </a>
+  );
+};
+export const LogoIcon = () => {
+  return (
+    <a
+      href="#"
+      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
+    >
+      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+    </a>
+  );
+};
+
+const Dashboard = ({ selectTab }: { selectTab: () => void }) => {
+  return (
+    <div className="flex flex-1">
+      <div className="flex h-full w-full flex-wrap bg-gray-50 text-black">
+        {selectTab() as ReactNode}
+      </div>
+    </div>
+  );
+};
 
 function RequestTab(
   data: IRequest[] | null,
