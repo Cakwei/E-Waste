@@ -5,7 +5,7 @@ import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import AuthProvider from "./components/AuthProvider";
 import CollectionForm from "./components/CollectionForm";
-import Profile from "./pages/Profile";
+import ViewRequest from "./pages/ViewRequest";
 
 function App() {
   return (
@@ -16,7 +16,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/collection" element={<CollectionForm />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ViewRequest />} />
+          <Route path="/profile/#profile/:id" element={<Home />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
