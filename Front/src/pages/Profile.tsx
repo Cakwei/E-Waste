@@ -166,7 +166,7 @@ export default function ViewRequest() {
   function selectTab() {
     switch (currentTab) {
       case "request":
-        return RequestTab(data, viewData, setViewData);
+        return RequestTab(data, setViewData);
       case "profile":
         return ProfileTab(auth, formData);
       case "support":
@@ -177,6 +177,7 @@ export default function ViewRequest() {
   }
   async function fetchData() {
     try {
+      viewData; //Remove this later
       if (
         !auth.loading &&
         auth.user?.username !== "" &&
@@ -397,7 +398,6 @@ const Dashboard = ({ selectTab }: { selectTab: () => void }) => {
 
 function RequestTab(
   data: IRequest[] | null,
-  viewData: IRequest | null,
   setViewData: (viewData: IRequest | null) => void,
 ) {
   function selectBadge(data: { status: string }) {
