@@ -1,13 +1,12 @@
 import { url } from "@/lib/exports";
 import axios from "axios";
-import {
-  createContext,
-  useContext,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
+interface ILogin {
+  email: string;
+  password: string;
+}
 interface IUser {
   username: string;
   email?: string;
@@ -25,7 +24,7 @@ export type ProviderProps = {
   } | null;
   token: string;
   loading: boolean;
-  login(data: IUser): void;
+  login(data: ILogin): void;
   logout(e: React.FormEvent): void;
   register(data: IUser): void;
 };
@@ -81,12 +80,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  const login = async (data: IUser) => {
+  const login = async (data: ILogin) => {
     try {
+      const emailRegexExpression =
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (data.email) {
+        if (!emailRegexExpression.test(data.email)) {
+          alert("Invalid email address");
+          return;
+        }
+      }
+
       const result = await axios.post(
         `${url}/login`,
         {
-          username: data.username,
+          email: data.email,
           password: data.password,
         },
         { withCredentials: true },
@@ -100,11 +108,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
         setToken(result.data.token);
         navigate("/");
-      } else {
-        alert("Login failed. Please try again.");
       }
     } catch (err) {
       console.log(err);
+      alert("Login failed. Please try again.");
     }
   };
 

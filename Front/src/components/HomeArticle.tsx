@@ -129,7 +129,7 @@ export default function HomeArticle() {
           Available Send-Off Locations
         </h1>
         <MapContainer
-          className="h-[450px] sm:h-[250px]"
+          className="z-0 h-[450px] sm:h-[250px]"
           center={[3.140853, 101.693207]}
           zoom={10}
           scrollWheelZoom={false}
@@ -150,6 +150,9 @@ export default function HomeArticle() {
             </Marker>
           ))}
         </MapContainer>
+        <span className="text-xs font-normal text-black normal-case">
+          (NOTE: Data in map is not entirely real)
+        </span>
       </div>
     </article>
   );

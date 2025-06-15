@@ -23,8 +23,8 @@ export interface JWTPayload extends JwtPayload {
 }
 async function Login(req: Request, res: Response): Promise<void> {
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
+    const { email, password } = req.body;
+    if (!email || !password) {
       res.status(400).send({
         success: false,
         message: 'Username and password are required.',
@@ -32,11 +32,23 @@ async function Login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const users = (await FindUserByUsername(username)) as UserAccount[];
-    if (users.length === 0) {
+    if (!validateEmailFormat(email)) {
+      res.status(400).send({
+        success: false,
+        message: 'Invalid email format.',
+      });
+      return;
+    }
+
+    const userExists =
+      ((await FindUserByEmail(email)) as UserAccount[]).length > 0;
+
+    if (!userExists) {
       res.status(401).send({ result: false, message: 'Invalid credentials.' });
       return;
     }
+
+    const users = (await FindUserByEmail(email)) as UserAccount[];
 
     const user = users[0];
     const passwordMatch = await bcrypt.compare(password, user.password); //password === user.password;
@@ -74,7 +86,6 @@ async function Register(req: Request, res: Response) {
   try {
     const hashSaltRounds = 10;
     const { username, email, password, firstName, lastName } = req.body;
-    console.log(username, email, password, firstName, lastName);
     if (
       username === '' &&
       email === '' &&
@@ -85,6 +96,15 @@ async function Register(req: Request, res: Response) {
       res.status(400).send({ result: false, message: 'All input is required' });
       return;
     }
+
+    if (!validateEmailFormat(email)) {
+      res.status(400).send({
+        success: false,
+        message: 'Invalid email format.',
+      });
+      return;
+    }
+
     const accountExists =
       ((await FindUserByEmail(email)) as UserAccount[]).length > 0 ||
       ((await FindUserByUsername(username)) as UserAccount[]).length > 0;
@@ -159,6 +179,7 @@ const Logout = (req: Request, res: Response) => {
   res.clearCookie('auth');
   res.status(200).send({ result: true, message: 'Logged out' });
 };
+
 // Private Functions
 export async function FindUserByEmail(email: string) {
   const [rows, fields] = await connection.execute(
@@ -187,6 +208,12 @@ export const VerifyToken = (token: string) => {
     console.log(err);
     return false;
   }
+};
+
+const validateEmailFormat = (email: string) => {
+  const emailRegexExpression =
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegexExpression.test(email);
 };
 
 export const SignToken = (data: JWTPayload) => {

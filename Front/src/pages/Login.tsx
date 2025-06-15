@@ -5,14 +5,14 @@ import { useAuth } from "@/components/AuthProvider";
 import { NavLink } from "react-router";
 
 interface FormData {
-  username: string;
+  email: string;
   password: string;
 }
 
 export default function Login() {
   const auth = useAuth();
   const [formData, setFormData] = useState<FormData>({
-    username: "",
+    email: "",
     password: "",
   });
 
@@ -44,7 +44,7 @@ export default function Login() {
         >
           <h1 className="text-center text-4xl font-bold">SIGN IN</h1>
           <div className="">
-            <span className="text-sm">Username:</span>
+            <span className="text-sm">Email Address:</span>
             <label className="input validator w-full border border-zinc-300 focus-within:border-black focus-within:outline-none">
               <svg
                 className="h-[1em] opacity-50"
@@ -64,11 +64,11 @@ export default function Login() {
               </svg>
               <input
                 type="text"
-                name="username"
-                value={formData.username}
+                name="email"
+                value={formData.email}
                 onChange={handleInputChange}
                 required
-                placeholder="Enter username"
+                placeholder="Enter username or email address"
               />
             </label>
           </div>

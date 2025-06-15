@@ -168,7 +168,7 @@ export const SidebarLink = ({
     <div
       onClick={() => setCurrentTab(link.tab as string)}
       className={cn(
-        `group/sidebar flex items-center justify-start gap-2 py-2 ${open ? "" : ""}`,
+        `group/sidebar flex items-center justify-start gap-2 py-2 transition-all duration-200 hover:rounded-md hover:bg-black/15 hover:px-2.5`,
         className,
       )}
       {...props}
@@ -180,7 +180,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="!m-0 inline-block !p-0 text-sm whitespace-pre text-white transition duration-150 group-hover/sidebar:translate-x-1 dark:text-neutral-200"
+        className="inline-block text-sm whitespace-pre text-white"
       >
         {link.label}
       </motion.span>

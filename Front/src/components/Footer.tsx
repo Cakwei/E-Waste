@@ -1,4 +1,5 @@
 import type { IStyle } from "@/pages/Home";
+import { Github, Linkedin, Youtube } from "lucide-react";
 
 export default function Footer({ className }: IStyle) {
   return (
@@ -19,12 +20,26 @@ export default function Footer({ className }: IStyle) {
       <nav>
         <h6 className="footer-title">Social</h6>
         <div className="grid grid-flow-col gap-4">
-          <a>
-            <i className="bi bi-twitter-x text-[20px]"></i>
-          </a>
-          <a>
-            <i className="bi bi-youtube text-[25px]"></i>
-          </a>
+          <Linkedin
+            size={20}
+            onClick={() =>
+              (window.location.href =
+                "https://www.linkedin.com/in/charlee-tan-1833902b6/")
+            }
+          />
+          <Youtube
+            size={20}
+            onClick={() =>
+              (window.location.href =
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+            }
+          />
+          <Github
+            size={20}
+            onClick={() =>
+              (window.location.href = "https://www.github.com/cakwei")
+            }
+          />
         </div>
       </nav>
     </footer>

@@ -4,7 +4,6 @@ import {
   useState,
   type FormEvent,
   type ReactNode,
-  type SetStateAction,
 } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/Sidebar";
 import { cn } from "@/lib/utils";
@@ -14,11 +13,12 @@ import {
   User,
   Fingerprint,
   Settings,
+  X,
+  Pencil,
   House,
   MessageCircleQuestion,
   SquareUser,
   Ticket,
-  X,
 } from "lucide-react";
 import logo from "../assets/logo.png";
 import { useAuth, type ProviderProps } from "@/components/AuthProvider";
@@ -120,25 +120,25 @@ const profileTabs: {
     label: "Return to Homepage",
     tab: "home",
     href: "/",
-    icon: <House size={20} />,
+    icon: <i className="bi bi-house text-lg"></i>,
   },
   {
     label: "My Information",
     tab: "profile",
     href: null,
-    icon: <SquareUser size={20} />,
+    icon: <i className="bi bi-person-bounding-box text-lg"></i>,
   },
   {
     label: "My Requests",
     tab: "request",
     href: null,
-    icon: <Ticket size={20} />,
+    icon: <i className="bi bi-ticket text-lg"></i>,
   },
   {
     label: "Help & Support",
     tab: "support",
     href: null,
-    icon: <MessageCircleQuestion size={20} />,
+    icon: <i className="bi bi-person-raised-hand text-lg"></i>,
   },
 ];
 export default function ViewRequest() {
@@ -157,8 +157,8 @@ export default function ViewRequest() {
     currentPassword: "",
     newPassword: "",
   });
-  const [hideNewPasswordInput, setHideNewPasswordInput] =
-    useState<boolean>(true);
+  //const [hideNewPasswordInput, setHideNewPasswordInput] =
+  // useState<boolean>(true);
   //const [image, setImage] = useState<string[]>([]);
   const [data, setData] = useState<IRequest[] | null>(null);
   const [viewData, setViewData] = useState<IRequest | null>(null);
@@ -168,9 +168,7 @@ export default function ViewRequest() {
       case "request":
         return RequestTab(data, viewData, setViewData);
       case "profile":
-        return ProfileTab(auth, hideNewPasswordInput, formData, (e) =>
-          handleInput(e),
-        );
+        return ProfileTab(auth, formData);
       case "support":
         return SupportTab();
       default:
@@ -205,13 +203,13 @@ export default function ViewRequest() {
       console.log(err);
     }
   }
-
+  /*
   async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   }
-
+*/
   useEffect(() => {
     selectTab();
 
@@ -267,7 +265,7 @@ export default function ViewRequest() {
       });
     }
   }, [auth]);
-
+  /*
   useEffect(() => {
     if (currentTab === "profile") {
       if (formData.currentPassword.length > 0) {
@@ -277,7 +275,7 @@ export default function ViewRequest() {
       }
     }
   }, [formData.currentPassword]);
-
+*/
   useEffect(() => {
     console.log(formData);
   }, [formData]);
@@ -289,25 +287,72 @@ export default function ViewRequest() {
         "h-[60vh]",
       )}
     >
-      <Sidebar open={open} setOpen={setOpen} animate={true}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-            <>
-              <Logo />
-            </>
-            <div className="mt-8 flex flex-col gap-2">
-              {profileTabs.map((link, idx) => (
-                <SidebarLink
-                  className="text-white hover:cursor-default"
-                  setCurrentTab={setCurrentTab}
-                  key={idx}
-                  link={link}
-                />
-              ))}
+      <div className="hidden md:block">
+        <Sidebar open={open} setOpen={setOpen} animate={true}>
+          <SidebarBody className="justify-between gap-10">
+            <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+              <>
+                <Logo />
+              </>
+              <div className="mt-8 flex flex-col gap-2">
+                {profileTabs.map((link, index) => (
+                  <SidebarLink
+                    className="hover:cursor-default"
+                    setCurrentTab={setCurrentTab}
+                    key={index}
+                    link={link}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        </SidebarBody>
-      </Sidebar>
+          </SidebarBody>
+        </Sidebar>
+      </div>
+      {/*Mobile navigation */}
+      <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
+        <button
+          onClick={() => {
+            setCurrentTab("home");
+          }}
+        >
+          <House size={20} />
+
+          <span className="dock-label">Home</span>
+        </button>{" "}
+        <button
+          onClick={() => {
+            console.log("erewgewgew");
+
+            setCurrentTab("profile");
+          }}
+        >
+          <SquareUser size={20} />
+
+          <span className="dock-label">Profile</span>
+        </button>
+        <button
+          onClick={() => {
+            console.log("erewgewgew");
+
+            setCurrentTab("request");
+          }}
+        >
+          <Ticket size={20} />
+
+          <span className="dock-label">Request</span>
+        </button>
+        <button
+          onClick={() => {
+            console.log("erewgewgew");
+
+            setCurrentTab("support");
+          }}
+        >
+          <MessageCircleQuestion size={20} />
+
+          <span className="dock-label">Help & Support</span>
+        </button>
+      </div>
       <Dashboard selectTab={selectTab} />
     </div>
   );
@@ -321,7 +366,7 @@ export const Logo = () => {
     >
       <img
         src={logo}
-        className="w-full max-w-7 min-w-7 cursor-pointer rounded-[50%] bg-zinc-400"
+        className="w-full max-w-6.5 min-w-6.5 cursor-pointer rounded-[50%] bg-zinc-400"
       />
       <span className="w-[100px] overflow-hidden text-xl font-semibold text-nowrap">
         E-Waste
@@ -534,12 +579,7 @@ function SupportTab() {
   );
 }
 
-function ProfileTab(
-  auth: ProviderProps,
-  hideNewPasswordInput: SetStateAction<boolean>,
-  formData: IFormData,
-  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void,
-) {
+function ProfileTab(auth: ProviderProps, formData: IFormData) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const result = await axios.post(
@@ -554,7 +594,7 @@ function ProfileTab(
     <div className="flex w-full justify-start bg-gray-50 p-5">
       <form
         onSubmit={handleSubmit}
-        className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]"
+        className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 pb-7.5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]"
       >
         <h1 className="text-2xl font-semibold">Profile</h1>
         <div className="flex w-full flex-col gap-2.5">
@@ -563,16 +603,18 @@ function ProfileTab(
             {auth.loading ? (
               <div className="skeleton basis-[50%]"></div>
             ) : (
-              <>
-                <input
-                  type="text"
-                  name="username"
-                  onChange={(e) => handleInput(e)}
-                  placeholder="Username"
-                  defaultValue={auth.user?.username}
-                  className="basis-[50%]"
+              <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                <span>{auth.user?.username}</span>
+                <Pencil
+                  size={15}
+                  className="hover:cursor-pointer"
+                  onClick={() =>
+                    (
+                      document.querySelector("#my_modal_2") as HTMLDialogElement
+                    ).showModal()
+                  }
                 />
-              </>
+              </div>
             )}
           </div>
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
@@ -580,39 +622,42 @@ function ProfileTab(
             {auth.loading ? (
               <div className="skeleton basis-[50%]"></div>
             ) : (
-              <>
-                <input
-                  type="text"
-                  name="email"
-                  onChange={(e) => handleInput(e)}
-                  placeholder="Email Address"
-                  defaultValue={auth.user?.email}
-                  className="basis-[50%]"
+              <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                <span>{auth.user?.email}</span>
+                <Pencil
+                  size={15}
+                  className="hover:cursor-pointer"
+                  onClick={() =>
+                    (
+                      document.querySelector("#my_modal_2") as HTMLDialogElement
+                    ).showModal()
+                  }
                 />
-              </>
+              </div>
             )}
           </div>
-          <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
-            <label className="basis-[50%] sm:text-nowrap">
-              Current Password
-            </label>
+          <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
+            <label className="sm:text-nowrap">Current Password</label>
             {auth.loading ? (
               <div className="skeleton basis-[50%]"></div>
             ) : (
-              <>
-                <input
-                  type="password"
-                  name="currentPassword"
-                  onChange={(e) => handleInput(e)}
-                  placeholder="Password"
-                  className="basis-[50%]"
+              <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                <span>{auth.user?.email}</span>
+                <Pencil
+                  size={15}
+                  className="hover:cursor-pointer"
+                  onClick={() =>
+                    (
+                      document.querySelector("#my_modal_2") as HTMLDialogElement
+                    ).showModal()
+                  }
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
 
-        {!hideNewPasswordInput && (
+        {/*!hideNewPasswordInput && (
           <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
             <label className="basis-[50%] sm:text-nowrap">New Password</label>
             <input
@@ -622,14 +667,17 @@ function ProfileTab(
               name="newPassword"
             />
           </div>
-        )}
-
-        <input
-          type="submit"
-          className="btn mt-2.5 border border-zinc-300 outline-none"
-          value="Update information"
-        />
+        )*/}
       </form>
+      {/* Open the modal using document.getElementById('ID').showModal() method */}
+      <dialog id="my_modal_2" className="modal">
+        <div className="modal-box">
+          <h3 className="text-lg font-bold">Account Information Edit</h3>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
     </div>
   );
 }
