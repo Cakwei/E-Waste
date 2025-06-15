@@ -16,8 +16,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/collection" element={<CollectionForm />} />
-          <Route path="/profile" element={<ViewRequest />} />
-          <Route path="/profile/#profile/:id" element={<Home />} />
+          <Route path="/profile/:tab?" element={<ViewRequest />} />
+          <Route path="/profile/:tab?/:id" element={<Home />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

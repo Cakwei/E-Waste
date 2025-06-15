@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config/config';
 
-const jwt_secret = config.jwt_secret;
+export const jwt_secret = config.jwt_secret;
 
 interface UserAccount extends RowDataPacket {
   username: string;
@@ -182,8 +182,7 @@ export const VerifyToken = (token: string) => {
   // Note: Throws error if cant verify
   try {
     const result = jwt.verify(token, jwt_secret);
-    console.log(result);
-    return token;
+    return result ? token : false;
   } catch (err) {
     console.log(err);
     return false;

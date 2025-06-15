@@ -21,9 +21,10 @@ export const AuthMiddleware = async (
       throw new Error();
     }
     const decoded = jwt.verify(token, SECRET_KEY);
-
+    if (decoded) {
+      next();
+    }
     //(req as CustomRequest).token = decoded;
-    next();
   } catch (err) {
     console.log(err);
     res.status(401).send({ result: false, message: 'Please authenticate.' });

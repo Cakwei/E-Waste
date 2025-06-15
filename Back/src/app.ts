@@ -4,6 +4,7 @@ import WasteRoute from './routes/WasteRoute';
 import cors from 'cors';
 import config from './config/config';
 import cookieParser from 'cookie-parser';
+import ProfileRoute from './routes/ProfileRoute';
 
 const app = express();
 app.use(
@@ -20,4 +21,5 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/', AuthRoute);
 app.use('/waste-collection', WasteRoute);
+app.use('/users', ProfileRoute);
 export default app;

@@ -2,7 +2,7 @@ import {
   useEffect,
   useLayoutEffect,
   useState,
-  type JSX,
+  type FormEvent,
   type ReactNode,
   type SetStateAction,
 } from "react";
@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/Table";
 import axios from "axios";
-import { useFetcher, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import {
   Accordion,
   AccordionContent,
@@ -145,9 +145,9 @@ export default function ViewRequest() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [currentTab, setCurrentTab] = useState<string>(
-    window.location.href.includes(`${import.meta.env.VITE_WEB_URL}`)
+    window.location.href.includes(`${import.meta.env.VITE_WEB_URL}/profile/`)
       ? window.location.href.split(
-          `${import.meta.env.VITE_WEB_URL}/profile/#`,
+          `${import.meta.env.VITE_WEB_URL}/profile/`,
         )[1]
       : "profile",
   );
@@ -163,13 +163,14 @@ export default function ViewRequest() {
   const [data, setData] = useState<IRequest[] | null>(null);
   const [viewData, setViewData] = useState<IRequest | null>(null);
   const [open, setOpen] = useState(false);
-
   function selectTab() {
     switch (currentTab) {
       case "request":
         return RequestTab(data, viewData, setViewData);
       case "profile":
-        return ProfileTab(auth, hideNewPasswordInput, (e) => handleInput(e));
+        return ProfileTab(auth, hideNewPasswordInput, formData, (e) =>
+          handleInput(e),
+        );
       case "support":
         return SupportTab();
       default:
@@ -190,7 +191,6 @@ export default function ViewRequest() {
         );
         console.log(result);
         if (result.data.result) {
-          console.log(result.data.message);
           setData(result.data.message);
           /* const convertedImagesStringOfArray = Buffer.Buffer.from(
             result.data.message.images.data,
@@ -220,13 +220,13 @@ export default function ViewRequest() {
         navigate("/");
         break;
       case "request":
-        navigate("/profile/#request");
+        navigate("/profile/request");
         break;
       case "profile":
-        navigate("/profile/#profile");
+        navigate("/profile");
         break;
       case "support":
-        navigate("/profile/#support");
+        navigate("/profile/support");
         break;
     }
   }, [currentTab, setCurrentTab]);
@@ -278,7 +278,10 @@ export default function ViewRequest() {
     }
   }, [formData.currentPassword]);
 
-  useEffect(() => console.log(currentTab), [setCurrentTab]);
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
+
   return (
     <div
       className={cn(
@@ -309,6 +312,7 @@ export default function ViewRequest() {
     </div>
   );
 }
+
 export const Logo = () => {
   return (
     <a
@@ -367,10 +371,6 @@ function RequestTab(
         );
     }
   }
-  useEffect(() => {
-    console.log(viewData);
-  }, []);
-
   return (
     <div className="flex h-dvh w-full flex-col bg-gray-50 p-5 font-sans md:h-full">
       <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
@@ -403,7 +403,7 @@ function RequestTab(
             <TableBody>
               {data ? (
                 data.map((item) => (
-                  <TableRow>
+                  <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.id}</TableCell>
                     <TableCell>{selectBadge(item)}</TableCell>
                     <TableCell>
@@ -477,7 +477,7 @@ function RequestTab(
   );
 }
 
-function SupportTab(): JSX.Element {
+function SupportTab() {
   return (
     <div className="pb-[64px] md:pb-0">
       <h1 className="bg-gray-50 p-5 text-4xl font-bold uppercase">
@@ -537,11 +537,25 @@ function SupportTab(): JSX.Element {
 function ProfileTab(
   auth: ProviderProps,
   hideNewPasswordInput: SetStateAction<boolean>,
+  formData: IFormData,
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void,
-): JSX.Element {
+) {
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const result = await axios.post(
+      `${url}/users/${auth.user?.email}/change-username`,
+      formData,
+    );
+    if (result.data.result === true) {
+      console.log(result);
+    }
+  }
   return (
     <div className="flex w-full justify-start bg-gray-50 p-5">
-      <form className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]">
+      <form
+        onSubmit={handleSubmit}
+        className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]"
+      >
         <h1 className="text-2xl font-semibold">Profile</h1>
         <div className="flex w-full flex-col gap-2.5">
           <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
@@ -599,7 +613,15 @@ function ProfileTab(
         </div>
 
         {!hideNewPasswordInput && (
-          <input type="password" placeholder="Password" name="newPassword" />
+          <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
+            <label className="basis-[50%] sm:text-nowrap">New Password</label>
+            <input
+              type="password"
+              onChange={(e) => handleInput(e)}
+              placeholder="Password"
+              name="newPassword"
+            />
+          </div>
         )}
 
         <input
