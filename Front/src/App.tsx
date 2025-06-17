@@ -5,7 +5,8 @@ import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import AuthProvider from "./components/AuthProvider";
 import CollectionForm from "./components/CollectionForm";
-import ViewRequest from "./pages/Profile";
+import Profile from "./pages/Profile/ProfileDashboard";
+import ViewTicket from "./pages/ViewTicket";
 
 function App() {
   return (
@@ -16,8 +17,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/collection" element={<CollectionForm />} />
-          <Route path="/profile/:tab?" element={<ViewRequest />} />
-          <Route path="/profile/:tab?/:id" element={<Home />} />
+          <Route path="/profile/request/:id" element={<ViewTicket />} />
+          <Route path="/profile/:tab?" element={<Profile />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

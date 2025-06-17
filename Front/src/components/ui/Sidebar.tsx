@@ -154,19 +154,19 @@ export const MobileSidebar = ({
 
 export const SidebarLink = ({
   link,
-  setCurrentTab,
+  setCurrentTab = null,
   className,
   ...props
 }: {
   link: Links;
-  setCurrentTab: (tab: string) => void;
+  setCurrentTab: ((tab: string) => void) | null;
   className?: string;
 }) => {
   const { open, animate } = useSidebar();
 
   return (
     <div
-      onClick={() => setCurrentTab(link.tab as string)}
+      onClick={() => setCurrentTab && setCurrentTab(link.tab as string)}
       className={cn(
         `group/sidebar flex items-center justify-start gap-2 py-2 transition-all duration-200 hover:rounded-md hover:bg-black/15 hover:px-2.5`,
         className,
