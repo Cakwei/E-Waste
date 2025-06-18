@@ -121,9 +121,9 @@ const CreateCollection = async (req: Request, res: Response) => {
 const GetAllOfUserCollection = async (req: Request, res: Response) => {
   try {
     let { username } = req.params;
-    console.log(username)
+    console.log(username);
     username = req.body.username;
-    console.log(username)
+    console.log(username);
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
@@ -151,12 +151,13 @@ const FindUserCollection = async (req: Request, res: Response) => {
   try {
     let { id } = req.params;
     id = req.body.id;
+
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
       FROM accounts
       RIGHT JOIN collections
-      ON accounts.email = collections.email WHERE id = ? AND collections.email = ?;
+      ON accounts.email = collections.email WHERE id = ?;
       `,
       [id],
     );
@@ -167,7 +168,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
     }
     res.status(200).send({
       result: true,
-      message: result as RowDataPacket[],
+      message: (result as RowDataPacket[])[0],
     });
   } catch (err) {
     console.log(err);

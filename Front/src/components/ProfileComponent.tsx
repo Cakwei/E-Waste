@@ -16,7 +16,7 @@ export type IRequest = {
   city: string;
   state: string;
   wasteDescription: string;
-  images: string;
+  images: Array<string>;
   creationDate: string;
   status: string;
 };
@@ -162,7 +162,7 @@ export const LogoIcon = () => {
 
 const Dashboard = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 overflow-scroll">
       <div className="flex h-full w-full flex-wrap bg-gray-50 text-black">
         {children}
       </div>

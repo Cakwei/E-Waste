@@ -11,5 +11,5 @@ router.post('/login', Login);
 router.post('/register', Register);
 router.post('/token', RefreshSession);
 router.post('/logout', Logout);
-
+router.post('/change-username', Logout);
 export default router;

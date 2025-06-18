@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Pencil } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { endPointUrl } from "@/lib/exports";
 import { useAuth } from "@/components/AuthProvider";
 import ProfileComponent from "@/components/ProfileComponent";
@@ -20,8 +20,10 @@ export default function ProfileTab() {
     currentPassword: "",
     newPassword: "",
   });
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    console.log("fwf");
     const result = await axios.post(
       `${endPointUrl}/users/${auth.user?.email}/change-username`,
       formData,
@@ -31,12 +33,20 @@ export default function ProfileTab() {
     }
   }
 
+  async function handleInput(e: ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  }
+
   useEffect(() => {
     const isLoggedIn =
       !auth.loading && auth.user?.username !== "" && auth.user?.email !== "";
     if (isLoggedIn) {
     }
   }, [auth]);
+
+  useEffect(() => console.log(formData), [formData, setFormData]);
   return (
     <ProfileComponent>
       <div className="flex w-full justify-start bg-gray-50 p-5">
@@ -110,24 +120,20 @@ export default function ProfileTab() {
               )}
             </div>
           </div>
-
-          {/*!hideNewPasswordInput && (
-          <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
-            <label className="basis-[50%] sm:text-nowrap">New Password</label>
-            <input
-              type="password"
-              onChange={(e) => handleInput(e)}
-              placeholder="Password"
-              name="newPassword"
-            />
-          </div>
-        )*/}
         </form>
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
+
         <dialog id="my_modal_2" className="modal">
-          <div className="modal-box">
+          <form className="modal-box">
             <h3 className="text-lg font-bold">Account Information Edit</h3>
-          </div>
+            <input
+              name="input"
+              onChange={handleInput}
+              className="rounded-sm px-2.5 outline outline-zinc-300"
+            />
+            <button type="submit" onClick={(e) => handleSubmit(e)}>
+              Submit
+            </button>
+          </form>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>
           </form>

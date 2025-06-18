@@ -22,7 +22,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile/support" element={<Support />} />
           <Route path="/profile/request" element={<Request />} />
-          <Route path="/profile/request/:id?" element={<ViewRequest />} />
+          <Route path="/profile/request/:id" element={<ViewRequest />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

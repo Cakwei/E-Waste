@@ -129,6 +129,12 @@ async function Register(req: Request, res: Response) {
       .send({ result: false, message: 'Failed to create account' });
   }
 }
+async function ChangeUsername(req: Request, res: Response) {
+  try {
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 async function RefreshSession(req: Request, res: Response) {
   try {
@@ -195,8 +201,6 @@ export async function FindUserByUsername(username: string) {
   return rows as UserAccount[];
 }
 
-export { Login, Register, RefreshSession, Logout };
-
 // Token functions
 export const VerifyToken = (token: string) => {
   // Note: Throws error if cant verify
@@ -228,3 +232,5 @@ export const SignToken = (data: JWTPayload) => {
   );
   return token;
 };
+
+export { Login, Register, RefreshSession, Logout };
