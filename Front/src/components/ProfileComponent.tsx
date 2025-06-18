@@ -1,67 +1,65 @@
-import { useLayoutEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/Sidebar";
 import { cn } from "@/lib/utils";
 import { House, MessageCircleQuestion, SquareUser, Ticket } from "lucide-react";
-import logo from "../assets/logo.png";
-import { useAuth } from "@/components/AuthProvider";
-import { url } from "@/lib/exports";
-import axios from "axios";
+import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router";
-import { profileTabs } from "./Profile/ProfileDashboard";
 
-export default function ViewTicket() {
+export type IRequest = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  building: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  wasteDescription: string;
+  images: string;
+  creationDate: string;
+  status: string;
+};
+
+export const profileTabs: {
+  label: string;
+  tab: string;
+  href: string;
+  icon: ReactNode | string;
+}[] = [
+  {
+    label: "Return to Homepage",
+    tab: "home",
+    href: "/",
+    icon: <i className="bi bi-house text-lg"></i>,
+  },
+  {
+    label: "My Information",
+    tab: "profile",
+    href: "/profile",
+    icon: <i className="bi bi-person-bounding-box text-lg"></i>,
+  },
+  {
+    label: "My Requests",
+    tab: "request",
+    href: "/profile/request",
+    icon: <i className="bi bi-ticket text-lg"></i>,
+  },
+  {
+    label: "Help & Support",
+    tab: "support",
+    href: "/profile/support",
+    icon: <i className="bi bi-person-raised-hand text-lg"></i>,
+  },
+];
+
+export default function ProfileComponent({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const navigate = useNavigate();
-  const auth = useAuth();
   const [open, setOpen] = useState(false);
-  async function fetchData() {
-    try {
-      if (
-        !auth.loading &&
-        auth.user?.username !== "" &&
-        auth.user?.email !== ""
-      ) {
-        const result = await axios.post(
-          `${url}/waste-collection/${auth.user?.email}`,
-          {},
-          { withCredentials: true },
-        );
-        console.log(result);
-        if (result.data.result) {
-          /* const convertedImagesStringOfArray = Buffer.Buffer.from(
-            result.data.message.images.data,
-          ).toString("utf-8");
-          const convertedImagesArray = JSON.parse(convertedImagesStringOfArray);
-          if (result.data.result === true) {
-            // setImage(convertedImagesArray);
-          }*/
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  useLayoutEffect(() => {
-    if (
-      auth.user?.username === "" &&
-      auth.user?.firstName === "" &&
-      auth.user?.lastName == "" &&
-      auth.user?.email === "" &&
-      auth.token === "" &&
-      !auth.loading
-    ) {
-      navigate("/login");
-      return;
-    }
-    if (
-      auth.user?.username !== "" &&
-      auth.user?.firstName !== "" &&
-      auth.user?.lastName !== "" &&
-      auth.user?.email !== "" &&
-      auth.user
-    ) {
-    }
-  }, [auth]);
 
   return (
     <div
@@ -70,7 +68,6 @@ export default function ViewTicket() {
         "h-[60vh]",
       )}
     >
-      fwfwf
       <div className="hidden md:block">
         <Sidebar open={open} setOpen={setOpen} animate={true}>
           <SidebarBody className="justify-between gap-10">
@@ -82,7 +79,6 @@ export default function ViewTicket() {
                 {profileTabs.map((link, index) => (
                   <SidebarLink
                     className="hover:cursor-default"
-                    setCurrentTab={null}
                     key={index}
                     link={link}
                   />
@@ -94,14 +90,18 @@ export default function ViewTicket() {
       </div>
       {/*Mobile navigation */}
       <div className="dock rounded-tl-md rounded-tr-md bg-[#056b66] text-white md:hidden">
-        <button onClick={() => {}}>
+        <button
+          onClick={() => {
+            navigate("/");
+          }}
+        >
           <House size={20} />
 
           <span className="dock-label">Home</span>
-        </button>{" "}
+        </button>
         <button
           onClick={() => {
-            console.log("erewgewgew");
+            navigate("/profile");
           }}
         >
           <SquareUser size={20} />
@@ -110,7 +110,7 @@ export default function ViewTicket() {
         </button>
         <button
           onClick={() => {
-            console.log("erewgewgew");
+            navigate("/profile/request");
           }}
         >
           <Ticket size={20} />
@@ -119,7 +119,7 @@ export default function ViewTicket() {
         </button>
         <button
           onClick={() => {
-            console.log("erewgewgew");
+            navigate("/profile/support");
           }}
         >
           <MessageCircleQuestion size={20} />
@@ -127,7 +127,7 @@ export default function ViewTicket() {
           <span className="dock-label">Help & Support</span>
         </button>
       </div>
-      <div></div>
+      <Dashboard children={children} />
     </div>
   );
 }
@@ -148,6 +148,7 @@ export const Logo = () => {
     </a>
   );
 };
+
 export const LogoIcon = () => {
   return (
     <a
@@ -159,11 +160,11 @@ export const LogoIcon = () => {
   );
 };
 
-const Dashboard = ({ selectTab }: { selectTab: () => void }) => {
+const Dashboard = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-1">
       <div className="flex h-full w-full flex-wrap bg-gray-50 text-black">
-        {selectTab() as ReactNode}
+        {children}
       </div>
     </div>
   );

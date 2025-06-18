@@ -1,3 +1,4 @@
+import ProfileComponent from "@/components/ProfileComponent";
 import {
   Accordion,
   AccordionContent,
@@ -6,9 +7,9 @@ import {
 } from "@/components/ui/Accordion";
 import { accordion, featureCards } from "@/lib/constants";
 
-export default function SupportTab() {
+export default function Support() {
   return (
-    <div className="pb-[64px] md:pb-0">
+    <ProfileComponent><div className="pb-[64px] md:pb-0">
       <h1 className="bg-gray-50 p-5 text-4xl font-bold uppercase">
         Need assistance?
       </h1>
@@ -59,6 +60,7 @@ export default function SupportTab() {
           ))}
         </Accordion>
       </div>
-    </div>
+    </div></ProfileComponent>
+    
   );
 }

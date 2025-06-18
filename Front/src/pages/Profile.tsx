@@ -1,0 +1,138 @@
+import axios from "axios";
+import { Pencil } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { endPointUrl } from "@/lib/exports";
+import { useAuth } from "@/components/AuthProvider";
+import ProfileComponent from "@/components/ProfileComponent";
+
+type IFormData = {
+  username: string;
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+};
+
+export default function ProfileTab() {
+  const auth = useAuth();
+  const [formData, setFormData] = useState<IFormData>({
+    username: "",
+    email: "",
+    currentPassword: "",
+    newPassword: "",
+  });
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    const result = await axios.post(
+      `${endPointUrl}/users/${auth.user?.email}/change-username`,
+      formData,
+    );
+    if (result.data.result === true) {
+      console.log(result);
+    }
+  }
+
+  useEffect(() => {
+    const isLoggedIn =
+      !auth.loading && auth.user?.username !== "" && auth.user?.email !== "";
+    if (isLoggedIn) {
+    }
+  }, [auth]);
+  return (
+    <ProfileComponent>
+      <div className="flex w-full justify-start bg-gray-50 p-5">
+        <form
+          onSubmit={handleSubmit}
+          className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 pb-7.5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]"
+        >
+          <h1 className="text-2xl font-semibold">Profile</h1>
+          <div className="flex w-full flex-col gap-2.5">
+            <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
+              <label className="sm:text-nowrap">Username</label>
+              {auth.loading ? (
+                <div className="skeleton basis-[50%]"></div>
+              ) : (
+                <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                  <span>{auth.user?.username}</span>
+                  <Pencil
+                    size={15}
+                    className="hover:cursor-pointer"
+                    onClick={() =>
+                      (
+                        document.querySelector(
+                          "#my_modal_2",
+                        ) as HTMLDialogElement
+                      ).showModal()
+                    }
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
+              <label className="sm:text-nowrap">Email Address</label>
+              {auth.loading ? (
+                <div className="skeleton basis-[50%]"></div>
+              ) : (
+                <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                  <span>{auth.user?.email}</span>
+                  <Pencil
+                    size={15}
+                    className="hover:cursor-pointer"
+                    onClick={() =>
+                      (
+                        document.querySelector(
+                          "#my_modal_2",
+                        ) as HTMLDialogElement
+                      ).showModal()
+                    }
+                  />
+                </div>
+              )}
+            </div>
+            <div className="flex w-full justify-between border-b border-b-zinc-300 pb-1 pl-1">
+              <label className="sm:text-nowrap">Current Password</label>
+              {auth.loading ? (
+                <div className="skeleton basis-[50%]"></div>
+              ) : (
+                <div className="flex w-full basis-[50%] items-center justify-start gap-5">
+                  <span>HIDDEN</span>
+                  <Pencil
+                    size={15}
+                    className="hover:cursor-pointer"
+                    onClick={() =>
+                      (
+                        document.querySelector(
+                          "#my_modal_2",
+                        ) as HTMLDialogElement
+                      ).showModal()
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/*!hideNewPasswordInput && (
+          <div className="flex w-full border-b border-b-zinc-300 pb-1 pl-1">
+            <label className="basis-[50%] sm:text-nowrap">New Password</label>
+            <input
+              type="password"
+              onChange={(e) => handleInput(e)}
+              placeholder="Password"
+              name="newPassword"
+            />
+          </div>
+        )*/}
+        </form>
+        {/* Open the modal using document.getElementById('ID').showModal() method */}
+        <dialog id="my_modal_2" className="modal">
+          <div className="modal-box">
+            <h3 className="text-lg font-bold">Account Information Edit</h3>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+      </div>
+    </ProfileComponent>
+  );
+}

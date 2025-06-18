@@ -1,4 +1,4 @@
-import { url } from "@/lib/exports";
+import { endPointUrl } from "@/lib/exports";
 import axios from "axios";
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
 
       const result = await axios.post(
-        `${url}/token`,
+        `${endPointUrl}/token`,
         {},
         {
           withCredentials: true,
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       const result = await axios.post(
-        `${url}/login`,
+        `${endPointUrl}/login`,
         {
           email: data.email,
           password: data.password,
@@ -118,7 +118,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await axios.post(
-      `${url}/logout`,
+      `${endPointUrl}/logout`,
       {},
       { withCredentials: true },
     );
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (data: IUser) => {
     try {
-      const result = await axios.post(`${url}/register`, {
+      const result = await axios.post(`${endPointUrl}/register`, {
         username: data.username,
         email: data.email,
         password: data.password,

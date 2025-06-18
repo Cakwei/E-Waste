@@ -7,11 +7,12 @@ import React, {
   type ReactNode,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { useNavigate } from "react-router";
 
 interface Links {
   label: string;
   tab: string;
-  href: string | null;
+  href: string;
   icon: string | ReactNode;
 }
 
@@ -99,7 +100,7 @@ export const DesktopSidebar = ({
         animate={{
           width: animate ? (open ? "300px" : "60px") : "300px",
         }}
-        onMouseEnter={() => setOpen(true)}
+        onMouseOver={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         {...props}
       >
@@ -154,19 +155,17 @@ export const MobileSidebar = ({
 
 export const SidebarLink = ({
   link,
-  setCurrentTab = null,
   className,
   ...props
 }: {
   link: Links;
-  setCurrentTab: ((tab: string) => void) | null;
   className?: string;
 }) => {
   const { open, animate } = useSidebar();
-
+  const navigate = useNavigate();
   return (
     <div
-      onClick={() => setCurrentTab && setCurrentTab(link.tab as string)}
+      onClick={() => navigate(link.href)}
       className={cn(
         `group/sidebar flex items-center justify-start gap-2 py-2 transition-all duration-200 hover:rounded-md hover:bg-black/15 hover:px-2.5`,
         className,

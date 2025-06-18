@@ -2,7 +2,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Clipboard } from "lucide-react";
 import axios from "axios";
-import { url } from "@/lib/exports";
+import { endPointUrl } from "@/lib/exports";
 import FileInput from "./FileInput";
 import type { FileWithPreview } from "@/hooks/FileInputHook";
 
@@ -77,7 +77,7 @@ export default function CollectionForm() {
           formInfo.append("img", formData.img[i].file as File);
         }
         const result = await axios.post(
-          `${url}/waste-collection/create`,
+          `${endPointUrl}/waste-collection/create`,
           formInfo,
           {
             withCredentials: true,

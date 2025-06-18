@@ -5,8 +5,6 @@ import {
   Fingerprint,
   Settings,
 } from "lucide-react";
-import type { i } from "node_modules/react-router/dist/development/route-data-ByAYLHuM.d.mts";
-import type { ReactNode } from "react";
 export const featureCards: {
   icon: LucideIcon;
   title: string;

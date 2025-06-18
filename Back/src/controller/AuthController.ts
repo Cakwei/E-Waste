@@ -135,7 +135,6 @@ async function RefreshSession(req: Request, res: Response) {
     let token = req.cookies.auth;
     if (token) {
       token = VerifyToken(token);
-      console.log(token);
       if (!token) {
         res.status(401).send({
           result: false,
