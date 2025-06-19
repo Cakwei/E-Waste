@@ -13,6 +13,7 @@ interface UserAccount extends RowDataPacket {
   password: string;
   firstName: string;
   lastName: string;
+  role: string;
 }
 
 export interface JWTPayload extends JwtPayload {
@@ -20,6 +21,7 @@ export interface JWTPayload extends JwtPayload {
   email: string;
   firstName: string;
   lastName: string;
+  role: string;
 }
 async function Login(req: Request, res: Response): Promise<void> {
   try {
@@ -73,6 +75,7 @@ async function Login(req: Request, res: Response): Promise<void> {
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
+      role: user.role,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -116,7 +119,7 @@ async function Register(req: Request, res: Response) {
     }
     const hashedPassword = await bcrypt.hash(password, hashSaltRounds);
     const [rows, fields] = await connection.execute(
-      'INSERT INTO `accounts` VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO `accounts` (email, firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)',
       [email, firstName, lastName, username, hashedPassword],
     );
     if ((rows as ResultSetHeader).affectedRows > 0) {
@@ -163,6 +166,7 @@ async function RefreshSession(req: Request, res: Response) {
         email: (jwt.verify(token, jwt_secret) as JWTPayload).email,
         firstName: (jwt.verify(token, jwt_secret) as JWTPayload).firstName,
         lastName: (jwt.verify(token, jwt_secret) as JWTPayload).lastName,
+        role: (jwt.verify(token, jwt_secret) as JWTPayload).role,
       });
     } else {
       res.clearCookie('auth');
@@ -226,6 +230,7 @@ export const SignToken = (data: JWTPayload) => {
       email: data.email,
       firstName: data.firstName,
       lastName: data.lastName,
+      role: data.role,
     },
     jwt_secret,
     { expiresIn: '1h' },

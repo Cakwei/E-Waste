@@ -36,7 +36,7 @@ export default function Request() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [data, setData] = useState<IRequest[] | null>(null);
-
+  const [loading, setLoading] = useState(true);
   async function fetchData() {
     try {
       if (
@@ -44,6 +44,7 @@ export default function Request() {
         auth.user?.username !== "" &&
         auth.user?.email !== ""
       ) {
+        setLoading(true);
         const result = await axios.post(
           `${endPointUrl}/waste-collection/user/${auth.user?.username}`,
           { username: auth.user?.username },
@@ -60,13 +61,16 @@ export default function Request() {
           }*/
         }
       }
+      setLoading(false);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     fetchData();
+    console.log(data, loading);
   }, [auth]);
 
   function selectBadge(data: { status: string }) {
@@ -103,7 +107,7 @@ export default function Request() {
             </button>
           </div>
           <section
-            className={`${data && data.length > 0 ? "max-h-[calc(100dvh-250px)]" : "h-50"} w-full overflow-scroll rounded-2xl outline`}
+            className={`${data && data.length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
           >
             <Table className="w-full">
               <TableCaption>A list of your recent invoices.</TableCaption>
@@ -116,8 +120,14 @@ export default function Request() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data ? (
-                  data.map((item) => (
+                {loading ? (
+                  <TableRow className="relative h-[27px] w-full">
+                    <TableCell>
+                      <span className="loading loading-spinner loading-md absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5"></span>
+                    </TableCell>
+                  </TableRow>
+                ) : data && data.length >= 1 ? (
+                  data?.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.id}</TableCell>
                       <TableCell>{selectBadge(item)}</TableCell>
@@ -143,7 +153,9 @@ export default function Request() {
                 ) : (
                   <TableRow className="relative h-[27px] w-full">
                     <TableCell>
-                      <span className="loading loading-spinner loading-md absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5"></span>
+                      <span className="absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5">
+                        You have no submitted collection requests.
+                      </span>
                     </TableCell>
                   </TableRow>
                 )}

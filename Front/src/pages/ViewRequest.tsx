@@ -3,7 +3,7 @@ import ProfileComponent, { type IRequest } from "@/components/ProfileComponent";
 import { endPointUrl } from "@/lib/exports";
 import axios from "axios";
 import { Copy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 
@@ -12,11 +12,12 @@ export default function ViewRequest() {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const auth = useAuth();
-  useEffect(() => {
-    const isLoggedIn =
-      !auth.loading && auth.user?.username !== "" && auth.user?.email !== "";
-    if (isLoggedIn) {
+  useLayoutEffect(() => {
+    const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
+    if (isLoggedIn && !auth.loading) {
       fetchData();
+    } else if (!isLoggedIn && !auth.loading) {
+      navigate("/login");
     }
   }, [auth]);
 
@@ -59,6 +60,7 @@ export default function ViewRequest() {
     if (data) {
       console.log(data);
     }
+    console.log(auth);
   }, [data, setData]);
   return (
     <ProfileComponent>
@@ -71,7 +73,7 @@ export default function ViewRequest() {
         </div>
       ) : (
         <div className="flex w-full items-center justify-center overflow-scroll p-5">
-          <div className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-white shadow-lg">
+          <div className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-white shadow-md transition-shadow duration-300 hover:shadow-lg">
             <header className="flex flex-col items-start justify-between rounded-t-xl bg-gradient-to-r from-emerald-500 to-green-600 px-6 py-4 text-white sm:flex-row sm:items-center">
               <a
                 href="#"
@@ -93,10 +95,12 @@ export default function ViewRequest() {
                 </svg>
                 Back to Requests
               </a>
-              <h1 className="text-center text-2xl font-bold sm:text-right sm:text-3xl">
-                Waste Collection Request{" "}
-                <span className="text-green-200">#dc7f6f...</span>
+              <h1 className="text-center text-xl font-bold sm:text-right sm:text-3xl">
+                Waste Collection Request
               </h1>
+              <span className="max-w-[150px] overflow-hidden font-bold text-nowrap text-ellipsis text-green-200">
+                #{data?.id}
+              </span>
             </header>
 
             <main className="p-6 md:p-8">
@@ -114,7 +118,14 @@ export default function ViewRequest() {
                         {data?.id}
                       </span>
                       <button className="ml-auto rounded-md p-1 transition-colors hover:bg-gray-200">
-                        <Copy size={15} />
+                        <Copy
+                          size={15}
+                          onClick={() => {
+                            if (data?.id) {
+                              navigator.clipboard.writeText(data.id);
+                            }
+                          }}
+                        />
                       </button>
                     </div>
                   </div>
@@ -279,19 +290,30 @@ export default function ViewRequest() {
                   Actions
                 </h2>
                 <div className="flex flex-wrap gap-4">
-                  <button className="focus:ring-opacity-75 rounded-lg bg-red-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none">
+                  <button
+                    onClick={() => console.log("Cancel clicked")}
+                    className="focus:ring-opacity-75 rounded-lg bg-red-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none"
+                  >
                     Cancel Request
                   </button>
-                  <button className="focus:ring-opacity-75 rounded-lg bg-blue-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                    Edit Request
-                  </button>
-
-                  <button className="focus:ring-opacity-75 rounded-lg bg-green-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none">
-                    Mark as Pending Pickup
-                  </button>
-                  <button className="focus:ring-opacity-75 rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none">
-                    Assign Agent
-                  </button>
+                  {auth.user?.role === "admin" ? (
+                    <>
+                      <button
+                        onClick={() => console.log("Marked clicked")}
+                        className="focus:ring-opacity-75 rounded-lg bg-green-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                      >
+                        Mark as Pending Pickup
+                      </button>
+                      <button
+                        onClick={() => console.log("Assign clicked")}
+                        className="focus:ring-opacity-75 rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
+                      >
+                        Assign Agent
+                      </button>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </section>
             </main>

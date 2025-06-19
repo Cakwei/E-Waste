@@ -151,7 +151,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
   try {
     let { id } = req.params;
     id = req.body.id;
-
+    console.log('fwf');
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status

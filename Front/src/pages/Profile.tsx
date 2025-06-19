@@ -4,6 +4,7 @@ import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { endPointUrl } from "@/lib/exports";
 import { useAuth } from "@/components/AuthProvider";
 import ProfileComponent from "@/components/ProfileComponent";
+import { useNavigate } from "react-router";
 
 type IFormData = {
   username: string;
@@ -12,8 +13,9 @@ type IFormData = {
   newPassword: string;
 };
 
-export default function ProfileTab() {
+export default function Profile() {
   const auth = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<IFormData>({
     username: "",
     email: "",
@@ -23,7 +25,6 @@ export default function ProfileTab() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    console.log("fwf");
     const result = await axios.post(
       `${endPointUrl}/users/${auth.user?.email}/change-username`,
       formData,
@@ -42,7 +43,8 @@ export default function ProfileTab() {
   useEffect(() => {
     const isLoggedIn =
       !auth.loading && auth.user?.username !== "" && auth.user?.email !== "";
-    if (isLoggedIn) {
+    if (!isLoggedIn) {
+      navigate("/");
     }
   }, [auth]);
 

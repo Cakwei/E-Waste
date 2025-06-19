@@ -21,6 +21,7 @@ export type ProviderProps = {
     email: string;
     firstName: string;
     lastName: string;
+    role: string;
   } | null;
   token: string;
   loading: boolean;
@@ -30,7 +31,7 @@ export type ProviderProps = {
 };
 
 const AuthContext = createContext<ProviderProps>({
-  user: { username: "", email: "", firstName: "", lastName: "" },
+  user: { username: "", email: "", firstName: "", lastName: "", role: "" },
   token: "",
   loading: true,
   login: () => {},
@@ -44,6 +45,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: "",
     firstName: "",
     lastName: "",
+    role: "",
   });
   const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,14 +69,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: result.data.email,
           firstName: result.data.firstName,
           lastName: result.data.lastName,
+          role: result.data.role,
         });
       } else {
-        setUser({ username: "", email: "", firstName: "", lastName: "" });
+        setUser({
+          username: "",
+          email: "",
+          firstName: "",
+          lastName: "",
+          role: "",
+        });
       }
       setLoading(false);
     } catch {
       setLoading(false);
-      setUser({ username: "", email: "", firstName: "", lastName: "" });
+      setUser({
+        username: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        role: "",
+      });
       setToken("");
       //window.location.href = "/";
     }
@@ -100,11 +115,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         { withCredentials: true },
       );
       if (result.data.result === true) {
+        console.log(result.data.message);
         setUser({
           username: result.data.username,
           email: result.data.email,
           firstName: result.data.firstName,
           lastName: result.data.lastName,
+          role: result.data.role,
         });
         setToken(result.data.token);
         navigate("/");
@@ -123,7 +140,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       { withCredentials: true },
     );
     if (result.status === 200) {
-      setUser({ username: "", email: "", firstName: "", lastName: "" });
+      setUser({
+        username: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        role: "",
+      });
       setToken("");
       window.location.href = "/";
     }
