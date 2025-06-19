@@ -75,8 +75,8 @@ export default function ViewRequest() {
         <div className="flex w-full items-center justify-center overflow-scroll p-5">
           <div className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-white shadow-md transition-shadow duration-300 hover:shadow-lg">
             <header className="flex flex-col items-start justify-between rounded-t-xl bg-gradient-to-r from-emerald-500 to-green-600 px-6 py-4 text-white sm:flex-row sm:items-center">
-              <a
-                href="#"
+              <button
+                onClick={() => navigate("/profile/request")}
                 className="mb-3 flex items-center text-sm font-semibold hover:underline sm:mb-0"
               >
                 <svg
@@ -94,7 +94,7 @@ export default function ViewRequest() {
                   ></path>
                 </svg>
                 Back to Requests
-              </a>
+              </button>
               <h1 className="text-center text-xl font-bold sm:text-right sm:text-3xl">
                 Waste Collection Request
               </h1>

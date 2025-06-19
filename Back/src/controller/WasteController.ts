@@ -57,8 +57,7 @@ const CreateCollection = async (req: Request, res: Response) => {
         .send({ result: false, message: 'At least  one image is required' });
       return;
     }
-
-    if (
+    const isInputsEmpty =
       firstName === '' ||
       lastName === '' ||
       email === '' ||
@@ -67,8 +66,18 @@ const CreateCollection = async (req: Request, res: Response) => {
       streetAddress === '' ||
       city === '' ||
       state === '' ||
-      wasteDescription === ''
-    ) {
+      wasteDescription === '';
+    console.log(
+      firstName === '',
+      lastName === '',
+      email === '',
+      phoneNumber === '',
+      building === '',
+      streetAddress === '',
+      city === '',
+      state === '',
+    );
+    if (isInputsEmpty) {
       res
         .status(400)
         .send({ result: false, message: 'One or more input is empty' });

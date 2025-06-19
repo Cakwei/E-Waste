@@ -1,5 +1,5 @@
 import { useAuth } from "@/components/AuthProvider";
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Clipboard } from "lucide-react";
 import axios from "axios";
 import { endPointUrl } from "@/lib/exports";
@@ -90,7 +90,7 @@ export default function CollectionForm() {
       console.log(err);
     }
   }
-
+  useEffect(() => console.log(formData), [formData]);
   return (
     <div className="">
       <div className="min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">
@@ -304,10 +304,6 @@ export default function CollectionForm() {
               <div>
                 <div className="block text-sm font-medium text-gray-700">
                   Photo upload (Optional)
-                </div>
-                <div className="text-error mb-1 block text-xs font-medium">
-                  [Only a showcase in frontend due to requiring payment for
-                  object storage]
                 </div>
                 <FileInput
                   callback={(data) => setFormData({ ...formData, img: data })}
