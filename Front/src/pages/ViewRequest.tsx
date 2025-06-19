@@ -3,7 +3,7 @@ import ProfileComponent, { type IRequest } from "@/components/ProfileComponent";
 import { endPointUrl } from "@/lib/exports";
 import axios, { type AxiosResponse } from "axios";
 import { Copy } from "lucide-react";
-import { useEffect, useLayoutEffect, useState, type FormEvent } from "react";
+import { useLayoutEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ui/ImageZoom";
