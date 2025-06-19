@@ -109,11 +109,11 @@ export default function Request() {
           <section
             className={`${data && data.length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
           >
-            <Table className="w-full">
-              <TableCaption>A list of your recent invoices.</TableCaption>
-              <TableHeader className="">
+            <Table>
+              <TableCaption>A list of your recent requests.</TableCaption>
+              <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Invoice</TableHead>
+                  <TableHead>ID</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Action</TableHead>
@@ -129,7 +129,7 @@ export default function Request() {
                 ) : data && data.length >= 1 ? (
                   data?.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className="font-medium">{item.id}</TableCell>
+                      <TableCell>{item.id}</TableCell>
                       <TableCell>{selectBadge(item)}</TableCell>
                       <TableCell>
                         {new Date(item.creationDate).getDate() +

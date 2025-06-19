@@ -67,16 +67,6 @@ const CreateCollection = async (req: Request, res: Response) => {
       city === '' ||
       state === '' ||
       wasteDescription === '';
-    console.log(
-      firstName === '',
-      lastName === '',
-      email === '',
-      phoneNumber === '',
-      building === '',
-      streetAddress === '',
-      city === '',
-      state === '',
-    );
     if (isInputsEmpty) {
       res
         .status(400)
@@ -184,4 +174,34 @@ const FindUserCollection = async (req: Request, res: Response) => {
   }
 };
 
-export { CreateCollection, GetAllOfUserCollection, FindUserCollection };
+const UpdateUserCollection = async (req: Request, res: Response) => {
+  try {
+    let { id } = req.params;
+    id = req.body.id;
+    const [result] = await connection.execute(
+      `
+      SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
+      FROM accounts
+      RIGHT JOIN collections
+      ON accounts.email = collections.email WHERE id = ?;
+      `,
+    );
+
+    if ((result as RowDataPacket[]).length === 0) {
+      res.status(404).send({ result: false, message: 'No results found' });
+      return;
+    }
+    res.status(200).send({
+      result: true,
+      message: (result as RowDataPacket[])[0],
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export {
+  CreateCollection,
+  GetAllOfUserCollection,
+  FindUserCollection,
+  UpdateUserCollection,
+};

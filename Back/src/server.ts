@@ -2,7 +2,8 @@ import app from './app';
 import config from './config/config';
 import mysql from 'mysql2/promise';
 import { v2 as cloudinary } from 'cloudinary';
-
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 // DB Connection
 export const connection = mysql.createPool({
   uri: config.db_url,
@@ -21,6 +22,7 @@ export const cloudinaryConfig = cloudinary.config({
   api_secret: config.cloudinary_api_secret,
 });
 
-app.listen(config.port, () => {
+const httpServer = app.listen(config.port, () => {
   console.log(`Server running on port ${config.port}`);
 });
+const io = new Server(httpServer);

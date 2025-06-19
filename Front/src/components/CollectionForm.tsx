@@ -90,6 +90,21 @@ export default function CollectionForm() {
       console.log(err);
     }
   }
+  useEffect(() => {
+    if (
+      auth.user?.firstName !== "" &&
+      auth.user?.lastName !== "" &&
+      auth.user?.email !== ""
+    ) {
+      setFormData({
+        ...formData,
+        firstName: auth?.user?.firstName || "",
+        lastName: auth?.user?.lastName || "",
+        email: auth?.user?.email || "",
+      });
+    }
+  }, [auth]);
+
   useEffect(() => console.log(formData), [formData]);
   return (
     <div className="">

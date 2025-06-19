@@ -1,17 +1,19 @@
 import { useAuth } from "@/components/AuthProvider";
 import ProfileComponent, { type IRequest } from "@/components/ProfileComponent";
 import { endPointUrl } from "@/lib/exports";
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import { Copy } from "lucide-react";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
+import { ImageZoom } from "@/components/ui/ImageZoom";
 
 export default function ViewRequest() {
   const [data, setData] = useState<IRequest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const auth = useAuth();
+
   useLayoutEffect(() => {
     const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
     if (isLoggedIn && !auth.loading) {
@@ -56,12 +58,51 @@ export default function ViewRequest() {
     }
   }
 
-  useEffect(() => {
-    if (data) {
-      console.log(data);
+  async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest("cancel")) as AxiosResponse;
+    if (result.data.result) {
+      console.log();
     }
-    console.log(auth);
-  }, [data, setData]);
+  }
+  async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest("mark")) as AxiosResponse;
+    if (result.data.result) {
+      console.log();
+    }
+  }
+  async function assignRequest(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest(
+      "assign",
+      "agent",
+    )) as AxiosResponse;
+    if (result.data.result) {
+      console.log();
+    }
+  }
+
+  async function updateCollectionRequest(
+    action: string,
+    agentInCharge: string | undefined = undefined,
+  ) {
+    const id = data?.id;
+    if (id) {
+      try {
+        const response = await axios.patch(`${endPointUrl}/collection/${id}`, {
+          id: data?.id,
+          action: action,
+          agentInCharge: agentInCharge,
+        });
+        return response.data;
+      } catch (error) {
+        console.error(`Error updating collection request ${id}:`, error);
+        throw error;
+      }
+    }
+  }
+
   return (
     <ProfileComponent>
       {loading ? (
@@ -72,7 +113,7 @@ export default function ViewRequest() {
           <div className="skeleton h-10 w-full bg-zinc-300"></div>
         </div>
       ) : (
-        <div className="flex w-full items-center justify-center overflow-scroll p-5">
+        <div className="flex w-full items-center justify-center overflow-scroll p-5 pb-[calc(64px+20px)] md:pb-5">
           <div className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-white shadow-md transition-shadow duration-300 hover:shadow-lg">
             <header className="flex flex-col items-start justify-between rounded-t-xl bg-gradient-to-r from-emerald-500 to-green-600 px-6 py-4 text-white sm:flex-row sm:items-center">
               <button
@@ -95,7 +136,7 @@ export default function ViewRequest() {
                 </svg>
                 Back to Requests
               </button>
-              <h1 className="text-center text-xl font-bold sm:text-right sm:text-3xl">
+              <h1 className="text-center text-xl font-bold sm:text-3xl">
                 Waste Collection Request
               </h1>
               <span className="max-w-[150px] overflow-hidden font-bold text-nowrap text-ellipsis text-green-200">
@@ -195,7 +236,7 @@ export default function ViewRequest() {
                         className="ml-2 text-green-600 transition-colors hover:text-green-800"
                         title="View on Map"
                       >
-                        <svg
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"
                           height="18"
@@ -209,7 +250,7 @@ export default function ViewRequest() {
                         >
                           <path d="M18 8c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 12 0Z" />
                           <circle cx="12" cy="8" r="2" />
-                        </svg>
+                        </svg> */}
                       </a>
                     </div>
                   </div>
@@ -225,7 +266,7 @@ export default function ViewRequest() {
                     <label className="mb-1 text-sm font-medium text-gray-600">
                       Name:
                     </label>
-                    <span className="text-base text-gray-800">
+                    <span className="overflow-hidden text-base text-ellipsis text-gray-800">
                       {data?.firstName} {data?.lastName}
                     </span>
                   </div>
@@ -235,7 +276,7 @@ export default function ViewRequest() {
                     </label>
                     <a
                       href="mailto:charleetan2020@gmail.com"
-                      className="text-base text-blue-600 hover:underline"
+                      className="overflow-hidden text-base text-ellipsis text-blue-600 hover:underline"
                     >
                       {data?.email}
                     </a>
@@ -244,7 +285,7 @@ export default function ViewRequest() {
                     <label className="mb-1 text-sm font-medium text-gray-600">
                       Phone Number:
                     </label>
-                    <a className="text-base text-blue-600 hover:underline">
+                    <a className="overflow-hidden text-base text-ellipsis text-blue-600 hover:underline">
                       {data?.phoneNumber}
                     </a>
                   </div>
@@ -267,16 +308,19 @@ export default function ViewRequest() {
                   <label className="mb-3 text-sm font-medium text-gray-600">
                     Attached Images:
                   </label>
-                  <div className="hide-scrollbar flex gap-4 overflow-x-auto p-2">
+                  <div className="flex gap-4 overflow-x-auto p-2">
                     {data?.images && data?.images.length > 0 ? (
                       data?.images.map((item) => (
-                        <div className="h-32 w-32 flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border border-gray-300 shadow-sm transition-shadow hover:shadow-md">
+                        <ImageZoom
+                          key={item}
+                          className="w-35 flex-shrink-0 cursor-pointer overflow-hidden border border-gray-300 bg-cover object-cover shadow-sm transition-shadow hover:shadow-md"
+                        >
                           <img
                             src={item}
                             alt="E-waste item 1"
-                            className="h-full w-full object-cover"
+                            className="bg-cover object-cover"
                           />
-                        </div>
+                        </ImageZoom>
                       ))
                     ) : (
                       <p className="text-gray-500">No images provided.</p>
@@ -291,22 +335,22 @@ export default function ViewRequest() {
                 </h2>
                 <div className="flex flex-wrap gap-4">
                   <button
-                    onClick={() => console.log("Cancel clicked")}
-                    className="focus:ring-opacity-75 rounded-lg bg-red-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none"
+                    onClick={cancelRequest}
+                    className="focus:ring-opacity-75 rounded-lg bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none"
                   >
                     Cancel Request
                   </button>
                   {auth.user?.role === "admin" ? (
                     <>
                       <button
-                        onClick={() => console.log("Marked clicked")}
-                        className="focus:ring-opacity-75 rounded-lg bg-green-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        onClick={markRequestStatus}
+                        className="focus:ring-opacity-75 rounded-lg bg-green-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
                       >
                         Mark as Pending Pickup
                       </button>
                       <button
-                        onClick={() => console.log("Assign clicked")}
-                        className="focus:ring-opacity-75 rounded-lg bg-gray-600 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
+                        onClick={assignRequest}
+                        className="focus:ring-opacity-75 rounded-lg bg-blue-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
                       >
                         Assign Agent
                       </button>
