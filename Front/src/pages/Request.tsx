@@ -87,6 +87,12 @@ export default function Request() {
             Picked Up
           </div>
         );
+      case "cancelled":
+        return (
+          <div className="badge badge-error p-1.5 font-semibold text-white">
+            Cancelled
+          </div>
+        );
     }
   }
   return (

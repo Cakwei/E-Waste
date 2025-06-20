@@ -90,11 +90,15 @@ export default function ViewRequest() {
     const id = data?.id;
     if (id) {
       try {
-        const response = await axios.patch(`${endPointUrl}/collection/${id}`, {
-          id: data?.id,
-          action: action,
-          agentInCharge: agentInCharge,
-        });
+        const response = await axios.patch(
+          `${endPointUrl}/waste-collection/collection/${id}`,
+          {
+            id: data?.id,
+            action: action,
+            agentInCharge: agentInCharge,
+          },
+          { withCredentials: true },
+        );
         return response.data;
       } catch (error) {
         console.error(`Error updating collection request ${id}:`, error);

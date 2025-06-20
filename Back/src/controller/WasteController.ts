@@ -1,9 +1,15 @@
 import { Request, Response } from 'express';
 import { cloudinaryConfig, connection } from '../server';
-import { RowDataPacket } from 'mysql2/promise';
+import {
+  FieldPacket,
+  QueryResult,
+  ResultSetHeader,
+  RowDataPacket,
+} from 'mysql2/promise';
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 as uuidv4 } from 'uuid';
-
+import { jwt_secret, JWTPayload, VerifyToken } from './AuthController';
+import jwt from 'jsonwebtoken';
 /*
 type FileMetadata = {
   name: string;
@@ -100,7 +106,7 @@ const CreateCollection = async (req: Request, res: Response) => {
         imageLinksArray,
       ],
     );
-
+    console.log(result);
     res.status(201).send({ result: true, message: 'Request created' });
   } catch (err) {
     console.log(err);
@@ -150,7 +156,6 @@ const FindUserCollection = async (req: Request, res: Response) => {
   try {
     let { id } = req.params;
     id = req.body.id;
-    console.log('fwf');
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
@@ -176,29 +181,97 @@ const FindUserCollection = async (req: Request, res: Response) => {
 
 const UpdateUserCollection = async (req: Request, res: Response) => {
   try {
-    let { id } = req.params;
-    id = req.body.id;
-    const [result] = await connection.execute(
-      `
-      SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
-      FROM accounts
-      RIGHT JOIN collections
-      ON accounts.email = collections.email WHERE id = ?;
-      `,
-    );
+    let { id, action, agentInCharge } = req.body;
+    let token: string | JWTPayload | boolean = req.cookies.auth;
+    let result: [QueryResult, FieldPacket[]];
 
-    if ((result as RowDataPacket[]).length === 0) {
-      res.status(404).send({ result: false, message: 'No results found' });
-      return;
+    if (token) {
+      // Verify token to match collection id to logged in user
+      token = VerifyToken(token as string);
+
+      if (!token) {
+        res.status(401).send({ result: false, message: 'Invalid token' });
+        return;
+      }
+      token = jwt.decode(token) as JWTPayload;
+
+      switch (action) {
+        case 'cancel':
+          result = await CancelCollection(id, token.email);
+          break;
+        case 'mark':
+          result = await MarkCollection(id, token.email);
+          break;
+        case 'assign':
+          result = await AssignAgentToCollection(
+            id,
+            token.email,
+            agentInCharge,
+          );
+          break;
+        default:
+          break;
+      }
+
+      const isRowAffected = (result![0] as ResultSetHeader).affectedRows > 0;
+      if (isRowAffected) {
+        res.status(200).send({
+          result: true,
+          message: (result![0] as ResultSetHeader).affectedRows,
+        });
+      } else {
+        res.status(400).send({ result: false, message: 'No rows affected' });
+      }
     }
-    res.status(200).send({
-      result: true,
-      message: (result as RowDataPacket[])[0],
-    });
   } catch (err) {
     console.log(err);
+    res.status(500).send({
+      result: false,
+      message: 'Failed to update collection',
+    });
   }
 };
+
+const CancelCollection = async (id: string, httpOnlyEmail: string) => {
+  const data = await connection.execute(
+    `
+      UPDATE collections
+      SET status = 'cancelled'
+      WHERE id = ? AND email = ?;
+      `,
+    [id, httpOnlyEmail],
+  );
+  return data;
+};
+
+const MarkCollection = async (id: string, httpOnlyEmail: string) => {
+  const data = await connection.execute(
+    `
+      UPDATE collections
+      SET status = 'pending',
+      WHERE id = ? AND email = ?;
+      `,
+    [id, httpOnlyEmail],
+  );
+  return data;
+};
+
+const AssignAgentToCollection = async (
+  id: string,
+  httpOnlyEmail: string,
+  agentInCharge: string,
+) => {
+  const data = await connection.execute(
+    `
+      UPDATE collections
+      SET status = 'assigned', agentInCharge = ?
+      WHERE id = ? AND email = ?;
+      `,
+    [agentInCharge, id, httpOnlyEmail],
+  );
+  return data;
+};
+
 export {
   CreateCollection,
   GetAllOfUserCollection,
