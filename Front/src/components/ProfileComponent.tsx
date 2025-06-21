@@ -162,10 +162,8 @@ export const LogoIcon = () => {
 
 const Dashboard = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex flex-1 overflow-scroll">
-      <div className="flex h-max w-full flex-wrap bg-gray-50 text-black md:h-full">
-        {children}
-      </div>
+    <div className="flex flex-1 overflow-scroll bg-gray-50">
+      <div className="flex h-max w-full flex-wrap text-black">{children}</div>
     </div>
   );
 };

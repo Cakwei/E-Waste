@@ -154,8 +154,7 @@ const GetAllOfUserCollection = async (req: Request, res: Response) => {
 
 const FindUserCollection = async (req: Request, res: Response) => {
   try {
-    let { id } = req.params;
-    id = req.body.id;
+    let { id } = req.params ?? req.body;
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status

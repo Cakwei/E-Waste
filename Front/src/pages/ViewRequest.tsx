@@ -3,26 +3,19 @@ import ProfileComponent, { type IRequest } from "@/components/ProfileComponent";
 import { endPointUrl } from "@/lib/exports";
 import axios, { type AxiosResponse } from "axios";
 import { Copy } from "lucide-react";
-import { useLayoutEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ui/ImageZoom";
+import { io } from "socket.io-client";
+
+const socket = io(endPointUrl);
 
 export default function ViewRequest() {
   const [data, setData] = useState<IRequest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const auth = useAuth();
-
-  useLayoutEffect(() => {
-    const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
-    if (isLoggedIn && !auth.loading) {
-      fetchData();
-    } else if (!isLoggedIn && !auth.loading) {
-      navigate("/login");
-    }
-  }, [auth]);
-
   async function fetchData() {
     try {
       if (
@@ -48,9 +41,9 @@ export default function ViewRequest() {
             ),
           };
           setData(data);
+        } else {
+          navigate("/");
         }
-      } else {
-        navigate("/");
       }
       setLoading(false);
     } catch (err) {
@@ -60,9 +53,9 @@ export default function ViewRequest() {
 
   async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
-    const result = (await updateCollectionRequest("cancel")) as AxiosResponse;
-    if (result.data.result) {
-      console.log();
+    const result = await updateCollectionRequest("cancel");
+    if (result?.data.result) {
+      socket.emit("updateViewRequest");
     }
   }
   async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
@@ -99,13 +92,30 @@ export default function ViewRequest() {
           },
           { withCredentials: true },
         );
-        return response.data;
+        return response;
       } catch (error) {
         console.error(`Error updating collection request ${id}:`, error);
         throw error;
       }
     }
   }
+
+  useEffect(() => {
+    const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
+    if (isLoggedIn && !auth.loading) {
+      fetchData();
+    } else if (!isLoggedIn && !auth.loading) {
+      navigate("/login");
+    }
+
+    socket.on("updateViewRequest", async () => {
+      await fetchData();
+    });
+
+    return () => {
+      socket.off("updateViewRequest");
+    };
+  }, [auth]);
 
   return (
     <ProfileComponent>
@@ -340,7 +350,7 @@ export default function ViewRequest() {
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={cancelRequest}
-                    className="focus:ring-opacity-75 rounded-lg bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none"
+                    className={`focus:ring-opacity-75 ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none`}
                   >
                     Cancel Request
                   </button>
@@ -348,13 +358,13 @@ export default function ViewRequest() {
                     <>
                       <button
                         onClick={markRequestStatus}
-                        className="focus:ring-opacity-75 rounded-lg bg-green-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        className="btn focus:ring-opacity-75 rounded-lg border-none bg-green-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
                       >
                         Mark as Pending Pickup
                       </button>
                       <button
                         onClick={assignRequest}
-                        className="focus:ring-opacity-75 rounded-lg bg-blue-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
+                        className="btn focus:ring-opacity-75 rounded-lg border-none bg-blue-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
                       >
                         Assign Agent
                       </button>

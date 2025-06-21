@@ -70,7 +70,6 @@ export default function Request() {
 
   useEffect(() => {
     fetchData();
-    console.log(data, loading);
   }, [auth]);
 
   function selectBadge(data: { status: string }) {

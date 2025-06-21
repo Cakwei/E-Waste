@@ -1,11 +1,11 @@
 import express from 'express';
 import AuthRoute from './routes/AuthRoute';
 import WasteRoute from './routes/WasteRoute';
-import cors from 'cors';
-import config from './config/config';
 import cookieParser from 'cookie-parser';
 import ProfileRoute from './routes/ProfileRoute';
-
+import { createServer } from 'http';
+import cors from 'cors';
+import config from './config/config';
 const app = express();
 app.use(
   cors({
@@ -16,10 +16,12 @@ app.use(
         : 'http://localhost:5173',
   }),
 );
+export const httpServer = createServer(app);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use('/', AuthRoute);
 app.use('/waste-collection', WasteRoute);
 app.use('/users', ProfileRoute);
+
 export default app;
