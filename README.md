@@ -14,6 +14,7 @@ Here're some of the project's current planned features:
 
 *   Add/edit/remove e-waste collection
 *   Authentication using JWT tokens
+*   Chat Support
 
 <h2>Future planned features </h2>
 
