@@ -126,9 +126,7 @@ const CreateCollection = async (req: Request, res: Response) => {
 const GetAllOfUserCollection = async (req: Request, res: Response) => {
   try {
     let { username } = req.params;
-    console.log(username);
     username = req.body.username;
-    console.log(username);
     const [result] = await connection.execute(
       `
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
@@ -142,7 +140,6 @@ const GetAllOfUserCollection = async (req: Request, res: Response) => {
       res.status(404).send({ result: false, message: 'No results found' });
       return;
     }
-    console.log(result);
     res.status(200).send({
       result: true,
       message: result as RowDataPacket[],
@@ -157,7 +154,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
     let { id } = req.params ?? req.body;
     const [result] = await connection.execute(
       `
-      SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
+      SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status, agentInCharge
       FROM accounts
       RIGHT JOIN collections
       ON accounts.email = collections.email WHERE id = ?;
@@ -169,6 +166,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
       res.status(404).send({ result: false, message: 'No results found' });
       return;
     }
+    console.log(result);
     res.status(200).send({
       result: true,
       message: (result as RowDataPacket[])[0],
@@ -247,7 +245,7 @@ const MarkCollection = async (id: string, httpOnlyEmail: string) => {
   const data = await connection.execute(
     `
       UPDATE collections
-      SET status = 'pending',
+      SET status = 'pending_pickup',
       WHERE id = ? AND email = ?;
       `,
     [id, httpOnlyEmail],

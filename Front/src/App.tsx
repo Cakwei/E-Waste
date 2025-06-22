@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import ViewRequest from "./pages/ViewRequest";
 import Request from "./pages/Request";
 import Support from "./pages/Support";
+import Logout from "./pages/Logout";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/profile/support" element={<Support />} />
           <Route path="/profile/request" element={<Request />} />
           <Route path="/profile/request/:id" element={<ViewRequest />} />
+          <Route path="/profile/logout" element={<Logout />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

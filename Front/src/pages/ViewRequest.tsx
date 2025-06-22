@@ -1,21 +1,47 @@
 import { useAuth } from "@/components/AuthProvider";
-import ProfileComponent, { type IRequest } from "@/components/ProfileComponent";
+import ProfileComponent from "@/components/ProfileComponent";
 import { endPointUrl } from "@/lib/exports";
 import axios, { type AxiosResponse } from "axios";
-import { Copy } from "lucide-react";
+import { Copy, TriangleAlert, UserPen } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ui/ImageZoom";
 import { io } from "socket.io-client";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/DialogConfirm";
+import { Button } from "@/components/ui/Button";
 
 const socket = io(endPointUrl);
 
+type IData = {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  building: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  wasteDescription: string;
+  images: Array<string>;
+};
+
 export default function ViewRequest() {
-  const [data, setData] = useState<IRequest | null>(null);
+  const [data, setData] = useState<IData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const auth = useAuth();
+
   async function fetchData() {
     try {
       if (
@@ -30,7 +56,7 @@ export default function ViewRequest() {
         const result = await axios.post(
           `${endPointUrl}/waste-collection/collection/${id}`,
           { id: id },
-          { withCredentials: true },
+          { withCredentials: true, timeout: 5000 },
         );
         if (result.data.result) {
           let data = result.data.message;
@@ -51,55 +77,6 @@ export default function ViewRequest() {
     }
   }
 
-  async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    const result = await updateCollectionRequest("cancel");
-    if (result?.data.result) {
-      socket.emit("updateViewRequest");
-    }
-  }
-  async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    const result = (await updateCollectionRequest("mark")) as AxiosResponse;
-    if (result.data.result) {
-      console.log();
-    }
-  }
-  async function assignRequest(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault();
-    const result = (await updateCollectionRequest(
-      "assign",
-      "agent",
-    )) as AxiosResponse;
-    if (result.data.result) {
-      console.log();
-    }
-  }
-
-  async function updateCollectionRequest(
-    action: string,
-    agentInCharge: string | undefined = undefined,
-  ) {
-    const id = data?.id;
-    if (id) {
-      try {
-        const response = await axios.patch(
-          `${endPointUrl}/waste-collection/collection/${id}`,
-          {
-            id: data?.id,
-            action: action,
-            agentInCharge: agentInCharge,
-          },
-          { withCredentials: true },
-        );
-        return response;
-      } catch (error) {
-        console.error(`Error updating collection request ${id}:`, error);
-        throw error;
-      }
-    }
-  }
-
   useEffect(() => {
     const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
     if (isLoggedIn && !auth.loading) {
@@ -107,15 +84,7 @@ export default function ViewRequest() {
     } else if (!isLoggedIn && !auth.loading) {
       navigate("/login");
     }
-
-    socket.on("updateViewRequest", async () => {
-      await fetchData();
-    });
-
-    return () => {
-      socket.off("updateViewRequest");
-    };
-  }, [auth]);
+  }, [auth, data?.id, navigate]);
 
   return (
     <ProfileComponent>
@@ -127,7 +96,7 @@ export default function ViewRequest() {
           <div className="skeleton h-10 w-full bg-zinc-300"></div>
         </div>
       ) : (
-        <div className="flex w-full items-center justify-center overflow-scroll p-5 pb-[calc(64px+20px)] md:pb-5">
+        <div className="w-full p-5 pb-[calc(64px+20px)] md:pb-5">
           <div className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-white shadow-md transition-shadow duration-300 hover:shadow-lg">
             <header className="flex flex-col items-start justify-between rounded-t-xl bg-gradient-to-r from-emerald-500 to-green-600 px-6 py-4 text-white sm:flex-row sm:items-center">
               <button
@@ -142,9 +111,9 @@ export default function ViewRequest() {
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M15 19l-7-7 7-7"
                   ></path>
                 </svg>
@@ -159,56 +128,7 @@ export default function ViewRequest() {
             </header>
 
             <main className="p-6 md:p-8">
-              <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
-                <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
-                  Request Overview
-                </h2>
-                <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-medium text-gray-600">
-                      Request ID:
-                    </label>
-                    <div className="flex items-center rounded-md border border-gray-300 bg-white p-2 font-mono text-base text-gray-800 [user-select:all]">
-                      <span className="w-[calc(100%-75px)] overflow-hidden text-nowrap text-ellipsis">
-                        {data?.id}
-                      </span>
-                      <button className="ml-auto rounded-md p-1 transition-colors hover:bg-gray-200">
-                        <Copy
-                          size={15}
-                          onClick={() => {
-                            if (data?.id) {
-                              navigator.clipboard.writeText(data.id);
-                            }
-                          }}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-medium text-gray-600">
-                      Status:
-                    </label>
-                    <span className="inline-block rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
-                      {data?.status &&
-                        data?.status.charAt(0).toUpperCase() +
-                          data?.status.slice(1)}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <label className="mb-1 text-sm font-medium text-gray-600">
-                      Submitted On:
-                    </label>
-                    <span className="text-base text-gray-800">
-                      {data?.creationDate &&
-                        new Date(data?.creationDate).getDate() +
-                          "-" +
-                          new Date(data?.creationDate).getMonth() +
-                          "-" +
-                          new Date(data?.creationDate).getFullYear()}
-                    </span>
-                  </div>
-                </div>
-              </section>
+              <RequestOverview id={data?.id} />
 
               <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
                 <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
@@ -342,42 +262,361 @@ export default function ViewRequest() {
                   </div>
                 </div>
               </section>
-
-              <section className="rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
-                <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
-                  Actions
-                </h2>
-                <div className="flex flex-wrap gap-4">
-                  <button
-                    onClick={cancelRequest}
-                    className={`focus:ring-opacity-75 ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:outline-none`}
-                  >
-                    Cancel Request
-                  </button>
-                  {auth.user?.role === "admin" ? (
-                    <>
-                      <button
-                        onClick={markRequestStatus}
-                        className="btn focus:ring-opacity-75 rounded-lg border-none bg-green-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                      >
-                        Mark as Pending Pickup
-                      </button>
-                      <button
-                        onClick={assignRequest}
-                        className="btn focus:ring-opacity-75 rounded-lg border-none bg-blue-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-gray-700 focus:ring-2 focus:ring-gray-600 focus:outline-none"
-                      >
-                        Assign Agent
-                      </button>
-                    </>
-                  ) : (
-                    ""
-                  )}
-                </div>
-              </section>
+              <ActionsBtnSection id={data?.id} />
             </main>
           </div>
+          <div></div>
         </div>
       )}
     </ProfileComponent>
+  );
+}
+type IRequestData = {
+  status: string;
+  agentInCharge: string;
+  creationDate: string;
+  id: string;
+};
+function RequestOverview({ id }: { id: string | undefined }) {
+  const [data, setData] = useState<IRequestData | null>(null);
+  async function fetchData() {
+    const result = await axios.post(
+      `${endPointUrl}/waste-collection/collection/${id}`,
+      {
+        id: id,
+      },
+      { withCredentials: true },
+    );
+    if (result.data.result) {
+      const { status, agentInCharge, creationDate } = result.data.message;
+      setData({
+        status: status,
+        agentInCharge: agentInCharge,
+        creationDate: creationDate,
+        id: id!,
+      });
+    }
+  }
+
+  function selectBadge(data: IRequestData | null) {
+    switch (data?.status) {
+      case "created":
+        return (
+          <span className="inline-block rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
+            {data?.status &&
+              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+          </span>
+        );
+      case "pending":
+        return (
+          <span className="inline-block rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
+            {data?.status &&
+              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+          </span>
+        );
+      case "cancelled":
+        return (
+          <span className="inline-block rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
+            {data?.status &&
+              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+          </span>
+        );
+    }
+  }
+
+  useEffect(() => {
+    socket.on("updateViewRequest", async () => {
+      fetchData();
+    });
+
+    return () => {
+      socket.off("updateViewRequest");
+    };
+  }, [id]);
+
+  useEffect(() => {
+    fetchData();
+  }, [id]);
+
+  return (
+    <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
+      <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
+        Request Overview
+      </h2>
+      <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2">
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-600">
+            Request ID:
+          </label>
+          <div className="flex items-center rounded-md border border-gray-300 bg-white p-2 font-mono text-base text-gray-800 [user-select:all]">
+            <span className="w-[calc(100%-75px)] overflow-hidden text-nowrap text-ellipsis">
+              {data?.id}
+            </span>
+            <button className="ml-auto rounded-md p-1 transition-colors hover:bg-gray-200">
+              <Copy
+                size={15}
+                onClick={() => {
+                  if (data?.id) {
+                    navigator.clipboard.writeText(data.id);
+                  }
+                }}
+              />
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-600">
+            Status:
+          </label>
+          {selectBadge(data)}
+        </div>
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-600">
+            Submitted On:
+          </label>
+          <span className="text-base text-gray-800">
+            {data?.creationDate &&
+              new Date(data?.creationDate).getDate() +
+                "-" +
+                new Date(data?.creationDate).getMonth() +
+                "-" +
+                new Date(data?.creationDate).getFullYear()}
+          </span>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="mb-1 text-sm font-medium text-gray-600">
+            Agent In Charge:
+          </label>
+          <span className="text-base text-gray-800">
+            {data?.agentInCharge ? (
+              <span>{data?.agentInCharge}</span>
+            ) : (
+              <span>Not assigned</span>
+            )}
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ActionsBtnSection({ id }: { id: string | undefined }) {
+  const auth = useAuth();
+  const [data, setData] = useState<IRequestData | null>(null);
+  async function fetchData() {
+    const result = await axios.post(
+      `${endPointUrl}/waste-collection/collection/${id}`,
+      {
+        id: id,
+      },
+      { withCredentials: true },
+    );
+    if (result.data.result) {
+      const { id, status, agentInCharge, creationDate } = result.data.message;
+
+      setData({
+        status: status,
+        agentInCharge: agentInCharge,
+        creationDate: creationDate,
+        id: id,
+      });
+    }
+  }
+
+  async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest("cancel")) as AxiosResponse;
+    if (result.data.result) {
+      socket.emit("updateViewRequest");
+    }
+  }
+  async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest("mark")) as AxiosResponse;
+    if (result.data.result) {
+      socket.emit("updateViewRequest");
+    }
+  }
+
+  async function assignRequest(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault();
+    const result = (await updateCollectionRequest(
+      "assign",
+      "agent",
+    )) as AxiosResponse;
+    if (result.data.result) {
+      socket.emit("updateViewRequest");
+    }
+  }
+
+  async function updateCollectionRequest(
+    action: string,
+    agentInCharge: string | undefined = undefined,
+  ) {
+    const id = data?.id;
+    if (id) {
+      try {
+        const response = await axios.patch(
+          `${endPointUrl}/waste-collection/collection/${id}`,
+          {
+            id: data?.id,
+            action: action,
+            agentInCharge: agentInCharge,
+          },
+          { withCredentials: true },
+        );
+        return response;
+      } catch (error) {
+        console.error(`Error updating collection request ${id}:`, error);
+        throw error;
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [id]);
+
+  useEffect(() => {
+    socket.on("updateViewRequest", async () => {
+      fetchData();
+    });
+
+    return () => {
+      socket.off("updateViewRequest");
+    };
+  }, [id]);
+
+  return (
+    <section className="rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
+      <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
+        Actions
+      </h2>
+      <div className="flex flex-wrap gap-4">
+        {auth.user?.role === "admin" ? (
+          <>
+            <Dialog>
+              <form>
+                <DialogTrigger asChild>
+                  <Button
+                    className={`focus:ring-opacity-75 h-auto ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-green-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-green-600`}
+                  >
+                    Mark as Pending Pickup
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Update Request Status to Pending</DialogTitle>
+                    <DialogDescription>
+                      Make sure all relevant information is given before
+                      proceeding.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4"></div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button
+                        type="submit"
+                        onClick={markRequestStatus}
+                        className="bg-green-500 hover:bg-green-600"
+                      >
+                        Save changes
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </form>
+            </Dialog>
+            <Dialog>
+              <form>
+                <DialogTrigger asChild>
+                  <Button
+                    className={`focus:ring-opacity-75 h-auto ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-blue-500 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-blue-600`}
+                  >
+                    Assign Agent
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2.5 text-lg">
+                      <UserPen size={22} />
+                      Assign an Agent
+                    </DialogTitle>
+                    <DialogDescription>
+                      <select
+                        defaultValue="Pick a color"
+                        className="select rounded-lg outline outline-zinc-300 focus:outline focus:outline-zinc-500"
+                      >
+                        <option disabled={true}>Pick a color</option>
+                        <option>Crimson</option>
+                        <option>Amber</option>
+                        <option>Velvet</option>
+                      </select>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4"></div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button
+                        type="submit"
+                        onClick={assignRequest}
+                        className="bg-green-500 hover:bg-green-600"
+                      >
+                        Save changes
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </form>
+            </Dialog>
+          </>
+        ) : (
+          <Dialog>
+            <form>
+              <DialogTrigger asChild>
+                <Button
+                  className={`focus:ring-opacity-75 h-auto ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-700`}
+                >
+                  Cancel Request
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2.5">
+                    <TriangleAlert size={22} color={"red"} />
+                    Are you sure?
+                  </DialogTitle>
+                  <DialogDescription>
+                    Keep in mind that once cancelled, it cannot be reversed.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4"></div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <DialogClose>
+                    <Button
+                      type="submit"
+                      className="bg-green-500 hover:bg-green-600"
+                      onClick={cancelRequest}
+                    >
+                      Save changes
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </form>
+          </Dialog>
+        )}
+      </div>
+    </section>
   );
 }

@@ -35,7 +35,7 @@ type IRequest = {
 export default function Request() {
   const navigate = useNavigate();
   const auth = useAuth();
-  const [data, setData] = useState<IRequest[] | null>(null);
+  const [dataList, setDataList] = useState<IRequest[] | null>(null);
   const [loading, setLoading] = useState(true);
   async function fetchData() {
     try {
@@ -48,10 +48,10 @@ export default function Request() {
         const result = await axios.post(
           `${endPointUrl}/waste-collection/user/${auth.user?.username}`,
           { username: auth.user?.username },
-          { withCredentials: true },
+          { withCredentials: true, timeout: 5000 },
         );
         if (result.data.result) {
-          setData(result.data.message);
+          setDataList(result.data.message);
           /* const convertedImagesStringOfArray = Buffer.Buffer.from(
             result.data.message.images.data,
           ).toString("utf-8");
@@ -112,7 +112,7 @@ export default function Request() {
             </button>
           </div>
           <section
-            className={`${data && data.length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
+            className={`${dataList && dataList.length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
           >
             <Table>
               <TableCaption>A list of your recent requests.</TableCaption>
@@ -131,8 +131,8 @@ export default function Request() {
                       <span className="loading loading-spinner loading-md absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5"></span>
                     </TableCell>
                   </TableRow>
-                ) : data && data.length >= 1 ? (
-                  data?.map((item) => (
+                ) : dataList && dataList.length >= 1 ? (
+                  dataList?.map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>{item.id}</TableCell>
                       <TableCell>{selectBadge(item)}</TableCell>

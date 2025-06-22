@@ -1,9 +1,15 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/Sidebar";
 import { cn } from "@/lib/utils";
-import { House, MessageCircleQuestion, SquareUser, Ticket } from "lucide-react";
+import {
+  House,
+  MessageCircleQuestion,
+  SquareUser,
+  Ticket,
+} from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router";
+import { useAuth } from "./AuthProvider";
 
 export type IRequest = {
   id: string;
@@ -19,6 +25,7 @@ export type IRequest = {
   images: Array<string>;
   creationDate: string;
   status: string;
+  agentInCharge: string;
 };
 
 export const profileTabs: {
@@ -51,6 +58,18 @@ export const profileTabs: {
     href: "/profile/support",
     icon: <i className="bi bi-person-raised-hand text-lg"></i>,
   },
+  {
+    label: "Manage users",
+    tab: "manageUsers",
+    href: "/manage-users",
+    icon: <i className="bi bi-kanban"></i>,
+  },
+  {
+    label: "Logout",
+    tab: "logout",
+    href: "/profile/logout",
+    icon: <i className="bi bi-box-arrow-left"></i>,
+  },
 ];
 
 export default function ProfileComponent({
@@ -58,8 +77,21 @@ export default function ProfileComponent({
 }: {
   children: ReactNode;
 }) {
+  const auth = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  const filteredProfileTabs = profileTabs.filter((tab) => {
+    if (tab.tab === "manageUsers") {
+      return auth.user?.role === "admin";
+    }
+    return true;
+  });
+
+  useEffect(() => {
+    console.log(auth.user?.role);
+    console.log(auth.user?.role === "admin");
+  }, [auth]);
 
   return (
     <div
@@ -76,7 +108,7 @@ export default function ProfileComponent({
                 <Logo />
               </>
               <div className="mt-8 flex flex-col gap-2">
-                {profileTabs.map((link, index) => (
+                {filteredProfileTabs.map((link, index) => (
                   <SidebarLink
                     className="hover:cursor-default"
                     key={index}

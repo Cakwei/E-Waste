@@ -26,7 +26,7 @@ export type ProviderProps = {
   token: string;
   loading: boolean;
   login(data: ILogin): void;
-  logout(e: React.FormEvent): void;
+  logout(e?: React.FormEvent): void;
   register(data: IUser): void;
 };
 
@@ -132,8 +132,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const logout = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     const result = await axios.post(
       `${endPointUrl}/logout`,
       {},
