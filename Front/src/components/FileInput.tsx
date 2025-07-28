@@ -1,7 +1,11 @@
 import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 
-import { formatBytes, useFileUpload, type FileWithPreview } from "@/hooks/FileInputHook";
-import { Button } from "@/components/ui/Button";
+import {
+  formatBytes,
+  useFileUpload,
+  type FileWithPreview,
+} from "@/hooks/FileInputHook";
+import { Button } from "@/components/Button";
 import { useEffect, type FormEvent } from "react";
 
 interface IFunction {

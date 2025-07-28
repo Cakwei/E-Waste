@@ -1,14 +1,14 @@
-import trash1 from "../assets/trash1.png";
-import greenEnv from "../assets/greenEnv.jpg";
+import trash1 from "@/assets/trash1.png";
+import greenEnv from "@/assets/greenEnv.jpg";
 import { motion } from "motion/react";
 import { NavLink } from "react-router";
-import AboutUs from "@/components/About";
+import AboutUs from "@/pages/Home/About";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/Accordion";
+} from "@/components/Accordion";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 

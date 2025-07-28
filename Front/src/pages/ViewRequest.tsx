@@ -1,12 +1,12 @@
-import { useAuth } from "@/components/AuthProvider";
-import ProfileComponent from "@/components/ProfileComponent";
+import { useAuth } from "@/context/AuthProvider";
+import ProfileComponent from "@/pages/Profile/ProfileWrapper";
 import { endPointUrl } from "@/lib/exports";
 import axios, { type AxiosResponse } from "axios";
 import { Copy, TriangleAlert, UserPen } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
-import { ImageZoom } from "@/components/ui/ImageZoom";
+import { ImageZoom } from "@/components/ImageZoom";
 import { io } from "socket.io-client";
 import {
   Dialog,
@@ -17,8 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/DialogConfirm";
-import { Button } from "@/components/ui/Button";
+} from "@/components/Dialog";
+import { Button } from "@/components/Button";
 
 const socket = io(endPointUrl);
 

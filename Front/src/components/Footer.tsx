@@ -1,5 +1,6 @@
-import type { IStyle } from "@/pages/Home";
+import type { IStyle } from "@/pages/Home/Home";
 import { Github, Linkedin, Youtube } from "lucide-react";
+import { NavLink } from "react-router";
 
 export default function Footer({ className }: IStyle) {
   return (
@@ -8,9 +9,15 @@ export default function Footer({ className }: IStyle) {
     >
       <nav>
         <h6 className="footer-title">Services</h6>
-        <a className="link link-hover">Request Waste Collection</a>
-        <a className="link link-hover">View Collection Request</a>
-        <a className="link link-hover">Available send-off locations</a>
+        <NavLink to="/collection" className="link link-hover">
+          Request Waste Collection
+        </NavLink>
+        <NavLink to="/profile/request" className="link link-hover">
+          View Collection Request
+        </NavLink>
+        <NavLink to="/locations" className="link link-hover">
+          Available send-off locations
+        </NavLink>
       </nav>
       <nav>
         <h6 className="footer-title">Company</h6>

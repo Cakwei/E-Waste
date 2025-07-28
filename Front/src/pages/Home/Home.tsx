@@ -1,7 +1,7 @@
-import Hero from "../components/Hero";
-import HomeArticle from "../components/HomeArticle";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import Hero from "./Hero";
+import HomeArticle from "./HomeArticle";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 export interface IStyle {
   className?: React.HTMLAttributes<HTMLElement | string> | string;

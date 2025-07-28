@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/context/AuthProvider";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Clipboard } from "lucide-react";
 import axios from "axios";

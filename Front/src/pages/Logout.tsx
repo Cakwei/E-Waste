@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/context/AuthProvider";
 import { useEffect } from "react";
 
 export default function Logout() {

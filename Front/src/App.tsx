@@ -1,11 +1,11 @@
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
-import AuthProvider from "./components/AuthProvider";
+import AuthProvider from "./context/AuthProvider";
 import CollectionForm from "./components/CollectionForm";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile/Profile";
 import ViewRequest from "./pages/ViewRequest";
 import Request from "./pages/Request";
 import Support from "./pages/Support";

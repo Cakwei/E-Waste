@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { useNavigate } from "react-router";
 import axios from "axios";
-import { useAuth } from "@/components/AuthProvider";
+import { useAuth } from "@/context/AuthProvider";
 import { useEffect, useState } from "react";
 import { endPointUrl } from "@/lib/exports";
 import {
@@ -12,9 +12,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/Table";
+} from "@/components/Table";
 import CollectionForm from "@/components/CollectionForm";
-import ProfileComponent from "@/components/ProfileComponent";
+import ProfileComponent from "@/pages/Profile/ProfileWrapper";
 
 type IRequest = {
   id: string;

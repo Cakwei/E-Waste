@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
-import heroImg from "../assets/heroImg.svg";
+import heroImg from "@/assets/heroImg.svg";
 import { motion } from "motion/react";
+import { Button } from "@/components/Button";
 export default function Hero() {
   const navigate = useNavigate();
   return (
@@ -13,21 +14,25 @@ export default function Hero() {
           Got items you want to ditch? We can help you!
         </h3>
         <div className="flex w-full justify-center gap-5">
-          <motion.button
+          <motion.div
             initial={{ x: -10 }}
             animate={{ x: 0, transition: { duration: 0.55 } }}
-            onClick={() => navigate("/profile")}
-            className="btn border-none bg-[#08948c] font-normal text-white outline-none"
           >
-            Recycle
-          </motion.button>
-          <motion.button
+            <Button
+              onClick={() => navigate("/profile")}
+              className="btn border-none bg-[#08948c] font-normal text-white outline-none"
+            >
+              Recycle
+            </Button>
+          </motion.div>
+          <motion.div
             initial={{ x: 10 }}
             animate={{ x: 0, transition: { duration: 0.55 } }}
-            className="btn border-none bg-[#30b4ac] font-normal text-white outline-none"
           >
-            Learn More
-          </motion.button>
+            <Button className="btn border-none bg-[#30b4ac] font-normal text-white outline-none">
+              Learn More
+            </Button>{" "}
+          </motion.div>
         </div>
       </div>
       <img

@@ -1,6 +1,6 @@
 import logo from "../assets/logo.png";
 import { NavLink, useNavigate } from "react-router";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "../context/AuthProvider";
 import defaultProfileIcon from "@/assets/defaultProfileIcon.jpg";
 export default function Header() {
   const auth = useAuth();
@@ -155,7 +155,7 @@ export default function Header() {
                       to="/login"
                     >
                       Login
-                    </NavLink>{" "}
+                    </NavLink>
                     <div className="hidden sm:flex">
                       <NavLink
                         className="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600"

@@ -1,15 +1,10 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/Sidebar";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
-import {
-  House,
-  MessageCircleQuestion,
-  SquareUser,
-  Ticket,
-} from "lucide-react";
+import { House, MessageCircleQuestion, SquareUser, Ticket } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router";
-import { useAuth } from "./AuthProvider";
+import { useAuth } from "@/context/AuthProvider";
 
 export type IRequest = {
   id: string;
@@ -72,11 +67,7 @@ export const profileTabs: {
   },
 ];
 
-export default function ProfileComponent({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function ProfileWrapper({ children }: { children: ReactNode }) {
   const auth = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
