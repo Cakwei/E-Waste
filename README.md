@@ -29,7 +29,7 @@ What I feel possible to be done after the whole web project is finished.
 <p>2. Install the necessary libraries.</p>
 
 ```
-npm run build
+npm install
 ```
 
 <p>3. Install a library that allows deployment of the application locally.</p>
@@ -38,7 +38,9 @@ npm run build
 npm install -g serve
 ```
 
-<p>4. Lastly deploy the application.</p>
+<p>4. Locate the SQL database file located inside 'Back' folder and import all into the MySQL software (e.g: WAMPServer).</p>
+
+<p>8. Lastly deploy the application.</p>
 
 ```
 serve dist
