@@ -11,6 +11,7 @@ import {
 } from "@/components/Accordion";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
+import { Button } from "@/components/Button";
 
 type ILocation = {
   office: string;
@@ -91,12 +92,9 @@ export default function HomeArticle() {
         <img src={greenEnv} className="w-50 rounded-[50%] outline-2" />
         <h5 className="sm:text-st flex flex-col items-center justify-center gap-5 text-center text-2xl font-bold sm:items-start sm:text-start">
           Wish to take part in our journey for a greener future?
-          <NavLink
-            to="/recycle"
-            className="btn w-max gap-2.5 border-none bg-[#30b4ac] text-white shadow-none outline-none"
-          >
+          <Button className="btn w-max gap-2.5 border-none bg-[#30b4ac] text-white shadow-none outline-none">
             Request for waste collection <i className="bi bi-arrow-right"></i>
-          </NavLink>
+          </Button>
         </h5>
       </div>
       <div className="mb-10 flex w-full max-w-[1500px] flex-wrap self-center min-[1920px]:max-w-[1920px] sm:flex-nowrap">

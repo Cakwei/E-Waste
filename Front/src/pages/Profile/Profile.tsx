@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Pencil, X } from "lucide-react";
+import { MailWarning, Pencil, X } from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -13,6 +13,17 @@ import ProfileWrapper from "@/pages/Profile/ProfileWrapper";
 import { useNavigate } from "react-router";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  //DialogTrigger,
+} from "@/components/Dialog";
+import { toast } from "sonner";
 /*
 type IFormData = {
   username: string;
@@ -21,11 +32,18 @@ type IFormData = {
   newPassword: string;
 };*/
 
+type profileInput = {
+  field: "username" | "email" | "password" | null;
+};
+
 export default function Profile() {
   const auth = useAuth();
   const navigate = useNavigate();
-  const [timer, setTimer] = useState(5);
-  const [hasDoubleConfirmed, setHasDoubleConfirmed] = useState(false);
+  const [dialog, setDialog] = useState({
+    usernameDialog: false,
+    emailDialog: false,
+    passwordDialog: false,
+  });
 
   const [changeUsernameInputValue, setChangeUsernameInputValue] = useState({
     currentUsername: null,
@@ -39,9 +57,8 @@ export default function Profile() {
     currentPassword: null,
     newPassword: null,
   });
-  const [renderModalType, setRenderModalType] = useState<
-    "username" | "email" | "password" | null
-  >(null);
+  const [renderModalType, setRenderModalType] =
+    useState<profileInput["field"]>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault(); /*
@@ -54,197 +71,220 @@ export default function Profile() {
     }*/
   }
 
-  function renderChangeProfileInfoModal() {
-    switch (renderModalType) {
+  function openDialog(field: profileInput["field"]) {
+    switch (field) {
+      case "username":
+        setDialog(() => ({
+          usernameDialog: true,
+          emailDialog: false,
+          passwordDialog: false,
+        }));
+        return;
+      case "email":
+        setDialog(() => ({
+          usernameDialog: false,
+          emailDialog: true,
+          passwordDialog: false,
+        }));
+        return;
+      case "password":
+        setDialog(() => ({
+          usernameDialog: false,
+          emailDialog: false,
+          passwordDialog: true,
+        }));
+        return;
+      default:
+        throw Error(
+          "Invalid field name, choose between username, email & password.",
+        );
+    }
+  }
+
+  function renderChangeProfileInfoModal(field: profileInput["field"]) {
+    switch (field) {
       case "username":
         return (
-          <dialog id="my_modal_2" className="modal">
-            <div className="modal-box bg-base-100 relative rounded-lg p-8 shadow-2xl">
-              <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 text-xl">
-                  <X />
-                </button>
-              </form>
-
-              <h3 className="text-base-content mb-4 text-2xl font-bold">
-                Change Username
-              </h3>
-
-              <div>
-                <label className="text-sm">Current Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div>
-                <label className="text-sm">New Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div className="modal-action mt-6 flex justify-end gap-3">
-                <form method="dialog">
-                  <Button className="bg-transparent text-black shadow-none hover:bg-zinc-100 hover:shadow">
-                    Cancel
-                  </Button>
-                </form>
-                {hasDoubleConfirmed ? (
-                  <button className="btn btn-primary">
-                    Are you sure? {timer}
-                  </button>
-                ) : (
+          <Dialog
+            open={dialog.usernameDialog}
+            onOpenChange={(open) =>
+              setDialog((prev) => ({
+                ...prev,
+                usernameDialog: open,
+              }))
+            }
+          >
+            <form>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit username</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile username here. Click save when
+                    done.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">Current Username</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "username")}
+                      id="name-1"
+                      name="currentUsername"
+                      placeholder="Cakwei"
+                    />
+                  </div>
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">New Username</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "username")}
+                      id="username-1"
+                      name="newUsername"
+                      placeholder="CakweiTiao"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
                   <Button
-                    className="bg-[#08948c] hover:bg-[#08948c]/80"
-                    onClick={() => setHasDoubleConfirmed(false)}
+                    type="submit"
+                    className="bg-[#08948c]"
+                    onClick={() => {
+                      toast.error("ddd", {
+                        style: {
+                          // color: "red",
+                          // display: "flex",
+                        },
+                        classNames: {
+                          title: "ml-2.5",
+                        },
+                        position: "top-center",
+                        icon: <MailWarning color="black" />,
+                      });
+                    }}
                   >
-                    Confirm
+                    Save changes
                   </Button>
-                )}
-              </div>
-            </div>
-
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
+                </DialogFooter>
+              </DialogContent>
             </form>
-          </dialog>
+          </Dialog>
         );
       case "email":
         return (
-          <dialog id="my_modal_2" className="modal">
-            <div className="modal-box bg-base-100 relative rounded-lg p-8 shadow-2xl">
-              <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 text-xl">
-                  <X />
-                </button>
-              </form>
-
-              <h3 className="text-base-content mb-4 text-2xl font-bold">
-                Change Username
-              </h3>
-
-              <div>
-                <label className="text-sm">Current Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div>
-                <label className="text-sm">New Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div className="modal-action mt-6 flex justify-end gap-3">
-                <form method="dialog">
-                  <Button className="bg-transparent text-black shadow-none hover:bg-zinc-100 hover:shadow">
-                    Cancel
+          <Dialog
+            open={dialog.emailDialog}
+            onOpenChange={(open) =>
+              setDialog((prev) => ({
+                ...prev,
+                emailDialog: open,
+              }))
+            }
+          >
+            <form>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit email address</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when
+                    you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">Current email address</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "email")}
+                      id="name-1"
+                      name="currentEmail"
+                      placeholder="dummy1@gmail.com"
+                    />
+                  </div>
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">New email address</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "email")}
+                      id="username-1"
+                      name="newEmail"
+                      placeholder="dummy2@gmail.com"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button type="submit" className="bg-[#08948c]">
+                    Save changes
                   </Button>
-                </form>
-                {hasDoubleConfirmed ? (
-                  <button className="btn btn-primary">
-                    Are you sure? {timer}
-                  </button>
-                ) : (
-                  <Button
-                    className="bg-[#08948c] hover:bg-[#08948c]/80"
-                    onClick={() => setHasDoubleConfirmed(false)}
-                  >
-                    Confirm
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
+                </DialogFooter>
+              </DialogContent>
             </form>
-          </dialog>
+          </Dialog>
         );
 
       case "password":
         return (
-          <dialog id="my_modal_2" className="modal">
-            <div className="modal-box bg-base-100 relative rounded-lg p-8 shadow-2xl">
-              <form method="dialog">
-                <button className="btn btn-sm btn-circle btn-ghost absolute top-4 right-4 text-xl">
-                  <X />
-                </button>
-              </form>
-
-              <h3 className="text-base-content mb-4 text-2xl font-bold">
-                Change Username
-              </h3>
-
-              <div>
-                <label className="text-sm">Current Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div>
-                <label className="text-sm">New Username:</label>
-                <Input
-                  className=""
-                  name="username"
-                  onChange={(e) => {
-                    handleInput(e, "username");
-                  }}
-                />
-              </div>
-              <div className="modal-action mt-6 flex justify-end gap-3">
-                <form method="dialog">
-                  <Button className="bg-transparent text-black shadow-none hover:bg-zinc-100 hover:shadow">
-                    Cancel
+          <Dialog
+            open={dialog.passwordDialog}
+            onOpenChange={(open) =>
+              setDialog((prev) => ({
+                ...prev,
+                passwordDialog: open,
+              }))
+            }
+          >
+            <form>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Edit password</DialogTitle>
+                  <DialogDescription>
+                    Make changes to your profile here. Click save when
+                    you&apos;re done.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">Current password</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "password")}
+                      id="name-1"
+                      name="currentPassword"
+                      placeholder="********"
+                    />
+                  </div>
+                  <div className="grid gap-0.5">
+                    <label className="text-sm">New password</label>
+                    <Input
+                      onChange={(e) => handleInput(e, "password")}
+                      id="username-1"
+                      name="newPassword"
+                      placeholder="********"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button type="submit" className="bg-[#08948c]">
+                    Save changes
                   </Button>
-                </form>
-                {hasDoubleConfirmed ? (
-                  <button className="btn btn-primary">
-                    Are you sure? {timer}
-                  </button>
-                ) : (
-                  <Button
-                    className="bg-[#08948c] hover:bg-[#08948c]/80"
-                    onClick={() => setHasDoubleConfirmed(false)}
-                  >
-                    Confirm
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
+                </DialogFooter>
+              </DialogContent>
             </form>
-          </dialog>
+          </Dialog>
         );
       default:
         return;
+      // Don't change here or it will not load UI
     }
   }
 
   async function handleInput(
     e: ChangeEvent<HTMLInputElement>,
-    field: "username" | "email" | "password",
+    field: profileInput["field"],
   ) {
     e.preventDefault();
     const { name, value } = e.target;
@@ -257,14 +297,14 @@ export default function Profile() {
         break;
 
       case "email":
-        setChangeUsernameInputValue((prev) => ({
+        setChangeEmailInputValue((prev) => ({
           ...prev,
           [name]: value,
         }));
         break;
 
       case "password":
-        setChangeUsernameInputValue((prev) => ({
+        setChangePasswordInputValue((prev) => ({
           ...prev,
           [name]: value,
         }));
@@ -284,13 +324,24 @@ export default function Profile() {
     }
   }, [auth]);
 
+  useEffect(() => {
+    console.log(
+      JSON.stringify(changeUsernameInputValue),
+      JSON.stringify(changeEmailInputValue),
+      JSON.stringify(changePasswordInputValue),
+    );
+  }, [
+    setChangeEmailInputValue,
+    setChangeUsernameInputValue,
+    setChangePasswordInputValue,
+    changeEmailInputValue,
+    changeUsernameInputValue,
+    changePasswordInputValue,
+  ]);
   return (
     <ProfileWrapper>
       <div className="flex w-full justify-start bg-gray-50 p-5">
-        <form
-          onSubmit={handleSubmit}
-          className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 pb-7.5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]"
-        >
+        <div className="flex h-max w-full flex-col gap-2.5 overflow-hidden rounded-2xl bg-white p-5 pb-7.5 shadow-md transition-shadow duration-300 hover:shadow-lg md:max-w-[650px]">
           <h1 className="text-2xl font-semibold">Profile</h1>
           <div className="flex w-full flex-col gap-2.5">
             <div className="flex w-full justify-between gap-5 border-b border-b-zinc-300 pb-1 pl-1">
@@ -307,6 +358,7 @@ export default function Profile() {
                     className="hover:cursor-pointer"
                     onClick={() => {
                       setRenderModalType("username");
+                      openDialog("username");
                     }}
                   />
                 </div>
@@ -326,6 +378,7 @@ export default function Profile() {
                     className="hover:cursor-pointer"
                     onClick={() => {
                       setRenderModalType("email");
+                      openDialog("email");
                     }}
                   />
                 </div>
@@ -345,16 +398,17 @@ export default function Profile() {
                     className="hover:cursor-pointer"
                     onClick={() => {
                       setRenderModalType("password");
+                      openDialog("password");
                     }}
                   />
                 </div>
               )}
             </div>
           </div>
-        </form>
+        </div>
 
         {/* Modal dialog for change of username, email & password */}
-        {renderChangeProfileInfoModal()}
+        {renderChangeProfileInfoModal(renderModalType)}
       </div>
     </ProfileWrapper>
   );

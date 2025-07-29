@@ -10,24 +10,28 @@ import ViewRequest from "./pages/ViewRequest";
 import Request from "./pages/Request";
 import Support from "./pages/Support";
 import Logout from "./pages/Logout";
+import { Toaster } from "./components/sonner";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/collection" element={<CollectionForm />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/profile/support" element={<Support />} />
-          <Route path="/profile/request" element={<Request />} />
-          <Route path="/profile/request/:id" element={<ViewRequest />} />
-          <Route path="/profile/logout" element={<Logout />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/collection" element={<CollectionForm />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/support" element={<Support />} />
+            <Route path="/profile/request" element={<Request />} />
+            <Route path="/profile/request/:id" element={<ViewRequest />} />
+            <Route path="/profile/logout" element={<Logout />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+      <Toaster />
+    </>
   );
 }
 
