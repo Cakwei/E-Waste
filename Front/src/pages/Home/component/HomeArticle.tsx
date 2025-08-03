@@ -1,8 +1,7 @@
 import trash1 from "@/assets/trash1.png";
 import greenEnv from "@/assets/greenEnv.jpg";
 import { motion } from "motion/react";
-import { NavLink } from "react-router";
-import AboutUs from "@/pages/Home/About";
+import AboutUs from "@/pages/Home/component/About";
 import {
   Accordion,
   AccordionContent,
@@ -10,14 +9,8 @@ import {
   AccordionTrigger,
 } from "@/components/Accordion";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import type { LatLngExpression } from "leaflet";
+import type { ILocation } from "@/types/types";
 import { Button } from "@/components/Button";
-
-type ILocation = {
-  office: string;
-  approx_coordinates: LatLngExpression;
-  city: string;
-};
 
 const info = [
   { label: "1k E-Waste Recycled", href: "#" },

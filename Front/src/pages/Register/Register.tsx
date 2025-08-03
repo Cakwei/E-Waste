@@ -1,16 +1,17 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import { useAuth } from "@/context/AuthProvider";
+import { Button } from "@/components/Button";
 
-interface FormData {
+type FormData = {
   username: string;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
-}
+};
 
 export default function Register() {
   const auth = useAuth();
@@ -215,13 +216,13 @@ export default function Register() {
               />
             </label>
           </div>
-          <button
+          <Button
             name="password"
             type="submit"
-            className="btn border bg-[#30b4ac] text-white outline-none"
+            className="btn mt-2.5 border bg-[#30b4ac] text-white outline-none"
           >
             Register
-          </button>
+          </Button>
           <div className="flex justify-between">
             <NavLink to="/login" className="w-full text-center text-sm">
               {" Existing user? "}

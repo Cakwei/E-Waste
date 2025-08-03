@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthProvider";
-import ProfileComponent from "@/pages/Profile/ProfileWrapper";
+import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
 import { endPointUrl } from "@/lib/exports";
 import axios, { type AxiosResponse } from "axios";
 import { Copy, TriangleAlert, UserPen } from "lucide-react";
@@ -19,22 +19,9 @@ import {
   DialogTrigger,
 } from "@/components/Dialog";
 import { Button } from "@/components/Button";
+import type { IData } from "@/types/types";
 
 const socket = io(endPointUrl);
-
-type IData = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  building: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  wasteDescription: string;
-  images: Array<string>;
-};
 
 export default function ViewRequest() {
   const [data, setData] = useState<IData | null>(null);

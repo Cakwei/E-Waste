@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { useAuth } from "@/context/AuthProvider";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { endPointUrl } from "@/lib/exports";
 import {
   Table,
@@ -14,29 +14,21 @@ import {
   TableRow,
 } from "@/components/Table";
 import CollectionForm from "@/components/CollectionForm";
-import ProfileComponent from "@/pages/Profile/ProfileWrapper";
-
-type IRequest = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  building: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  wasteDescription: string;
-  images: string;
-  creationDate: string;
-  status: string;
-};
+import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
+import type { IRequest } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Request() {
   const navigate = useNavigate();
   const auth = useAuth();
-  const [dataList, setDataList] = useState<IRequest[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const query = useQuery({
+    queryKey: ["dataList", auth.user?.username],
+    queryFn: fetchData,
+    enabled:
+      !auth.loading && auth.user?.username !== "" && auth.user?.email !== "",
+    refetchInterval: 5000,
+  });
+
   async function fetchData() {
     try {
       if (
@@ -44,14 +36,14 @@ export default function Request() {
         auth.user?.username !== "" &&
         auth.user?.email !== ""
       ) {
-        setLoading(true);
         const result = await axios.post(
           `${endPointUrl}/waste-collection/user/${auth.user?.username}`,
           { username: auth.user?.username },
-          { withCredentials: true, timeout: 5000 },
+          { withCredentials: true },
         );
         if (result.data.result) {
-          setDataList(result.data.message);
+          // setDataList(result.data.message);
+          return result.data.message;
           /* const convertedImagesStringOfArray = Buffer.Buffer.from(
             result.data.message.images.data,
           ).toString("utf-8");
@@ -61,16 +53,12 @@ export default function Request() {
           }*/
         }
       }
-      setLoading(false);
+      return null;
     } catch (err) {
       console.log(err);
-      setLoading(false);
+      return null;
     }
   }
-
-  useEffect(() => {
-    fetchData();
-  }, [auth]);
 
   function selectBadge(data: { status: string }) {
     switch (data.status) {
@@ -112,7 +100,7 @@ export default function Request() {
             </button>
           </div>
           <section
-            className={`${dataList && dataList.length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
+            className={`${query.data && (query.data as IRequest[]).length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
           >
             <Table>
               <TableCaption>A list of your recent requests.</TableCaption>
@@ -125,14 +113,14 @@ export default function Request() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
+                {query.isLoading ? (
                   <TableRow className="relative h-[27px] w-full">
                     <TableCell>
                       <span className="loading loading-spinner loading-md absolute left-[50%] flex translate-x-[-50%] justify-center py-2.5"></span>
                     </TableCell>
                   </TableRow>
-                ) : dataList && dataList.length >= 1 ? (
-                  dataList?.map((item) => (
+                ) : query.data && (query.data as IRequest[]).length >= 1 ? (
+                  (query.data as IRequest[]).map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>{item.id}</TableCell>
                       <TableCell>{selectBadge(item)}</TableCell>

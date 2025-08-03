@@ -1,13 +1,14 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { NavLink } from "react-router";
+import { Button } from "@/components/Button";
 
-interface FormData {
+type FormData = {
   email: string;
   password: string;
-}
+};
 
 export default function Login() {
   const auth = useAuth();
@@ -119,12 +120,12 @@ export default function Login() {
             </label>
           </div>
 
-          <button
+          <Button
             type="submit"
             className="btn border bg-[#30b4ac] text-white outline-none"
           >
             Login
-          </button>
+          </Button>
           <NavLink to="/register" className="w-full text-center text-sm">
             {" New user? "}
             <span className="hover:link text-blue-500">Create an account</span>

@@ -1,11 +1,8 @@
-import Hero from "./Hero";
-import HomeArticle from "./HomeArticle";
+import Hero from "./component/Hero";
+import HomeArticle from "./component/HomeArticle";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 
-export interface IStyle {
-  className?: React.HTMLAttributes<HTMLElement | string> | string;
-}
 export default function Home() {
   return (
     <>

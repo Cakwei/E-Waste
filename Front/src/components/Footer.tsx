@@ -1,4 +1,4 @@
-import type { IStyle } from "@/pages/Home/Home";
+import type { IStyle } from "@/pages/Home/page";
 import { Github, Linkedin, Youtube } from "lucide-react";
 import { NavLink } from "react-router";
 

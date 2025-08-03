@@ -1,4 +1,4 @@
-import ProfileComponent from "@/pages/Profile/ProfileWrapper";
+import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
 import {
   Accordion,
   AccordionContent,

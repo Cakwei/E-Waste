@@ -105,7 +105,6 @@ export default function CollectionForm() {
     }
   }, [auth]);
 
-  useEffect(() => console.log(formData), [formData]);
   return (
     <div className="">
       <div className="min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">

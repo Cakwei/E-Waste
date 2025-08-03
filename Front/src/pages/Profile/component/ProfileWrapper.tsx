@@ -6,23 +6,6 @@ import logo from "@/assets/logo.png";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/context/AuthProvider";
 
-export type IRequest = {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  building: string;
-  streetAddress: string;
-  city: string;
-  state: string;
-  wasteDescription: string;
-  images: Array<string>;
-  creationDate: string;
-  status: string;
-  agentInCharge: string;
-};
-
 export const profileTabs: {
   label: string;
   tab: string;
@@ -78,11 +61,6 @@ export default function ProfileWrapper({ children }: { children: ReactNode }) {
     }
     return true;
   });
-
-  useEffect(() => {
-    console.log(auth.user?.role);
-    console.log(auth.user?.role === "admin");
-  }, [auth]);
 
   return (
     <div

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { MailWarning, Pencil, X } from "lucide-react";
+import { MailWarning, Pencil } from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
@@ -7,9 +6,8 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from "react";
-import { endPointUrl } from "@/lib/exports";
 import { useAuth } from "@/context/AuthProvider";
-import ProfileWrapper from "@/pages/Profile/ProfileWrapper";
+import ProfileWrapper from "@/pages/Profile/component/ProfileWrapper";
 import { useNavigate } from "react-router";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
@@ -21,9 +19,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  //DialogTrigger,
 } from "@/components/Dialog";
 import { toast } from "sonner";
+import type { ProfileInput } from "@/types/types";
 /*
 type IFormData = {
   username: string;
@@ -31,10 +29,6 @@ type IFormData = {
   currentPassword: string;
   newPassword: string;
 };*/
-
-type profileInput = {
-  field: "username" | "email" | "password" | null;
-};
 
 export default function Profile() {
   const auth = useAuth();
@@ -58,7 +52,7 @@ export default function Profile() {
     newPassword: null,
   });
   const [renderModalType, setRenderModalType] =
-    useState<profileInput["field"]>(null);
+    useState<ProfileInput["field"]>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault(); /*
@@ -71,7 +65,7 @@ export default function Profile() {
     }*/
   }
 
-  function openDialog(field: profileInput["field"]) {
+  function openDialog(field: ProfileInput["field"]) {
     switch (field) {
       case "username":
         setDialog(() => ({
@@ -101,7 +95,7 @@ export default function Profile() {
     }
   }
 
-  function renderChangeProfileInfoModal(field: profileInput["field"]) {
+  function renderChangeProfileInfoModal(field: ProfileInput["field"]) {
     switch (field) {
       case "username":
         return (
@@ -284,7 +278,7 @@ export default function Profile() {
 
   async function handleInput(
     e: ChangeEvent<HTMLInputElement>,
-    field: profileInput["field"],
+    field: ProfileInput["field"],
   ) {
     e.preventDefault();
     const { name, value } = e.target;
