@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthProvider";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Clipboard } from "lucide-react";
 import axios from "axios";
-import { endPointUrl } from "@/lib/exports";
+import { endPointUrl } from "@/constants/constants";
 import FileInput from "./FileInput";
 import type { FileWithPreview } from "@/hooks/FileInputHook";
 

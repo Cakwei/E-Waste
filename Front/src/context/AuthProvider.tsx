@@ -1,4 +1,5 @@
-import { endPointUrl } from "@/lib/exports";
+import { endPointUrl } from "@/constants/constants";
+import type { axiosResponse } from "@/types/types";
 import axios from "axios";
 import { createContext, useContext, useLayoutEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -62,14 +63,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           withCredentials: true,
         },
       );
-      if (result.data.result === true) {
-        setToken(result.data.token);
+      if ((result as axiosResponse).data.status === "Success") {
+        const data = (result as axiosResponse).data.data;
+        setToken(data.token);
         setUser({
-          username: result.data.username,
-          email: result.data.email,
-          firstName: result.data.firstName,
-          lastName: result.data.lastName,
-          role: result.data.role,
+          username: data.username,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          role: data.role,
         });
       } else {
         setUser({
@@ -114,16 +116,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
         { withCredentials: true },
       );
-      if (result.data.result === true) {
-        console.log(result.data.message);
+      if ((result as axiosResponse).data.status === "Success") {
+        const data = (result as axiosResponse).data.data;
         setUser({
-          username: result.data.username,
-          email: result.data.email,
-          firstName: result.data.firstName,
-          lastName: result.data.lastName,
-          role: result.data.role,
+          username: data.username,
+          email: data.email,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          role: data.role,
         });
-        setToken(result.data.token);
+        setToken(data.token);
         navigate("/");
       }
     } catch (err) {
@@ -162,7 +164,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         lastName: data.lastName,
       });
 
-      if (result.data.result === true) {
+      if ((result as axiosResponse).data.status === "Success") {
         alert("Successfully registered. Please login.");
         navigate("/login");
       } else {

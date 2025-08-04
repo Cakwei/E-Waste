@@ -1,9 +1,9 @@
 import { useAuth } from "@/context/AuthProvider";
 import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
-import { endPointUrl } from "@/lib/exports";
+import { endPointUrl } from "@/constants/constants";
 import axios, { type AxiosResponse } from "axios";
 import { Copy, TriangleAlert, UserPen } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ImageZoom";
@@ -19,15 +19,20 @@ import {
   DialogTrigger,
 } from "@/components/Dialog";
 import { Button } from "@/components/Button";
-import type { IData } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
+import type { axiosResponse } from "@/types/types";
 
 const socket = io(endPointUrl);
-
 export default function ViewRequest() {
-  const [data, setData] = useState<IData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
   const auth = useAuth();
+  const { data, isLoading } = useQuery({
+    queryKey: ["collectionInfo", auth.user?.username],
+    queryFn: fetchData,
+    enabled:
+      !auth.loading && auth.user?.username !== "" && auth.user?.email !== "",
+    refetchInterval: 5000,
+  });
 
   async function fetchData() {
     try {
@@ -36,46 +41,45 @@ export default function ViewRequest() {
         auth.user?.username !== "" &&
         auth.user?.email !== ""
       ) {
-        setLoading(true);
         const id = window.location.href.split(
           `${import.meta.env.VITE_WEB_URL}/profile/request/`,
         )[1];
         const result = await axios.post(
           `${endPointUrl}/waste-collection/collection/${id}`,
           { id: id },
-          { withCredentials: true, timeout: 5000 },
+          { withCredentials: true },
         );
-        if (result.data.result) {
-          let data = result.data.message;
+        if ((result as axiosResponse).data.status === "Success") {
+          let data = (result as axiosResponse).data.data;
           data = {
             ...data,
             images: JSON.parse(
-              Buffer.Buffer.from(result.data.message.images).toString("utf-8"),
+              Buffer.Buffer.from(data.images).toString("utf-8"),
             ),
           };
-          setData(data);
+          return data;
         } else {
           navigate("/");
+          return null;
         }
       }
-      setLoading(false);
+      return null;
     } catch (err) {
       console.log(err);
+      return null;
     }
   }
 
   useEffect(() => {
     const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
-    if (isLoggedIn && !auth.loading) {
-      fetchData();
-    } else if (!isLoggedIn && !auth.loading) {
+    if (!isLoggedIn && !auth.loading) {
       navigate("/login");
     }
-  }, [auth, data?.id, navigate]);
+  }, [auth, navigate]);
 
   return (
     <ProfileComponent>
-      {loading ? (
+      {isLoading ? (
         <div className="flex w-full flex-col gap-4 p-5 md:max-w-[650px]">
           <div className="skeleton h-100 w-full bg-zinc-300"></div>
           <div className="skeleton h-10 w-28 bg-zinc-300"></div>
@@ -110,12 +114,12 @@ export default function ViewRequest() {
                 Waste Collection Request
               </h1>
               <span className="max-w-[150px] overflow-hidden font-bold text-nowrap text-ellipsis text-green-200">
-                #{data?.id}
+                {data?.id}
               </span>
             </header>
 
             <main className="p-6 md:p-8">
-              <RequestOverview id={data?.id} />
+              <RequestOverview data={data as axiosResponse["data"]} />
 
               <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
                 <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
@@ -231,7 +235,7 @@ export default function ViewRequest() {
                   </label>
                   <div className="flex gap-4 overflow-x-auto p-2">
                     {data?.images && data?.images.length > 0 ? (
-                      data?.images.map((item) => (
+                      data?.images.map((item: string) => (
                         <ImageZoom
                           key={item}
                           className="w-35 flex-shrink-0 cursor-pointer overflow-hidden border border-gray-300 bg-cover object-cover shadow-sm transition-shadow hover:shadow-md"
@@ -249,7 +253,7 @@ export default function ViewRequest() {
                   </div>
                 </div>
               </section>
-              <ActionsBtnSection id={data?.id} />
+              <ActionsBtnSection data={data as axiosResponse} />
             </main>
           </div>
           <div></div>
@@ -258,35 +262,17 @@ export default function ViewRequest() {
     </ProfileComponent>
   );
 }
+
 type IRequestData = {
   status: string;
   agentInCharge: string;
   creationDate: string;
   id: string;
 };
-function RequestOverview({ id }: { id: string | undefined }) {
-  const [data, setData] = useState<IRequestData | null>(null);
-  async function fetchData() {
-    const result = await axios.post(
-      `${endPointUrl}/waste-collection/collection/${id}`,
-      {
-        id: id,
-      },
-      { withCredentials: true },
-    );
-    if (result.data.result) {
-      const { status, agentInCharge, creationDate } = result.data.message;
-      setData({
-        status: status,
-        agentInCharge: agentInCharge,
-        creationDate: creationDate,
-        id: id!,
-      });
-    }
-  }
 
-  function selectBadge(data: IRequestData | null) {
-    switch (data?.status) {
+function RequestOverview({ data }: { data: { [key: string]: any } }) {
+  function selectBadge() {
+    switch (data?.status.toString()) {
       case "created":
         return (
           <span className="inline-block rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
@@ -312,18 +298,12 @@ function RequestOverview({ id }: { id: string | undefined }) {
   }
 
   useEffect(() => {
-    socket.on("updateViewRequest", async () => {
-      fetchData();
-    });
+    socket.on("updateViewRequest", async () => {});
 
     return () => {
       socket.off("updateViewRequest");
     };
-  }, [id]);
-
-  useEffect(() => {
-    fetchData();
-  }, [id]);
+  }, []);
 
   return (
     <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
@@ -355,7 +335,7 @@ function RequestOverview({ id }: { id: string | undefined }) {
           <label className="mb-1 text-sm font-medium text-gray-600">
             Status:
           </label>
-          {selectBadge(data)}
+          {selectBadge()}
         </div>
         <div className="flex flex-col">
           <label className="mb-1 text-sm font-medium text-gray-600">
@@ -388,40 +368,20 @@ function RequestOverview({ id }: { id: string | undefined }) {
   );
 }
 
-function ActionsBtnSection({ id }: { id: string | undefined }) {
+function ActionsBtnSection({ data }: { data: { [key: string]: any } }) {
   const auth = useAuth();
-  const [data, setData] = useState<IRequestData | null>(null);
-  async function fetchData() {
-    const result = await axios.post(
-      `${endPointUrl}/waste-collection/collection/${id}`,
-      {
-        id: id,
-      },
-      { withCredentials: true },
-    );
-    if (result.data.result) {
-      const { id, status, agentInCharge, creationDate } = result.data.message;
-
-      setData({
-        status: status,
-        agentInCharge: agentInCharge,
-        creationDate: creationDate,
-        id: id,
-      });
-    }
-  }
 
   async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     const result = (await updateCollectionRequest("cancel")) as AxiosResponse;
-    if (result.data.result) {
+    if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
     }
   }
   async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     const result = (await updateCollectionRequest("mark")) as AxiosResponse;
-    if (result.data.result) {
+    if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
     }
   }
@@ -432,7 +392,7 @@ function ActionsBtnSection({ id }: { id: string | undefined }) {
       "assign",
       "agent",
     )) as AxiosResponse;
-    if (result.data.result) {
+    if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
     }
   }
@@ -460,20 +420,6 @@ function ActionsBtnSection({ id }: { id: string | undefined }) {
       }
     }
   }
-
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  useEffect(() => {
-    socket.on("updateViewRequest", async () => {
-      fetchData();
-    });
-
-    return () => {
-      socket.off("updateViewRequest");
-    };
-  }, [id]);
 
   return (
     <section className="rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">

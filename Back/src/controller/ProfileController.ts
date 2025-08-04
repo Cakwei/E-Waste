@@ -46,15 +46,20 @@ const changeUsername = async (req: Request, res: Response) => {
             maxAge: 60 * 60 * 1000,
             httpOnly: true,
           });
-        res.status(200).send({ result: true, message: 'Username changed' });
+        res
+          .status(200)
+          .send({ status: 'Success', data: {}, message: 'Username changed' });
       }
     } else {
-      res.status(401).send({ result: false, message: 'Invalid token' });
+      res
+        .status(401)
+        .send({ status: 'Error', data: {}, message: 'Invalid token' });
     }
   } catch (err) {
     console.log(err);
     res.status(500).send({
-      result: false,
+      status: 'Error',
+      data: {},
       message: 'Error occurred while changing username',
     });
   }
@@ -81,13 +86,16 @@ const changePassword = async (req: Request, res: Response) => {
           [newPassword, email, username],
         );
       } else {
-        res.status(401).send({ result: false, message: 'Invalid token' });
+        res
+          .status(401)
+          .send({ status: 'Error', data: {}, message: 'Invalid token' });
       }
     }
   } catch (err) {
     console.log(err);
     res.status(500).send({
-      result: false,
+      status: 'Error',
+      data: {},
       message: 'Error occurred while changing password',
     });
   }

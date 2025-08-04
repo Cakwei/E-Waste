@@ -2,8 +2,7 @@ import { X } from "lucide-react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { useAuth } from "@/context/AuthProvider";
-import { useState } from "react";
-import { endPointUrl } from "@/lib/exports";
+import { endPointUrl } from "@/constants/constants";
 import {
   Table,
   TableBody,
@@ -15,8 +14,9 @@ import {
 } from "@/components/Table";
 import CollectionForm from "@/components/CollectionForm";
 import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
-import type { IRequest } from "@/types/types";
+import type { axiosResponse, IRequest } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/Button";
 
 export default function Request() {
   const navigate = useNavigate();
@@ -41,9 +41,9 @@ export default function Request() {
           { username: auth.user?.username },
           { withCredentials: true },
         );
-        if (result.data.result) {
+        if ((result as axiosResponse).data.status === "Success") {
           // setDataList(result.data.message);
-          return result.data.message;
+          return result.data.data;
           /* const convertedImagesStringOfArray = Buffer.Buffer.from(
             result.data.message.images.data,
           ).toString("utf-8");
@@ -64,21 +64,15 @@ export default function Request() {
     switch (data.status) {
       case "created":
         return (
-          <div className="badge badge-success p-1.5 font-semibold text-white">
-            Created
-          </div>
+          <div className="badge badge-success p-2.5 text-white">Created</div>
         );
       case "picked_up":
         return (
-          <div className="badge badge-success p-1.5 font-semibold text-white">
-            Picked Up
-          </div>
+          <div className="badge badge-success p-2.5 text-white">Picked Up</div>
         );
       case "cancelled":
         return (
-          <div className="badge badge-error p-1.5 font-semibold text-white">
-            Cancelled
-          </div>
+          <div className="badge badge-error p-2.5 text-white">Cancelled</div>
         );
     }
   }
@@ -88,7 +82,7 @@ export default function Request() {
         <div className="flex max-w-[1080px] flex-col items-start gap-2.5 rounded-lg bg-white p-6 shadow-md transition-shadow duration-300 hover:shadow-lg">
           <h1 className="text-2xl font-semibold">Collection Requests</h1>
           <div className="flex justify-between">
-            <button
+            <Button
               onClick={() => {
                 (
                   document.getElementById("my_modal_1") as HTMLDialogElement
@@ -97,7 +91,7 @@ export default function Request() {
               className="btn border-none bg-[#028b85] font-normal text-white"
             >
               Create New Request
-            </button>
+            </Button>
           </div>
           <section
             className={`${query.data && (query.data as IRequest[]).length > 0 ? "max-h-[calc(100dvh-250px)]" : ""} w-full overflow-scroll rounded-2xl outline`}
@@ -132,14 +126,14 @@ export default function Request() {
                           new Date(item.creationDate).getFullYear()}
                       </TableCell>
                       <TableCell className="">
-                        <button
+                        <Button
                           onClick={() => {
                             navigate(`/profile/request/${item.id}`);
                           }}
                           className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal shadow-none"
                         >
                           View
-                        </button>
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))

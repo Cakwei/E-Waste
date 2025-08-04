@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/Accordion";
-import { accordion, featureCards } from "@/lib/constants";
+import { accordion, featureCards } from "@/constants/constants";
 
 export default function Support() {
   return (

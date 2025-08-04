@@ -1,15 +1,15 @@
 import Home from "./pages/Home/page";
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
+import Login from "./pages/Login/page";
+import Register from "./pages/Register/page";
 import "./styles/App.css";
 import { BrowserRouter, Routes, Route } from "react-router";
 import AuthProvider from "./context/AuthProvider";
 import CollectionForm from "./components/CollectionForm";
 import Profile from "./pages/Profile/page";
-import ViewRequest from "./pages/ViewRequest/ViewRequest";
-import Request from "./pages/Request/Request";
+import ViewRequest from "./pages/ViewRequest/page";
+import Request from "./pages/Request/page";
 import Support from "./pages/Support/Support";
-import Logout from "./pages/Logout/Logout";
+import Logout from "./pages/Logout/page";
 import { Toaster } from "./components/Sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

@@ -1,4 +1,4 @@
-import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 import config from '../config/config';
 
@@ -18,7 +18,7 @@ export const AuthMiddleware = async (
     // const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
       console.log('error');
-      throw new Error();
+      return;
     }
     const decoded = jwt.verify(token, SECRET_KEY);
     if (decoded) {

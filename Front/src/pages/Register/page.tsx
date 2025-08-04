@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useEffect, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { NavLink } from "react-router";
 import { useAuth } from "@/context/AuthProvider";
 import { Button } from "@/components/Button";
@@ -23,7 +23,7 @@ export default function Register() {
     lastName: "",
   });
 
-  async function register(e: React.FormEvent) {
+  async function register(e: FormEvent) {
     e.preventDefault();
     console.log(formData.firstName.trim());
     if (
@@ -47,9 +47,6 @@ export default function Register() {
       [name]: value,
     }));
   };
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
 
   return (
     <div className="">

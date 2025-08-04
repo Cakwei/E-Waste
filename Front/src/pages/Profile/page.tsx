@@ -317,7 +317,7 @@ export default function Profile() {
       navigate("/");
     }
   }, [auth]);
-
+  /*
   useEffect(() => {
     console.log(
       JSON.stringify(changeUsernameInputValue),
@@ -331,7 +331,7 @@ export default function Profile() {
     changeEmailInputValue,
     changeUsernameInputValue,
     changePasswordInputValue,
-  ]);
+  ]);*/
   return (
     <ProfileWrapper>
       <div className="flex w-full justify-start bg-gray-50 p-5">

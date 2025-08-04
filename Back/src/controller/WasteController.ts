@@ -58,9 +58,11 @@ const CreateCollection = async (req: Request, res: Response) => {
     const files = req.files as Express.Multer.File[];
 
     if (!(Array.isArray(req.files) && files.length > 0)) {
-      res
-        .status(400)
-        .send({ result: false, message: 'At least  one image is required' });
+      res.status(400).send({
+        status: 'Error',
+        data: {},
+        message: 'At least  one image is required',
+      });
       return;
     }
     const isInputsEmpty =
@@ -74,9 +76,11 @@ const CreateCollection = async (req: Request, res: Response) => {
       state === '' ||
       wasteDescription === '';
     if (isInputsEmpty) {
-      res
-        .status(400)
-        .send({ result: false, message: 'One or more input is empty' });
+      res.status(400).send({
+        status: 'Error',
+        data: {},
+        message: 'One or more input is empty',
+      });
       return;
     }
 
@@ -107,7 +111,9 @@ const CreateCollection = async (req: Request, res: Response) => {
       ],
     );
     console.log(result);
-    res.status(201).send({ result: true, message: 'Request created' });
+    res
+      .status(201)
+      .send({ status: 'Success', data: {}, message: 'Request created' });
   } catch (err) {
     console.log(err);
     if (imageLinksArray.length > 0) {
@@ -119,7 +125,7 @@ const CreateCollection = async (req: Request, res: Response) => {
     }
     res
       .status(500)
-      .send({ result: false, message: 'Failed to create request' });
+      .send({ status: 'Error', data: {}, message: 'Failed to create request' });
   }
 };
 
@@ -137,12 +143,15 @@ const GetAllOfUserCollection = async (req: Request, res: Response) => {
       [username],
     );
     if ((result as RowDataPacket[]).length === 0) {
-      res.status(404).send({ result: false, message: 'No results found' });
+      res
+        .status(404)
+        .send({ status: 'Error', data: {}, message: 'No results found' });
       return;
     }
     res.status(200).send({
-      result: true,
-      message: result as RowDataPacket[],
+      status: 'Success',
+      data: result as RowDataPacket[],
+      message: 'Succesfully found result(s)',
     });
   } catch (err) {
     console.log(err);
@@ -163,13 +172,15 @@ const FindUserCollection = async (req: Request, res: Response) => {
     );
 
     if ((result as RowDataPacket[]).length === 0) {
-      res.status(404).send({ result: false, message: 'No results found' });
+      res
+        .status(404)
+        .send({ status: 'Error', data: {}, message: 'No results found' });
       return;
     }
-    console.log(result);
     res.status(200).send({
-      result: true,
-      message: (result as RowDataPacket[])[0],
+      status: 'Success',
+      data: (result as RowDataPacket[])[0],
+      message: 'Succesfully found result(s)',
     });
   } catch (err) {
     console.log(err);
@@ -187,7 +198,9 @@ const UpdateUserCollection = async (req: Request, res: Response) => {
       token = VerifyToken(token as string);
 
       if (!token) {
-        res.status(401).send({ result: false, message: 'Invalid token' });
+        res
+          .status(401)
+          .send({ status: 'Error', data: {}, message: 'Invalid token' });
         return;
       }
       token = jwt.decode(token) as JWTPayload;
@@ -213,17 +226,21 @@ const UpdateUserCollection = async (req: Request, res: Response) => {
       const isRowAffected = (result![0] as ResultSetHeader).affectedRows > 0;
       if (isRowAffected) {
         res.status(200).send({
-          result: true,
-          message: (result![0] as ResultSetHeader).affectedRows,
+          status: 'Success',
+          data: (result![0] as ResultSetHeader).affectedRows,
+          message: 'Successfully updated collection info',
         });
       } else {
-        res.status(400).send({ result: false, message: 'No rows affected' });
+        res
+          .status(400)
+          .send({ status: 'Error', data: {}, message: 'No rows affected' });
       }
     }
   } catch (err) {
     console.log(err);
     res.status(500).send({
-      result: false,
+      status: 'Fail',
+      data: {},
       message: 'Failed to update collection',
     });
   }
