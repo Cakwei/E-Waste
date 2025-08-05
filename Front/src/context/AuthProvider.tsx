@@ -99,11 +99,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (data: ILogin) => {
     try {
+      setLoading(true);
       const emailRegexExpression =
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (data.email) {
         if (!emailRegexExpression.test(data.email)) {
           alert("Invalid email address");
+          setLoading(false);
           return;
         }
       }
@@ -126,8 +128,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           role: data.role,
         });
         setToken(data.token);
+
         navigate("/");
+        setLoading(false);
       }
+      setLoading(false);
     } catch (err) {
       console.log(err);
       alert("Login failed. Please try again.");
@@ -156,6 +161,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const register = async (data: IUser) => {
     try {
+      setLoading(true);
       const result = await axios.post(`${endPointUrl}/register`, {
         username: data.username,
         email: data.email,
@@ -167,11 +173,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if ((result as axiosResponse).data.status === "Success") {
         alert("Successfully registered. Please login.");
         navigate("/login");
+        setLoading(false);
       } else {
         alert("Login failed. Please try again.");
+        setLoading(false);
       }
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 

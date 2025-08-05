@@ -72,6 +72,7 @@ export default function ViewRequest() {
 
   useEffect(() => {
     const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
+    console.log(isLoggedIn, auth.loading);
     if (!isLoggedIn && !auth.loading) {
       navigate("/login");
     }
@@ -79,7 +80,7 @@ export default function ViewRequest() {
 
   return (
     <ProfileComponent>
-      {isLoading ? (
+      {!(isLoading || !auth.loading) ? (
         <div className="flex w-full flex-col gap-4 p-5 md:max-w-[650px]">
           <div className="skeleton h-100 w-full bg-zinc-300"></div>
           <div className="skeleton h-10 w-28 bg-zinc-300"></div>

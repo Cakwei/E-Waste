@@ -12,12 +12,11 @@ type FormData = {
 
 export default function Login() {
   const auth = useAuth();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
-
-  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
@@ -124,7 +123,7 @@ export default function Login() {
             type="submit"
             className="btn border bg-[#30b4ac] text-white outline-none"
           >
-            Login
+            {auth.loading ? "Logging in..." : "Login"}
           </Button>
           <NavLink to="/register" className="w-full text-center text-sm">
             {" New user? "}

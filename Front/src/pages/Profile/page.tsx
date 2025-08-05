@@ -20,8 +20,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/Dialog";
-import { toast } from "sonner";
 import type { ProfileInput } from "@/types/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { endPointUrl } from "@/constants/constants";
 /*
 type IFormData = {
   username: string;
@@ -32,6 +34,7 @@ type IFormData = {
 
 export default function Profile() {
   const auth = useAuth();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [dialog, setDialog] = useState({
     usernameDialog: false,
@@ -40,30 +43,37 @@ export default function Profile() {
   });
 
   const [changeUsernameInputValue, setChangeUsernameInputValue] = useState({
-    currentUsername: null,
-    newUsername: null,
+    currentUsername: "",
+    newUsername: "",
   });
   const [changeEmailInputValue, setChangeEmailInputValue] = useState({
-    currentEmail: null,
-    newEmail: null,
+    currentEmail: "",
+    newEmail: "",
   });
   const [changePasswordInputValue, setChangePasswordInputValue] = useState({
-    currentPassword: null,
-    newPassword: null,
+    currentPassword: "",
+    newPassword: "",
   });
   const [renderModalType, setRenderModalType] =
     useState<ProfileInput["field"]>(null);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault(); /*
-    const result = await axios.post(
-      `${endPointUrl}/users/${auth.user?.email}/change-username`,
-      formData,
-    );
-    if (result.data.result === true) {
-      console.log(result);
-    }*/
-  }
+  const updateProfileInfo = useMutation({
+    mutationFn: async () => {
+      return (
+        await axios.post(
+          `${endPointUrl}/users/${auth.user?.email}/change-username`,
+          changeUsernameInputValue,
+          { withCredentials: true },
+        )
+      ).data.data;
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["profileInfo"] });
+    },
+    onError: (error) => {
+      console.error("Error updating profile information:", error);
+    },
+  });
 
   function openDialog(field: ProfileInput["field"]) {
     switch (field) {
@@ -94,6 +104,20 @@ export default function Profile() {
         );
     }
   }
+
+  useEffect(() => {
+    console.log(
+      JSON.stringify({
+        changeEmailInputValue: changeEmailInputValue,
+        changePasswordInputValue: changePasswordInputValue,
+        changeUsernameInputValue: changeUsernameInputValue,
+      }),
+    );
+  }, [
+    changeEmailInputValue,
+    changePasswordInputValue,
+    changeUsernameInputValue,
+  ]);
 
   function renderChangeProfileInfoModal(field: ProfileInput["field"]) {
     switch (field) {
@@ -145,17 +169,7 @@ export default function Profile() {
                     type="submit"
                     className="bg-[#08948c]"
                     onClick={() => {
-                      toast.error("ddd", {
-                        style: {
-                          // color: "red",
-                          // display: "flex",
-                        },
-                        classNames: {
-                          title: "ml-2.5",
-                        },
-                        position: "top-center",
-                        icon: <MailWarning color="black" />,
-                      });
+                      updateProfileInfo.mutate();
                     }}
                   >
                     Save changes
@@ -345,7 +359,7 @@ export default function Profile() {
               ) : (
                 <div className="flex w-full basis-[50%] items-center justify-start gap-5">
                   <span className="w-[40%] overflow-hidden text-ellipsis md:w-fit">
-                    {auth.user?.username}
+                    {updateProfileInfo.data?.username || auth.user?.username}
                   </span>
                   <Pencil
                     size={15}

@@ -218,7 +218,7 @@ export default function Register() {
             type="submit"
             className="btn mt-2.5 border bg-[#30b4ac] text-white outline-none"
           >
-            Register
+            {auth.loading ? "Registering..." : "Register"}
           </Button>
           <div className="flex justify-between">
             <NavLink to="/login" className="w-full text-center text-sm">

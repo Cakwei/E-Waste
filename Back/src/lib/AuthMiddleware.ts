@@ -17,7 +17,7 @@ export const AuthMiddleware = async (
     const token = req.cookies.auth;
     // const token = req.header('Authorization')?.split(' ')[1];
     if (!token) {
-      console.log('error');
+      console.log('No token found');
       return;
     }
     const decoded = jwt.verify(token, SECRET_KEY);
