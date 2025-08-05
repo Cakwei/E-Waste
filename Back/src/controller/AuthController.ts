@@ -27,6 +27,7 @@ async function Login(req: Request, res: Response): Promise<void> {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
+      res.clearCookie('auth');
       res.status(400).send({
         status: 'Error',
         data: {},
@@ -36,6 +37,7 @@ async function Login(req: Request, res: Response): Promise<void> {
     }
 
     if (!validateEmailFormat(email)) {
+      res.clearCookie('auth');
       res.status(400).send({
         status: 'Error',
         data: {},
@@ -48,6 +50,7 @@ async function Login(req: Request, res: Response): Promise<void> {
       ((await FindUserByEmail(email)) as UserAccount[]).length > 0;
 
     if (!userExists) {
+      res.clearCookie('auth');
       res
         .status(401)
         .send({ status: 'Error', data: {}, message: 'Invalid credentials.' });
@@ -60,6 +63,7 @@ async function Login(req: Request, res: Response): Promise<void> {
     const passwordMatch = await bcrypt.compare(password, user.password); //password === user.password;
 
     if (!passwordMatch) {
+      res.clearCookie('auth');
       res
         .status(401)
         .send({ status: 'Error', data: {}, message: 'Invalid credentials.' });
@@ -73,6 +77,7 @@ async function Login(req: Request, res: Response): Promise<void> {
       maxAge: 60 * 60 * 1000,
       httpOnly: true,
     });
+
     res.status(200).send({
       status: 'Success',
       data: {
@@ -86,6 +91,7 @@ async function Login(req: Request, res: Response): Promise<void> {
       message: 'Login successful.',
     });
   } catch (error) {
+    res.clearCookie('auth');
     console.error('Login error:', error);
     res.status(500).send({
       status: 'Error',
@@ -147,17 +153,6 @@ async function Register(req: Request, res: Response) {
       .send({ status: 'Error', data: {}, message: 'Failed to create account' });
   }
 }
-async function ChangeUsername(req: Request, res: Response) {
-  try {
-  } catch (err) {
-    console.log(err);
-    res.status(500).send({
-      status: 'Error',
-      data: {},
-      message: 'Failed to change username',
-    });
-  }
-}
 
 async function RefreshSession(req: Request, res: Response) {
   try {
@@ -172,7 +167,8 @@ async function RefreshSession(req: Request, res: Response) {
         });
         return;
       }
-      token = SignToken(jwt.decode(token) as JWTPayload);
+      token = jwt.decode(token);
+      token = SignToken(token);
       res.cookie('auth', token, {
         sameSite: 'lax',
         secure: config.nodeEnv === 'prod' ? true : false,
@@ -200,6 +196,7 @@ async function RefreshSession(req: Request, res: Response) {
       });
     }
   } catch (err) {
+    console.log(err);
     res.clearCookie('auth');
     res.status(500).send({
       status: 'Error',

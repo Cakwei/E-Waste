@@ -275,7 +275,7 @@ type IRequestData = {
 function RequestOverview({
   data,
 }: {
-  data: { [key: string]: string | number };
+  data: { [key: string]: string };
 }) {
   function selectBadge() {
     switch (data?.status.toString()) {

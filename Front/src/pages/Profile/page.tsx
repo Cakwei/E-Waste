@@ -1,13 +1,8 @@
 import { Pencil } from "lucide-react";
-import {
-  useEffect,
-  useLayoutEffect,
-  useState,
-  type ChangeEvent,
-} from "react";
+import { useEffect, useLayoutEffect, useState, type ChangeEvent } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import ProfileWrapper from "@/pages/Profile/component/ProfileWrapper";
-import { useNavigate } from "react-router";
+import { useNavigate, useNavigation } from "react-router";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import {
@@ -33,6 +28,7 @@ type IFormData = {
 
 export default function Profile() {
   const auth = useAuth();
+  const navigation = useNavigate();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [dialog, setDialog] = useState({
@@ -57,17 +53,43 @@ export default function Profile() {
     useState<ProfileInput["field"]>(null);
 
   const updateProfileInfo = useMutation({
-    mutationFn: async () => {
-      return (
-        await axios.post(
-          `${endPointUrl}/users/${auth.user?.email}/change-username`,
-          changeUsernameInputValue,
-          { withCredentials: true },
-        )
-      ).data.data;
+    mutationFn: async (mode: {
+      changeUsername?: boolean;
+      changeEmail?: boolean;
+      changePassword?: boolean;
+    }) => {
+      console.log(mode);
+      if (mode.changeUsername) {
+        console.log("zz");
+        return (
+          await axios.post(
+            `${endPointUrl}/users/${auth.user?.email}/change-username`,
+            changeUsernameInputValue,
+            { withCredentials: true },
+          )
+        ).data.data;
+      }
+      if (mode.changeEmail) {
+        return (
+          await axios.post(
+            `${endPointUrl}/users/${auth.user?.email}/change-email`,
+            changeEmailInputValue,
+            { withCredentials: true },
+          )
+        ).data.data;
+      }
+      if (mode.changePassword) {
+        return (
+          await axios.post(
+            `${endPointUrl}/users/${auth.user?.email}/change-password`,
+            changePasswordInputValue,
+            { withCredentials: true },
+          )
+        ).data.data;
+      }
     },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["profileInfo"] });
+    onSuccess: () => {
+      window.location.href = "/";
     },
     onError: (error) => {
       console.error("Error updating profile information:", error);
@@ -168,7 +190,7 @@ export default function Profile() {
                     type="submit"
                     className="bg-[#08948c]"
                     onClick={() => {
-                      updateProfileInfo.mutate();
+                      updateProfileInfo.mutate({ changeUsername: true });
                     }}
                   >
                     Save changes
@@ -222,7 +244,13 @@ export default function Profile() {
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit" className="bg-[#08948c]">
+                  <Button
+                    onClick={() => {
+                      updateProfileInfo.mutate({ changeEmail: true });
+                    }}
+                    type="submit"
+                    className="bg-[#08948c]"
+                  >
                     Save changes
                   </Button>
                 </DialogFooter>
@@ -248,7 +276,10 @@ export default function Profile() {
                   <DialogTitle>Edit password</DialogTitle>
                   <DialogDescription>
                     Make changes to your profile here. Click save when
-                    you&apos;re done.
+                    you&apos;re done.{" "}
+                    <span className="text-error">
+                      NOTE: You will signed out!
+                    </span>
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4">
@@ -275,7 +306,13 @@ export default function Profile() {
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit" className="bg-[#08948c]">
+                  <Button
+                    onClick={() =>
+                      updateProfileInfo.mutate({ changePassword: true })
+                    }
+                    type="submit"
+                    className="bg-[#08948c]"
+                  >
                     Save changes
                   </Button>
                 </DialogFooter>
@@ -378,7 +415,7 @@ export default function Profile() {
               ) : (
                 <div className="flex w-full basis-[50%] items-center justify-start gap-5">
                   <span className="w-[40%] overflow-hidden text-ellipsis md:w-fit">
-                    {auth.user?.email}
+                    {updateProfileInfo.data?.email || auth.user?.email}
                   </span>
                   <Pencil
                     size={15}

@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
       }
       setLoading(false);
-    } catch {
+    } catch (err) {
       setLoading(false);
       setUser({
         username: "",
@@ -134,6 +134,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log(err);
       alert("Login failed. Please try again.");
     }
