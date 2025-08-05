@@ -45,7 +45,7 @@ export type IData = {
 export interface axiosResponse extends AxiosResponse {
   data: {
     status: string;
-    data: { [key: string]: any };
+    data: { [key: string]: string | number };
     message: string;
     code: number;
   };

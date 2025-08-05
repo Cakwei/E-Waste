@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
 import { House, MessageCircleQuestion, SquareUser, Ticket } from "lucide-react";

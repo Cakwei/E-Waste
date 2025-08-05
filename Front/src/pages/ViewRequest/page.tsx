@@ -264,14 +264,19 @@ export default function ViewRequest() {
   );
 }
 
+/*
 type IRequestData = {
   status: string;
   agentInCharge: string;
   creationDate: string;
   id: string;
 };
-
-function RequestOverview({ data }: { data: { [key: string]: any } }) {
+*/
+function RequestOverview({
+  data,
+}: {
+  data: { [key: string]: string | number };
+}) {
   function selectBadge() {
     switch (data?.status.toString()) {
       case "created":
@@ -369,7 +374,11 @@ function RequestOverview({ data }: { data: { [key: string]: any } }) {
   );
 }
 
-function ActionsBtnSection({ data }: { data: { [key: string]: any } }) {
+function ActionsBtnSection({
+  data,
+}: {
+  data: { [key: string]: string | number };
+}) {
   const auth = useAuth();
 
   async function cancelRequest(e: FormEvent<HTMLButtonElement>) {

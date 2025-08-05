@@ -1,10 +1,9 @@
-import { MailWarning, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import {
   useEffect,
   useLayoutEffect,
   useState,
   type ChangeEvent,
-  type FormEvent,
 } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import ProfileWrapper from "@/pages/Profile/component/ProfileWrapper";
