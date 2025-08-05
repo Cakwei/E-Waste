@@ -2,7 +2,7 @@ import { Pencil } from "lucide-react";
 import { useEffect, useLayoutEffect, useState, type ChangeEvent } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import ProfileWrapper from "@/pages/Profile/component/ProfileWrapper";
-import { useNavigate, useNavigation } from "react-router";
+import { useNavigate } from "react-router";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import {
@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/Dialog";
 import type { ProfileInput } from "@/types/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { endPointUrl } from "@/constants/constants";
 /*
@@ -28,8 +28,6 @@ type IFormData = {
 
 export default function Profile() {
   const auth = useAuth();
-  const navigation = useNavigate();
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [dialog, setDialog] = useState({
     usernameDialog: false,

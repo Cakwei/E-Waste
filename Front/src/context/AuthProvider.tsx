@@ -83,7 +83,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         });
       }
       setLoading(false);
-    } catch (err) {
+    } catch {
       setLoading(false);
       setUser({
         username: "",
