@@ -54,3 +54,10 @@ export const endPointUrl =
   import.meta.env.VITE_DEPLOYMENT_MODE === "prod"
     ? "https://wms-api.cakwei.com"
     : "http://localhost:3000";
+
+export const Colors = {
+  activePrimaryButtonStyle:
+    "bg-teal-600 text-white hover:bg-teal-700 active:bg-teal-800",
+  activeSecondaryButtonStyle:
+    "bg-[#30b4ac] hover:bg-teal-600 active:bg-teal-700",
+};

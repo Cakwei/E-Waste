@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import heroImg from "@/assets/heroImg.svg";
 import { motion } from "motion/react";
 import { Button } from "@/components/Button";
+import { Colors } from "@/constants/constants";
 export default function Hero() {
   const navigate = useNavigate();
   return (
@@ -20,7 +21,7 @@ export default function Hero() {
           >
             <Button
               onClick={() => navigate("/profile")}
-              className="btn border-none bg-[#08948c] font-normal text-white outline-none"
+              className={`${Colors.activePrimaryButtonStyle} btn border-none bg-[#08948c] font-normal text-white outline-none`}
             >
               Recycle
             </Button>
@@ -29,7 +30,9 @@ export default function Hero() {
             initial={{ x: 10 }}
             animate={{ x: 0, transition: { duration: 0.55 } }}
           >
-            <Button className="btn border-none bg-[#30b4ac] font-normal text-white outline-none">
+            <Button
+              className={`${Colors.activeSecondaryButtonStyle} btn border-none bg-[#30b4ac] font-normal text-white outline-none`}
+            >
               Learn More
             </Button>{" "}
           </motion.div>

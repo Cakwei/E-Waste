@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { NavLink } from "react-router";
 import { useAuth } from "@/context/AuthProvider";
 import { Button } from "@/components/Button";
+import { Colors } from "@/constants/constants";
 
 type FormData = {
   username: string;
@@ -49,9 +50,9 @@ export default function Register() {
   };
 
   return (
-    <div className="">
+    <div className="h-auto">
       <Header />
-      <article className="mt-[64px] flex min-h-[500px] w-full items-center justify-center bg-[#08948c] p-5 min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)]">
+      <article className="mt-[64px] flex min-h-[500px] w-full items-center justify-center bg-[#08948c] p-5 min-[640px]:h-[calc(100dvh-250px)]">
         <form
           onSubmit={(e) => {
             register(e);
@@ -216,7 +217,7 @@ export default function Register() {
           <Button
             name="password"
             type="submit"
-            className="btn mt-2.5 border bg-[#30b4ac] text-white outline-none"
+            className={`${Colors.activeSecondaryButtonStyle} btn mt-2.5 border outline-none`}
           >
             {auth.loading ? "Registering..." : "Register"}
           </Button>

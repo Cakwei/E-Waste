@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import { useNavigate } from "react-router";
 import axios from "axios";
 import { useAuth } from "@/context/AuthProvider";
-import { endPointUrl } from "@/constants/constants";
+import { Colors, endPointUrl } from "@/constants/constants";
 import {
   Table,
   TableBody,
@@ -64,15 +64,21 @@ export default function Request() {
     switch (data.status) {
       case "created":
         return (
-          <div className="badge badge-success p-2.5 text-white">Created</div>
+          <div className="badge badge-success h-[30px] p-2.5 text-white">
+            Created
+          </div>
         );
       case "picked_up":
         return (
-          <div className="badge badge-success p-2.5 text-white">Picked Up</div>
+          <div className="badge badge-success h-[30px] p-2.5 text-white">
+            Picked Up
+          </div>
         );
       case "cancelled":
         return (
-          <div className="badge badge-error p-2.5 text-white">Cancelled</div>
+          <div className="badge badge-error h-[30px] p-2.5 text-white">
+            Cancelled
+          </div>
         );
     }
   }
@@ -88,7 +94,7 @@ export default function Request() {
                   document.getElementById("my_modal_1") as HTMLDialogElement
                 ).showModal();
               }}
-              className="btn border-none bg-[#028b85] font-normal text-white"
+              className={`btn border-none py-5 font-normal ${Colors.activeSecondaryButtonStyle}`}
             >
               Create New Request
             </Button>
@@ -130,7 +136,7 @@ export default function Request() {
                           onClick={() => {
                             navigate(`/profile/request/${item.id}`);
                           }}
-                          className="btn btn-primary max-h-[30px] border-none bg-[#30b4ac] font-normal shadow-none"
+                          className={`btn btn-primary h-[30px] border-none px-5 font-normal shadow-none ${Colors.activeSecondaryButtonStyle} `}
                         >
                           View
                         </Button>

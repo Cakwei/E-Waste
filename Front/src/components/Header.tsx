@@ -2,6 +2,8 @@ import logo from "../assets/logo.png";
 import { NavLink, useNavigate } from "react-router";
 import { useAuth } from "../context/AuthProvider";
 import defaultProfileIcon from "@/assets/defaultProfileIcon.jpg";
+import { Button } from "./Button";
+import { Colors } from "@/constants/constants";
 export default function Header() {
   const auth = useAuth();
   const navigate = useNavigate();
@@ -150,19 +152,19 @@ export default function Header() {
                   <div className="skeleton size-10 h-10 w-10 rounded-[50%]"></div>
                 ) : (
                   <>
-                    <NavLink
-                      className="rounded-md bg-teal-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm"
-                      to="/login"
+                    <Button
+                      className={`${Colors.activePrimaryButtonStyle} rounded-md p-5 text-sm font-medium shadow-sm`}
+                      onClick={() => navigate("/login")}
                     >
                       Login
-                    </NavLink>
+                    </Button>
                     <div className="hidden sm:flex">
-                      <NavLink
-                        className="rounded-md bg-gray-100 px-5 py-2.5 text-sm font-medium text-teal-600"
-                        to="/register"
+                      <Button
+                        className={`${Colors.activeSecondaryButtonStyle} rounded-md p-5 text-sm font-medium`}
+                        onClick={() => navigate("/register")}
                       >
                         Register
-                      </NavLink>
+                      </Button>
                     </div>
                   </>
                 )}

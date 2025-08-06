@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { NavLink } from "react-router";
 import { Button } from "@/components/Button";
+import { Colors } from "@/constants/constants";
 
 type FormData = {
   email: string;
@@ -121,7 +122,7 @@ export default function Login() {
 
           <Button
             type="submit"
-            className="btn border bg-[#30b4ac] text-white outline-none"
+            className={`${Colors.activeSecondaryButtonStyle} btn border outline-none`}
           >
             {auth.loading ? "Logging in..." : "Login"}
           </Button>

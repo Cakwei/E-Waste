@@ -17,7 +17,7 @@ import {
 import type { ProfileInput } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { endPointUrl } from "@/constants/constants";
+import { Colors, endPointUrl } from "@/constants/constants";
 /*
 type IFormData = {
   username: string;
@@ -186,7 +186,7 @@ export default function Profile() {
                   </DialogClose>
                   <Button
                     type="submit"
-                    className="bg-[#08948c]"
+                    className={`${Colors.activePrimaryButtonStyle}`}
                     onClick={() => {
                       updateProfileInfo.mutate({ changeUsername: true });
                     }}
@@ -247,7 +247,7 @@ export default function Profile() {
                       updateProfileInfo.mutate({ changeEmail: true });
                     }}
                     type="submit"
-                    className="bg-[#08948c]"
+                    className={`${Colors.activePrimaryButtonStyle}`}
                   >
                     Save changes
                   </Button>
@@ -309,7 +309,7 @@ export default function Profile() {
                       updateProfileInfo.mutate({ changePassword: true })
                     }
                     type="submit"
-                    className="bg-[#08948c]"
+                    className={`${Colors.activePrimaryButtonStyle}`}
                   >
                     Save changes
                   </Button>

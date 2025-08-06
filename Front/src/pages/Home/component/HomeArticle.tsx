@@ -11,6 +11,7 @@ import {
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import type { ILocation } from "@/types/types";
 import { Button } from "@/components/Button";
+import { Colors } from "@/constants/constants";
 
 const info = [
   { label: "1k E-Waste Recycled", href: "#" },
@@ -85,7 +86,9 @@ export default function HomeArticle() {
         <img src={greenEnv} className="w-50 rounded-[50%] outline-2" />
         <h5 className="sm:text-st flex flex-col items-center justify-center gap-5 text-center text-2xl font-bold sm:items-start sm:text-start">
           Wish to take part in our journey for a greener future?
-          <Button className="btn w-max gap-2.5 border-none bg-[#30b4ac] text-white shadow-none outline-none">
+          <Button
+            className={`btn w-max gap-2.5 border-none bg-[#30b4ac] p-5 shadow-none outline-none ${Colors.activeSecondaryButtonStyle}`}
+          >
             Request for waste collection <i className="bi bi-arrow-right"></i>
           </Button>
         </h5>
