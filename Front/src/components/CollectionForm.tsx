@@ -21,7 +21,7 @@ export interface ICollectionForm {
 
 export default function CollectionForm() {
   const auth = useAuth();
-
+  const [processing, setProcessing] = useState(false);
   const [formData, setFormData] = useState<ICollectionForm>({
     firstName: auth.user?.firstName || "",
     lastName: auth.user?.lastName || "",
@@ -48,6 +48,7 @@ export default function CollectionForm() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
+      setProcessing(true);
       if (
         !(
           formData.firstName === "" &&
@@ -86,8 +87,10 @@ export default function CollectionForm() {
         );
         console.log(result);
       }
+      setProcessing(false);
     } catch (err) {
       console.log(err);
+      setProcessing(false);
     }
   }
   useEffect(() => {
@@ -329,7 +332,7 @@ export default function CollectionForm() {
                   type="submit"
                   className="inline-flex justify-center rounded-md border border-transparent bg-green-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
                 >
-                  Submit Form
+                  {processing ? "Submitting form..." : "Submit Form"}
                 </button>
               </div>
             </form>

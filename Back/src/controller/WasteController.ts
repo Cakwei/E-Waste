@@ -8,7 +8,7 @@ import {
 } from 'mysql2/promise';
 import { v2 as cloudinary } from 'cloudinary';
 import { v4 as uuidv4 } from 'uuid';
-import { jwt_secret, JWTPayload, VerifyToken } from './AuthController';
+import { JWTPayload, VerifyToken } from './AuthController';
 import jwt from 'jsonwebtoken';
 /*
 type FileMetadata = {
@@ -96,11 +96,12 @@ const CreateCollection = async (req: Request, res: Response) => {
       imagePublicIdArray.push(result.public_id);
     }
 
+    const accountId = await getAccountIDByEmail(email);
     const result = await connection.execute(
-      'INSERT INTO collections (id, email, phoneNumber, building, streetAddress, city, state, wasteDescription, images, creationdate) VALUES (?,?,?,?,?,?,?,?,?, NOW())',
+      'INSERT INTO collections (id, accountId, phoneNumber, building, streetAddress, city, state, wasteDescription, images, creationdate) VALUES (?,?,?,?,?,?,?,?,?, NOW())',
       [
         uuid,
-        email,
+        accountId,
         phoneNumber,
         building,
         streetAddress,
@@ -138,7 +139,7 @@ const GetAllOfUserCollection = async (req: Request, res: Response) => {
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status
       FROM accounts
       RIGHT JOIN collections
-      ON accounts.email = collections.email WHERE username = ?;
+      ON accounts.accountId = collections.accountId WHERE username = ?;
       `,
       [username],
     );
@@ -166,7 +167,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
       SELECT id, building, streetAddress, city, state, wasteDescription, images, accounts.email, firstName, lastName, phoneNumber, creationDate, status, agentInCharge
       FROM accounts
       RIGHT JOIN collections
-      ON accounts.email = collections.email WHERE id = ?;
+      ON accounts.accountId = collections.accountId WHERE id = ?;
       `,
       [id],
     );
@@ -247,25 +248,27 @@ const UpdateUserCollection = async (req: Request, res: Response) => {
 };
 
 const CancelCollection = async (id: string, httpOnlyEmail: string) => {
+  const accountId = await getAccountIDByEmail(httpOnlyEmail);
   const data = await connection.execute(
     `
       UPDATE collections
       SET status = 'cancelled'
-      WHERE id = ? AND email = ?;
+      WHERE id = ? AND accountId = ?;
       `,
-    [id, httpOnlyEmail],
+    [id, accountId],
   );
   return data;
 };
 
 const MarkCollection = async (id: string, httpOnlyEmail: string) => {
+  const accountId = await getAccountIDByEmail(httpOnlyEmail);
   const data = await connection.execute(
     `
       UPDATE collections
       SET status = 'pending_pickup',
-      WHERE id = ? AND email = ?;
+      WHERE id = ? AND accountId = ?;
       `,
-    [id, httpOnlyEmail],
+    [id, accountId],
   );
   return data;
 };
@@ -275,13 +278,14 @@ const AssignAgentToCollection = async (
   httpOnlyEmail: string,
   agentInCharge: string,
 ) => {
+  const accountId = await getAccountIDByEmail(httpOnlyEmail);
   const data = await connection.execute(
     `
       UPDATE collections
       SET status = 'assigned', agentInCharge = ?
-      WHERE id = ? AND email = ?;
+      WHERE id = ? AND accountId = ?;
       `,
-    [agentInCharge, id, httpOnlyEmail],
+    [agentInCharge, id, accountId],
   );
   return data;
 };
@@ -292,3 +296,14 @@ export {
   FindUserCollection,
   UpdateUserCollection,
 };
+
+// Quick functions
+async function getAccountIDByEmail(email: string) {
+  if (email) {
+    const [result] = await connection.execute(
+      'SELECT accountId FROM accounts WHERE email = ?',
+      [email],
+    );
+    return (result as RowDataPacket[])[0].accountId;
+  }
+}

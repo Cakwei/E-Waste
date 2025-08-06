@@ -3,7 +3,7 @@ import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
 import { endPointUrl } from "@/constants/constants";
 import axios, { type AxiosResponse } from "axios";
 import { Copy, TriangleAlert, UserPen } from "lucide-react";
-import { useEffect, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ImageZoom";
@@ -31,7 +31,7 @@ export default function ViewRequest() {
     queryFn: fetchData,
     enabled:
       !auth.loading && auth.user?.username !== "" && auth.user?.email !== "",
-    refetchInterval: 5000,
+    refetchInterval: 2500,
   });
 
   async function fetchData() {
@@ -54,19 +54,16 @@ export default function ViewRequest() {
           data = {
             ...data,
             images: JSON.parse(
-              Buffer.Buffer.from(data.images).toString("utf-8"),
+              Buffer.Buffer.from(data.images as string).toString("utf-8"),
             ),
           };
           return data;
         } else {
           navigate("/");
-          return null;
         }
       }
-      return null;
     } catch (err) {
       console.log(err);
-      return null;
     }
   }
 
@@ -120,7 +117,7 @@ export default function ViewRequest() {
             </header>
 
             <main className="p-6 md:p-8">
-              <RequestOverview data={data as axiosResponse["data"]} />
+              <RequestOverview data={data} />
 
               <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
                 <h2 className="mb-4 border-b pb-3 text-xl font-semibold text-gray-800">
@@ -236,7 +233,7 @@ export default function ViewRequest() {
                   </label>
                   <div className="flex gap-4 overflow-x-auto p-2">
                     {data?.images && data?.images.length > 0 ? (
-                      data?.images.map((item: string) => (
+                      (data?.images as string[]).map((item: string) => (
                         <ImageZoom
                           key={item}
                           className="w-35 flex-shrink-0 cursor-pointer overflow-hidden border border-gray-300 bg-cover object-cover shadow-sm transition-shadow hover:shadow-md"
@@ -254,7 +251,7 @@ export default function ViewRequest() {
                   </div>
                 </div>
               </section>
-              <ActionsBtnSection data={data as axiosResponse} />
+              <ActionsBtnSection data={data} />
             </main>
           </div>
           <div></div>
@@ -275,7 +272,7 @@ type IRequestData = {
 function RequestOverview({
   data,
 }: {
-  data: { [key: string]: string };
+  data: { [key: string]: string | string[] } | undefined;
 }) {
   function selectBadge() {
     switch (data?.status.toString()) {
@@ -283,33 +280,28 @@ function RequestOverview({
         return (
           <span className="inline-block rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
             {data?.status &&
-              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+              (data?.status as string).charAt(0).toUpperCase() +
+                data?.status.slice(1)}
           </span>
         );
       case "pending":
         return (
           <span className="inline-block rounded-full bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
             {data?.status &&
-              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+              (data?.status as string).charAt(0).toUpperCase() +
+                data?.status.slice(1)}
           </span>
         );
       case "cancelled":
         return (
           <span className="inline-block rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-md">
             {data?.status &&
-              data?.status.charAt(0).toUpperCase() + data?.status.slice(1)}
+              (data?.status as string).charAt(0).toUpperCase() +
+                data?.status.slice(1)}
           </span>
         );
     }
   }
-
-  useEffect(() => {
-    socket.on("updateViewRequest", async () => {});
-
-    return () => {
-      socket.off("updateViewRequest");
-    };
-  }, []);
 
   return (
     <section className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-6 shadow-sm">
@@ -330,7 +322,7 @@ function RequestOverview({
                 size={15}
                 onClick={() => {
                   if (data?.id) {
-                    navigator.clipboard.writeText(data.id);
+                    navigator.clipboard.writeText(data.id as string);
                   }
                 }}
               />
@@ -349,11 +341,11 @@ function RequestOverview({
           </label>
           <span className="text-base text-gray-800">
             {data?.creationDate &&
-              new Date(data?.creationDate).getDate() +
+              new Date(data?.creationDate as string).getDate() +
                 "-" +
-                new Date(data?.creationDate).getMonth() +
+                new Date(data?.creationDate as string).getMonth() +
                 "-" +
-                new Date(data?.creationDate).getFullYear()}
+                new Date(data?.creationDate as string).getFullYear()}
           </span>
         </div>
 
@@ -377,15 +369,22 @@ function RequestOverview({
 function ActionsBtnSection({
   data,
 }: {
-  data: { [key: string]: string | number };
+  data: { [key: string]: string | string[] } | undefined;
 }) {
   const auth = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const [openDialog, setOpenDialog] = useState({
+    cancel: false,
+    mark: false,
+    assign: false,
+  });
 
   async function cancelRequest(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault();
     const result = (await updateCollectionRequest("cancel")) as AxiosResponse;
     if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
+      setOpenDialog({ ...openDialog, cancel: !openDialog.cancel });
     }
   }
   async function markRequestStatus(e: FormEvent<HTMLButtonElement>) {
@@ -393,6 +392,7 @@ function ActionsBtnSection({
     const result = (await updateCollectionRequest("mark")) as AxiosResponse;
     if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
+      setOpenDialog({ ...openDialog, mark: !openDialog.mark });
     }
   }
 
@@ -404,6 +404,7 @@ function ActionsBtnSection({
     )) as AxiosResponse;
     if ((result as axiosResponse).data.status === "Success") {
       socket.emit("updateViewRequest");
+      setOpenDialog({ ...openDialog, assign: !openDialog.assign });
     }
   }
 
@@ -412,8 +413,9 @@ function ActionsBtnSection({
     agentInCharge: string | undefined = undefined,
   ) {
     const id = data?.id;
-    if (id) {
-      try {
+    try {
+      setIsSaving(true);
+      if (id) {
         const response = await axios.patch(
           `${endPointUrl}/waste-collection/collection/${id}`,
           {
@@ -423,11 +425,13 @@ function ActionsBtnSection({
           },
           { withCredentials: true },
         );
+        setIsSaving(false);
         return response;
-      } catch (error) {
-        console.error(`Error updating collection request ${id}:`, error);
-        throw error;
       }
+      setIsSaving(false);
+    } catch (error) {
+      setIsSaving(false);
+      console.error(`Error updating collection request ${id}:`, error);
     }
   }
 
@@ -439,7 +443,12 @@ function ActionsBtnSection({
       <div className="flex flex-wrap gap-4">
         {auth.user?.role === "admin" ? (
           <>
-            <Dialog>
+            <Dialog
+              open={openDialog.mark}
+              onOpenChange={() =>
+                setOpenDialog({ ...openDialog, mark: !openDialog.mark })
+              }
+            >
               <form>
                 <DialogTrigger asChild>
                   <Button
@@ -474,7 +483,12 @@ function ActionsBtnSection({
                 </DialogContent>
               </form>
             </Dialog>
-            <Dialog>
+            <Dialog
+              open={openDialog.assign}
+              onOpenChange={() =>
+                setOpenDialog({ ...openDialog, mark: !openDialog.assign })
+              }
+            >
               <form>
                 <DialogTrigger asChild>
                   <Button
@@ -521,9 +535,17 @@ function ActionsBtnSection({
             </Dialog>
           </>
         ) : (
-          <Dialog>
+          <Dialog
+            open={openDialog.cancel}
+            onOpenChange={() =>
+              setOpenDialog({ ...openDialog, cancel: !openDialog.cancel })
+            }
+          >
             <form>
-              <DialogTrigger asChild>
+              <DialogTrigger
+                className={`focus:ring-opacity-75 h-auto ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-700`}
+                asChild
+              >
                 <Button
                   className={`focus:ring-opacity-75 h-auto ${data?.status === "cancelled" ? "btn-disabled" : ""} btn rounded-lg border-none bg-red-600 px-6 py-2.5 font-semibold text-white shadow-md transition-all hover:bg-red-700`}
                 >
@@ -545,13 +567,13 @@ function ActionsBtnSection({
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <DialogClose>
+                  <DialogClose asChild>
                     <Button
                       type="submit"
                       className="bg-green-500 hover:bg-green-600"
                       onClick={cancelRequest}
                     >
-                      Save changes
+                      {isSaving ? "Saving..." : "Save changes"}
                     </Button>
                   </DialogClose>
                 </DialogFooter>
