@@ -65,13 +65,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       );
       if ((result as axiosResponse).data.status === "Success") {
         const data = (result as axiosResponse).data.data;
-        setToken(data.token);
+        setToken(data.token as string);
         setUser({
-          username: data.username,
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          role: data.role,
+          username: data.username as string,
+          email: data.email as string,
+          firstName: data.firstName as string,
+          lastName: data.lastName as string,
+          role: data.role as string,
         });
       } else {
         setUser({
@@ -121,13 +121,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if ((result as axiosResponse).data.status === "Success") {
         const data = (result as axiosResponse).data.data;
         setUser({
-          username: data.username,
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          role: data.role,
+          username: data.username as string,
+          email: data.email as string,
+          firstName: data.firstName as string,
+          lastName: data.lastName as string,
+          role: data.role as string,
         });
-        setToken(data.token);
+        setToken(data.token as string);
 
         navigate("/");
         setLoading(false);
