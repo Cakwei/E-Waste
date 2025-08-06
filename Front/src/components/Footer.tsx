@@ -1,11 +1,10 @@
-import type { IStyle } from "@/pages/Home/page";
 import { Github, Linkedin, Youtube } from "lucide-react";
 import { NavLink } from "react-router";
 
-export default function Footer({ className }: IStyle) {
+export default function Footer() {
   return (
     <footer
-      className={`footer sm:footer-horizontal bg-base-200 text-base-content p-10 ${className} `}
+      className={`footer sm:footer-horizontal bg-base-200 text-base-content p-10`}
     >
       <nav>
         <h6 className="footer-title">Services</h6>
