@@ -4,7 +4,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config/config';
-
+import { v4 as uuidv4 } from 'uuid';
 export const jwt_secret = config.jwt_secret;
 
 interface UserAccount extends RowDataPacket {
@@ -137,9 +137,10 @@ async function Register(req: Request, res: Response) {
       return;
     }
     const hashedPassword = await bcrypt.hash(password, hashSaltRounds);
+    const id = uuidv4();
     const [rows, fields] = await connection.execute(
-      'INSERT INTO `accounts` (email, firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)',
-      [email, firstName, lastName, username, hashedPassword],
+      'INSERT INTO `accounts` (accountId, email, firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)',
+      [id, email, firstName, lastName, username, hashedPassword],
     );
     if ((rows as ResultSetHeader).affectedRows > 0) {
       res
