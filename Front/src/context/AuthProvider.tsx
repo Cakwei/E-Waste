@@ -1,7 +1,12 @@
-import { endPointUrl } from "@/constants/constants";
+import { endPointUrl} from "@/constants/constants";
 import type { axiosResponse } from "@/types/types";
 import axios from "axios";
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigate } from "react-router";
 
 interface ILogin {
@@ -23,7 +28,7 @@ export type ProviderProps = {
     firstName: string;
     lastName: string;
     role: string;
-  } | null;
+  };
   token: string;
   loading: boolean;
   login(data: ILogin): void;

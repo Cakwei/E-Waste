@@ -139,7 +139,7 @@ async function Register(req: Request, res: Response) {
     const hashedPassword = await bcrypt.hash(password, hashSaltRounds);
     const id = uuidv4();
     const [rows, fields] = await connection.execute(
-      'INSERT INTO `accounts` (accountId, email, firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?)',
+      'INSERT INTO `accounts` (accountId, email, firstName, lastName, username, password) VALUES (?, ?, ?, ?, ?, ?)',
       [id, email, firstName, lastName, username, hashedPassword],
     );
     if ((rows as ResultSetHeader).affectedRows > 0) {

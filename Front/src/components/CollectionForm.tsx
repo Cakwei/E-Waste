@@ -19,7 +19,11 @@ export interface ICollectionForm {
   img: FileWithPreview[];
 }
 
-export default function CollectionForm() {
+export default function CollectionFormComp({
+  outerBackgroundColor,
+}: {
+  outerBackgroundColor?: string;
+}) {
   const auth = useAuth();
   const [processing, setProcessing] = useState(false);
   const [formData, setFormData] = useState<ICollectionForm>({
@@ -109,234 +113,234 @@ export default function CollectionForm() {
   }, [auth]);
 
   return (
-    <div className="">
-      <div className="min-w-[324px] font-light min-[324px]:h-[calc(100vh-64px-250px)] sm:h-[calc(100vh-64px-192px)] md:h-auto">
-        <div className="flex items-center justify-center bg-[#08948c] p-4 sm:p-6 lg:p-8">
-          <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl sm:p-8">
-            {/* Company Logo and Title */}
-            <div className="mb-6 flex flex-col items-center">
-              <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full border-2 border-green-300 bg-green-50">
-                {/* Using a simple SVG for the logo placeholder */}
-                <Clipboard className="size-15 text-2xl" color="#00a63e" />
-              </div>
-              <h1 className="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl">
-                Waste Pickup Request Form
-              </h1>
+    <div className="min-w-[324px]">
+      <div
+        className={`flex items-center justify-center p-4 sm:p-6 lg:p-8 ${outerBackgroundColor || "bg-[#08948c]"}`}
+      >
+        <div className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl sm:p-8">
+          {/* Company Logo and Title */}
+          <div className="mb-6 flex flex-col items-center">
+            <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full border-2 border-green-300 bg-green-50">
+              {/* Using a simple SVG for the logo placeholder */}
+              <Clipboard className="size-15 text-2xl" color="#00a63e" />
             </div>
+            <h1 className="mb-4 text-2xl font-bold text-gray-800 sm:text-3xl">
+              Waste Pickup Request Form
+            </h1>
+          </div>
 
-            {/* Form Section */}
-            <form
-              onSubmit={(e) => handleSubmit(e)}
-              encType={"multipart/form-data"}
-              className="space-y-4"
-            >
-              {/* Name Section */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="firstName"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    disabled
-                    className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={auth.user?.firstName || formData.firstName}
-                    name="firstName"
-                    onChange={(e) => handleInput(e)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="lastName"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    disabled
-                    className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={auth.user?.lastName || formData.lastName}
-                    name="lastName"
-                    onChange={(e) => handleInput(e)}
-                    required
-                  />
-                </div>
-              </div>
-              {/* Email Address */}
+          {/* Form Section */}
+          <form
+            onSubmit={(e) => handleSubmit(e)}
+            encType={"multipart/form-data"}
+            className="space-y-4"
+          >
+            {/* Name Section */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
-                  htmlFor="email"
+                  htmlFor="firstName"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  Email Address
+                  First Name
                 </label>
                 <input
-                  type="email"
-                  id="email"
+                  type="text"
+                  id="firstName"
                   disabled
                   className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  value={auth.user?.email || formData.email}
-                  name="email"
+                  value={auth.user?.firstName || formData.firstName}
+                  name="firstName"
                   onChange={(e) => handleInput(e)}
                   required
                 />
               </div>
-              {/* Phone Number */}
               <div>
                 <label
-                  htmlFor="phoneNumber"
+                  htmlFor="lastName"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phoneNumber"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  placeholder="### ### ####"
-                  value={formData.phoneNumber}
-                  name="phoneNumber"
-                  onChange={(e) => handleInput(e)}
-                  required
-                />
-              </div>
-              {/* Waste Location Building */}
-              <div>
-                <label
-                  htmlFor="building"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Waste Collection Pickup Address
+                  Last Name
                 </label>
                 <input
                   type="text"
-                  id="building"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  value={formData.building}
-                  name="building"
-                  onChange={(e) => handleInput(e)}
-                />
-              </div>
-              {/* Street Address */}
-              <div>
-                <label
-                  htmlFor="streetAddress"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Street Address
-                </label>
-                <input
-                  type="text"
-                  id="streetAddress"
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  value={formData.streetAddress}
-                  name="streetAddress"
+                  id="lastName"
+                  disabled
+                  className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                  value={auth.user?.lastName || formData.lastName}
+                  name="lastName"
                   onChange={(e) => handleInput(e)}
                   required
                 />
               </div>
-              {/* City and Country */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="city"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    id="city"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                    value={formData.city}
-                    name="city"
-                    onChange={(e) => handleInput(e)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="country"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    State
-                  </label>
-                  <select
-                    defaultValue="null"
-                    name="state"
-                    onChange={(e) => handleInput(e)}
-                    className="select mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  >
-                    <option
-                      disabled
-                      value="null"
-                      className="rounded-md bg-zinc-200"
-                    >
-                      Pick a state
-                    </option>
-                    <option value="johor">Johor</option>
-                    <option value="kedah">Kedah</option>
-                    <option value="kelantan">Kelantan</option>
-                    <option value="melaka">Malacca</option>
-                    <option value="negeri_sembilan">Negeri Sembilan</option>
-                    <option value="pahang">Pahang</option>
-                    <option value="penang">Penang</option>
-                    <option value="perak">Perak</option>
-                    <option value="perlis">Perlis</option>
-                    <option value="selangor">Selangor</option>
-                    <option value="terengganu">Terengganu</option>
-                    <option value="sabah">Sabah</option>
-                    <option value="sarawak">Sarawak</option>
-                    <option value="kuala_lumpur">Kuala Lumpur</option>
-                    <option value="labuan">Labuan</option>
-                    <option value="putrajaya">Putrajaya</option>
-                  </select>
-                </div>
-              </div>
-
+            </div>
+            {/* Email Address */}
+            <div>
+              <label
+                htmlFor="email"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="email"
+                disabled
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-zinc-100 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                value={auth.user?.email || formData.email}
+                name="email"
+                onChange={(e) => handleInput(e)}
+                required
+              />
+            </div>
+            {/* Phone Number */}
+            <div>
+              <label
+                htmlFor="phoneNumber"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                placeholder="### ### ####"
+                value={formData.phoneNumber}
+                name="phoneNumber"
+                onChange={(e) => handleInput(e)}
+                required
+              />
+            </div>
+            {/* Waste Location Building */}
+            <div>
+              <label
+                htmlFor="building"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Waste Collection Pickup Address
+              </label>
+              <input
+                type="text"
+                id="building"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                value={formData.building}
+                name="building"
+                onChange={(e) => handleInput(e)}
+              />
+            </div>
+            {/* Street Address */}
+            <div>
+              <label
+                htmlFor="streetAddress"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Street Address
+              </label>
+              <input
+                type="text"
+                id="streetAddress"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                value={formData.streetAddress}
+                name="streetAddress"
+                onChange={(e) => handleInput(e)}
+                required
+              />
+            </div>
+            {/* City and Country */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label
-                  htmlFor="wasteDescription"
+                  htmlFor="city"
                   className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  Waste Origin Classification/Description
+                  City
                 </label>
-                <textarea
-                  id="wasteDescription"
-                  rows={4}
-                  className="mt-1 block min-h-[100px] w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
-                  value={formData.wasteDescription}
-                  name="wasteDescription"
+                <input
+                  type="text"
+                  id="city"
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                  value={formData.city}
+                  name="city"
                   onChange={(e) => handleInput(e)}
-                ></textarea>
-              </div>
-
-              <div>
-                <div className="block text-sm font-medium text-gray-700">
-                  Photo upload (Optional)
-                </div>
-                <FileInput
-                  callback={(data) => setFormData({ ...formData, img: data })}
+                  required
                 />
               </div>
-              {/* Submit Button */}
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className="inline-flex justify-center rounded-md border border-transparent bg-green-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
+              <div>
+                <label
+                  htmlFor="country"
+                  className="mb-1 block text-sm font-medium text-gray-700"
                 >
-                  {processing ? "Submitting form..." : "Submit Form"}
-                </button>
+                  State
+                </label>
+                <select
+                  defaultValue="null"
+                  name="state"
+                  onChange={(e) => handleInput(e)}
+                  className="select mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                >
+                  <option
+                    disabled
+                    value="null"
+                    className="rounded-md bg-zinc-200"
+                  >
+                    Pick a state
+                  </option>
+                  <option value="johor">Johor</option>
+                  <option value="kedah">Kedah</option>
+                  <option value="kelantan">Kelantan</option>
+                  <option value="melaka">Malacca</option>
+                  <option value="negeri_sembilan">Negeri Sembilan</option>
+                  <option value="pahang">Pahang</option>
+                  <option value="penang">Penang</option>
+                  <option value="perak">Perak</option>
+                  <option value="perlis">Perlis</option>
+                  <option value="selangor">Selangor</option>
+                  <option value="terengganu">Terengganu</option>
+                  <option value="sabah">Sabah</option>
+                  <option value="sarawak">Sarawak</option>
+                  <option value="kuala_lumpur">Kuala Lumpur</option>
+                  <option value="labuan">Labuan</option>
+                  <option value="putrajaya">Putrajaya</option>
+                </select>
               </div>
-            </form>
-          </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="wasteDescription"
+                className="mb-1 block text-sm font-medium text-gray-700"
+              >
+                Waste Origin Classification/Description
+              </label>
+              <textarea
+                id="wasteDescription"
+                rows={4}
+                className="mt-1 block min-h-[100px] w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 focus:outline-none sm:text-sm"
+                value={formData.wasteDescription}
+                name="wasteDescription"
+                onChange={(e) => handleInput(e)}
+              ></textarea>
+            </div>
+
+            <div>
+              <div className="block text-sm font-medium text-gray-700">
+                Photo upload (Optional)
+              </div>
+              <FileInput
+                callback={(data) => setFormData({ ...formData, img: data })}
+              />
+            </div>
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="inline-flex justify-center rounded-md border border-transparent bg-green-600 px-6 py-2 text-sm font-medium text-white shadow-sm transition duration-150 ease-in-out hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
+              >
+                {processing ? "Submitting form..." : "Submit Form"}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

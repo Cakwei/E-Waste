@@ -61,3 +61,5 @@ export const Colors = {
   activeSecondaryButtonStyle:
     "bg-[#30b4ac] hover:bg-teal-600 active:bg-teal-700",
 };
+
+export const protectedRoutes = ["/profile"];

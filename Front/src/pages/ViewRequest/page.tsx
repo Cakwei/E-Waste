@@ -3,7 +3,7 @@ import ProfileComponent from "@/pages/Profile/component/ProfileWrapper";
 import { endPointUrl } from "@/constants/constants";
 import axios, { type AxiosResponse } from "axios";
 import { Copy, TriangleAlert, UserPen } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import Buffer from "buffer/";
 import { ImageZoom } from "@/components/ImageZoom";
@@ -66,7 +66,7 @@ export default function ViewRequest() {
       console.log(err);
     }
   }
-
+  /*
   useEffect(() => {
     const isLoggedIn = auth.user?.username !== "" && auth.user?.email !== "";
     console.log(isLoggedIn, auth.loading);
@@ -74,7 +74,7 @@ export default function ViewRequest() {
       navigate("/login");
     }
   }, [auth, navigate]);
-
+*/
   return (
     <ProfileComponent>
       {!(isLoading || !auth.loading) ? (

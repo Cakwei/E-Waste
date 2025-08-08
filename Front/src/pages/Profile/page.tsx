@@ -1,8 +1,7 @@
 import { Pencil } from "lucide-react";
-import { useEffect, useLayoutEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import ProfileWrapper from "@/pages/Profile/component/ProfileWrapper";
-import { useNavigate } from "react-router";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import {
@@ -28,7 +27,6 @@ type IFormData = {
 
 export default function Profile() {
   const auth = useAuth();
-  const navigate = useNavigate();
   const [dialog, setDialog] = useState({
     usernameDialog: false,
     emailDialog: false,
@@ -357,7 +355,7 @@ export default function Profile() {
         );
     }
   }
-
+  /*
   useLayoutEffect(() => {
     const isLoggedIn =
       !auth.loading && auth.user?.username !== "" && auth.user?.email !== "";
@@ -365,7 +363,7 @@ export default function Profile() {
       navigate("/");
     }
   }, [auth]);
-  /*
+ 
   useEffect(() => {
     console.log(
       JSON.stringify(changeUsernameInputValue),
@@ -380,6 +378,7 @@ export default function Profile() {
     changeUsernameInputValue,
     changePasswordInputValue,
   ]);*/
+  
   return (
     <ProfileWrapper>
       <div className="flex w-full justify-start bg-gray-50 p-5">

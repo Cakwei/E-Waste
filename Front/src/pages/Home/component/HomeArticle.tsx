@@ -12,6 +12,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import type { ILocation } from "@/types/types";
 import { Button } from "@/components/Button";
 import { Colors } from "@/constants/constants";
+import { useNavigate } from "react-router";
 
 const info = [
   { label: "1k E-Waste Recycled", href: "#" },
@@ -62,6 +63,7 @@ const location: ILocation[] = [
 ];
 
 export default function HomeArticle() {
+  const navigate = useNavigate();
   return (
     <article className="flex w-full flex-col p-10 text-white">
       <ul className="flex w-full flex-wrap justify-center gap-5">
@@ -87,6 +89,9 @@ export default function HomeArticle() {
         <h5 className="sm:text-st flex flex-col items-center justify-center gap-5 text-center text-2xl font-bold sm:items-start sm:text-start">
           Wish to take part in our journey for a greener future?
           <Button
+            onClick={() => {
+              navigate("/collection");
+            }}
             className={`btn w-max gap-2.5 border-none bg-[#30b4ac] p-5 shadow-none outline-none ${Colors.activeSecondaryButtonStyle}`}
           >
             Request for waste collection <i className="bi bi-arrow-right"></i>

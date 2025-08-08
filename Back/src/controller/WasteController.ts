@@ -145,7 +145,7 @@ const GetAllOfUserCollection = async (req: Request, res: Response) => {
     );
     if ((result as RowDataPacket[]).length === 0) {
       res
-        .status(404)
+        .status(204)
         .send({ status: 'Error', data: {}, message: 'No results found' });
       return;
     }
@@ -174,7 +174,7 @@ const FindUserCollection = async (req: Request, res: Response) => {
 
     if ((result as RowDataPacket[]).length === 0) {
       res
-        .status(404)
+        .status(204)
         .send({ status: 'Error', data: {}, message: 'No results found' });
       return;
     }
@@ -233,7 +233,7 @@ const UpdateUserCollection = async (req: Request, res: Response) => {
         });
       } else {
         res
-          .status(400)
+          .status(204)
           .send({ status: 'Error', data: {}, message: 'No rows affected' });
       }
     }
