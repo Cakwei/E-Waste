@@ -20,7 +20,7 @@ Here're some of the project's current planned features:
 
 What I feel possible to be done after the whole web project is finished.
 
-*   Flutter mobile app
+*   React Native mobile app
 
 <h2>🛠️ Installation Steps:</h2>
 
